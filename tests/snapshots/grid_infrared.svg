@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 735 402" width="735" height="402" style="cursor:default" role="img" aria-label="aspect grid">
+<defs><linearGradient id="aspgrid_infrared_30_12" gradientUnits="userSpaceOnUse" x1="8.0" y1="368.0" x2="203.0" y2="173.0"><stop offset="0%" stop-color="#ffd25e"/><stop offset="100%" stop-color="#ff3b2f"/></linearGradient></defs>
+<g><title>Sun in Leo at 25.32°</title>
+<rect x="8.0" y="8.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="23.0" y="23.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">☉︎</text></g>
+<g><title>Moon trine Sun · 0.2° orb</title><rect x="8.0" y="38.0" width="30.0" height="30.0" fill="#ffd25e" fill-opacity="0.13"/><text x="23.0" y="53.0" fill="#ffd25e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="13.8" font-weight="600" text-anchor="middle" dominant-baseline="central">△︎</text></g>
+<g><title>Moon in Aries at 5.51°</title>
+<rect x="38.0" y="38.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="53.0" y="53.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">☽︎</text></g>
+<g><title>Mercury in Virgo at 10.20° ℞</title>
+<rect x="68.0" y="68.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="83.0" y="83.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">☿︎</text></g>
+<g><title>Venus conjunct Sun · 1.5° orb</title><rect x="8.0" y="98.0" width="30.0" height="30.0" fill="#a06a52" fill-opacity="0.13"/><text x="23.0" y="113.0" fill="#a06a52" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="13.8" font-weight="600" text-anchor="middle" dominant-baseline="central">☌︎</text></g>
+<g><title>Venus in Leo at 10.85°</title>
+<rect x="98.0" y="98.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="113.0" y="113.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">♀︎</text></g>
+<g><title>Mars quincunx Moon · 0.1° orb</title><rect x="38.0" y="128.0" width="30.0" height="30.0" fill="#ffd25e" fill-opacity="0.13"/><text x="53.0" y="143.0" fill="#ffd25e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="13.8" font-weight="600" text-anchor="middle" dominant-baseline="central">⚻︎</text></g>
+<g><title>Mars in Libra at 20.44°</title>
+<rect x="128.0" y="128.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="143.0" y="143.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">♂︎</text></g>
+<g><title>Jupiter trine Venus · 1.7° orb</title><rect x="98.0" y="158.0" width="30.0" height="30.0" fill="#ffd25e" fill-opacity="0.13"/><text x="113.0" y="173.0" fill="#ffd25e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="13.8" font-weight="600" text-anchor="middle" dominant-baseline="central">△︎</text></g>
+<g><title>Jupiter in Capricorn at 15.11° ℞</title>
+<rect x="158.0" y="158.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="173.0" y="173.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">♃︎</text></g>
+<g><title>Saturn sextile Sun · 0.6° orb</title><rect x="8.0" y="188.0" width="30.0" height="30.0" fill="#ffd25e" fill-opacity="0.13"/><text x="23.0" y="203.0" fill="#ffd25e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="13.8" font-weight="600" text-anchor="middle" dominant-baseline="central">⚹︎</text></g>
+<g><title>Saturn semi-sextile Jupiter · 0.6° orb</title><rect x="158.0" y="188.0" width="30.0" height="30.0" fill="#ffd25e" fill-opacity="0.13"/><text x="173.0" y="203.0" fill="#ffd25e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="13.8" font-weight="600" text-anchor="middle" dominant-baseline="central">⚺︎</text></g>
+<g><title>Saturn in Aquarius at 10.73°</title>
+<rect x="188.0" y="188.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="203.0" y="203.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">♄︎</text></g>
+<g><title>Uranus in Taurus at 5.20°</title>
+<rect x="218.0" y="218.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="233.0" y="233.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">♅︎</text></g>
+<g><title>Neptune opposite Mercury · 1.3° orb</title><rect x="68.0" y="248.0" width="30.0" height="30.0" fill="#ff3b2f" fill-opacity="0.13"/><text x="83.0" y="263.0" fill="#ff3b2f" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="13.8" font-weight="600" text-anchor="middle" dominant-baseline="central">☍︎</text></g>
+<g><title>Neptune in Pisces at 20.92° ℞</title>
+<rect x="248.0" y="248.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="263.0" y="263.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">♆︎</text></g>
+<g><title>Pluto square Mars · 0.8° orb</title><rect x="128.0" y="278.0" width="30.0" height="30.0" fill="#ff3b2f" fill-opacity="0.13"/><text x="143.0" y="293.0" fill="#ff3b2f" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="13.8" font-weight="600" text-anchor="middle" dominant-baseline="central">□︎</text></g>
+<g><title>Pluto in Capricorn at 5.63° ℞</title>
+<rect x="278.0" y="278.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="293.0" y="293.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">♇︎</text></g>
+<g><title>North Node in Taurus at 25.00° ℞</title>
+<rect x="308.0" y="308.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="323.0" y="323.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">☊︎</text></g>
+<g><title>Chiron in Aries at 8.10°</title>
+<rect x="338.0" y="338.0" width="30.0" height="30.0" fill="#30201f"/>
+<text x="353.0" y="353.0" fill="#ff5a2e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="15.6" text-anchor="middle" dominant-baseline="central">⚷︎</text></g>
+<line x1="8.0" y1="38.0" x2="38.0" y2="38.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="8.0" y1="68.0" x2="68.0" y2="68.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="8.0" y1="98.0" x2="98.0" y2="98.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="8.0" y1="128.0" x2="128.0" y2="128.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="8.0" y1="158.0" x2="158.0" y2="158.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="8.0" y1="188.0" x2="188.0" y2="188.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="8.0" y1="218.0" x2="218.0" y2="218.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="8.0" y1="248.0" x2="248.0" y2="248.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="8.0" y1="278.0" x2="278.0" y2="278.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="8.0" y1="308.0" x2="308.0" y2="308.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="8.0" y1="338.0" x2="338.0" y2="338.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="38.0" y1="38.0" x2="38.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="68.0" y1="68.0" x2="68.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="98.0" y1="98.0" x2="98.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="128.0" y1="128.0" x2="128.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="158.0" y1="158.0" x2="158.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="188.0" y1="188.0" x2="188.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="218.0" y1="218.0" x2="218.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="248.0" y1="248.0" x2="248.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="278.0" y1="278.0" x2="278.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="308.0" y1="308.0" x2="308.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<line x1="338.0" y1="338.0" x2="338.0" y2="368.0" stroke="url(#aspgrid_infrared_30_12)" stroke-width="1.5" shape-rendering="crispEdges"/>
+<polygon points="8.0,8.0 8.0,368.0 368.0,368.0 368.0,338.0 338.0,338.0 338.0,308.0 308.0,308.0 308.0,278.0 278.0,278.0 278.0,248.0 248.0,248.0 248.0,218.0 218.0,218.0 218.0,188.0 188.0,188.0 188.0,158.0 158.0,158.0 158.0,128.0 128.0,128.0 128.0,98.0 98.0,98.0 98.0,68.0 68.0,68.0 68.0,38.0 38.0,38.0 38.0,8.0 8.0,8.0" fill="none" stroke="url(#aspgrid_infrared_30_12)" stroke-width="4" stroke-linejoin="miter" shape-rendering="crispEdges"/>
+<text x="8.0" y="385.0" fill="#a06a52" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="14" dominant-baseline="central">☌︎</text>
+<text x="28.0" y="385.0" fill="#a06a52" font-family="system-ui,sans-serif" font-size="12.5" dominant-baseline="central">Conjunction</text>
+<text x="129.2" y="385.0" fill="#ff3b2f" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="14" dominant-baseline="central">☍︎</text>
+<text x="149.2" y="385.0" fill="#a06a52" font-family="system-ui,sans-serif" font-size="12.5" dominant-baseline="central">Opposition</text>
+<text x="243.2" y="385.0" fill="#ff3b2f" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="14" dominant-baseline="central">□︎</text>
+<text x="263.2" y="385.0" fill="#a06a52" font-family="system-ui,sans-serif" font-size="12.5" dominant-baseline="central">Square</text>
+<text x="328.4" y="385.0" fill="#ffd25e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="14" dominant-baseline="central">△︎</text>
+<text x="348.4" y="385.0" fill="#a06a52" font-family="system-ui,sans-serif" font-size="12.5" dominant-baseline="central">Trine</text>
+<text x="406.4" y="385.0" fill="#ffd25e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="14" dominant-baseline="central">⚹︎</text>
+<text x="426.4" y="385.0" fill="#a06a52" font-family="system-ui,sans-serif" font-size="12.5" dominant-baseline="central">Sextile</text>
+<text x="498.8" y="385.0" fill="#ffd25e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="14" dominant-baseline="central">⚻︎</text>
+<text x="518.8" y="385.0" fill="#a06a52" font-family="system-ui,sans-serif" font-size="12.5" dominant-baseline="central">Quincunx</text>
+<text x="598.4" y="385.0" fill="#ffd25e" font-family='"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif' font-size="14" dominant-baseline="central">⚺︎</text>
+<text x="618.4" y="385.0" fill="#a06a52" font-family="system-ui,sans-serif" font-size="12.5" dominant-baseline="central">Semi-sextile</text>
+</svg>
