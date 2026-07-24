@@ -37,7 +37,10 @@ compute = ["openephem>=0.1.0"]
 test = ["pytest>=7", "ruff>=0.6", "mypy>=1.10"]
 
 [project.urls]
-Repository = "https://github.com/NoahChristian/ElpisWeb"
+Homepage = "https://github.com/NoahChristian/ephemvis"
+Repository = "https://github.com/NoahChristian/ephemvis"
+Changelog = "https://github.com/NoahChristian/ephemvis/blob/main/CHANGELOG.md"
+Issues = "https://github.com/NoahChristian/ephemvis/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ephemvis"]

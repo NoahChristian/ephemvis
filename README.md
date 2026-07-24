@@ -1,8 +1,14 @@
 # ephemvis
 
+[![CI](https://github.com/NoahChristian/ephemvis/actions/workflows/ci.yml/badge.svg)](https://github.com/NoahChristian/ephemvis/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/ephemvis.svg)](https://pypi.org/project/ephemvis/)
+[![Python](https://img.shields.io/pypi/pyversions/ephemvis.svg)](https://pypi.org/project/ephemvis/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Themeable **SVG rendering** for astrological chart data — the display layer that
-pairs with [openephem](../oracle) (the calculation core). ephemvis turns a chart
-dict into a self-contained chart **wheel** and a triangular **aspect grid**.
+pairs with [openephem](https://github.com/NoahChristian/openephem) (the calculation
+core). ephemvis turns a chart dict into a self-contained chart **wheel** and a
+triangular **aspect grid**.
 
 The split is deliberate: **openephem computes, ephemvis draws.** The math core
 stays small and auditable; the visuals can be forked and restyled freely without
