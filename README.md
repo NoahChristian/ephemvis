@@ -52,4 +52,5 @@ ephemvis reads the chart dict openephem's `assemble()` returns:
 }
 ```
 
-MIT © 2026 Elizabeth Huston, Ph.D. and Noah Christian, Ph.D.
+MIT © 2026 Elizabeth Huston, Ph.D. and Noah Christian, Ph.D.  
+Contact: elpisastrology@gmail.com · elpisastrology.com and noahchristian@gmail.com
