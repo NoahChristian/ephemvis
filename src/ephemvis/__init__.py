@@ -18,9 +18,9 @@ Themes: 'light', 'dark', 'auto', and the pastel modes 'prism', 'twilight',
 
 __version__ = "0.1.0"
 
-from . import wheel, aspectgrid                     # noqa: F401
-from .wheel import render_svg, PALETTES             # noqa: F401
-from .aspectgrid import render_aspect_grid_svg      # noqa: F401
+from . import aspectgrid, wheel  # noqa: F401
+from .aspectgrid import render_aspect_grid_svg  # noqa: F401
+from .wheel import PALETTES, render_svg  # noqa: F401
 
 __all__ = [
     "__version__", "render_svg", "render_aspect_grid_svg", "PALETTES",

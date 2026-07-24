@@ -11,7 +11,9 @@ so it is safe to embed in the same page as other inline SVGs.
 
 from __future__ import annotations
 
-from .wheel import PLANET_GLYPHS, PALETTES, _L, _esc, _lerp_hex, body_label
+from typing import cast
+
+from .wheel import _L, PALETTES, PLANET_GLYPHS, _esc, _lerp_hex, body_label
 
 ASP_SYM = {"conjunction": "☌", "opposition": "☍", "square": "□", "trine": "△",
            "sextile": "⚹", "quincunx": "⚻", "semisextile": "⚺",
@@ -54,7 +56,7 @@ def render_aspect_grid_svg(chart: dict, theme: str = "light", order=None,
     n = len(gorder)
     amap = {frozenset((a.get("a"), a.get("b"))): a for a in aspects}
     C, pad = float(cell), 8.0
-    bg0 = pal["bg"][0]
+    bg0 = cast("tuple[str, str]", pal["bg"])[0]
     diagbg = _lerp_hex(bg0, pal["planet"], 0.10)       # subtle diagonal-cell tint over bg
     accent = pal["anglelab"]                           # diagonal glyph colour
     muted = pal["deg"]

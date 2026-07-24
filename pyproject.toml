@@ -34,7 +34,7 @@ dependencies = []
 
 [project.optional-dependencies]
 compute = ["openephem>=0.1.0"]
-test = ["pytest>=7"]
+test = ["pytest>=7", "ruff>=0.6", "mypy>=1.10"]
 
 [project.urls]
 Repository = "https://github.com/NoahChristian/ElpisWeb"
@@ -43,4 +43,21 @@ Repository = "https://github.com/NoahChristian/ElpisWeb"
 packages = ["src/ephemvis"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/ephemvis", "README.md", "LICENSE"]
+include = ["src/ephemvis", "README.md", "CHANGELOG.md", "LICENSE"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# E501: dense SVG output lines. UP031: %-formatting is deliberate here — the tight,
+# many-argument SVG string assembly reads better as % than as f-strings.
+ignore = ["E501", "UP031"]
+
+[tool.mypy]
+python_version = "3.10"
+files = ["src/ephemvis"]
+ignore_missing_imports = true
+disallow_untyped_defs = false
+warn_unused_ignores = false

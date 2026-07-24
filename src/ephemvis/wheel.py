@@ -261,7 +261,6 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
     r_house = r_zod_in               # house-cusp lines reach the zodiac inner edge
     r_tick_in = r_zod_in * 0.905     # inner end of the planet pointer ticks
     r_glyph = r_zod_in * 0.845       # planet-glyph ring (pushed out for more room)
-    r_deg = r_zod_in * 0.758         # degree-label ring, just inside the glyphs
     r_hnum_out = r_zod_in * 0.43     # house-ring outer = former aspect-circle radius
     r_hub = r_zod_in * 0.33          # aspect circle == house-ring inner edge (they meet)
     r_hnum = r_zod_in * 0.38         # house numbers, centred in the (wider) ring band
@@ -300,8 +299,10 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
             for sgi in range(N):
                 a0, a1 = 360.0 * sgi / N, 360.0 * (sgi + 1) / N
                 col = _conic((a0 + a1) / 720.0 + turn, stops)
-                x1, y1 = sp(rout, a0); x2, y2 = sp(rout, a1)
-                x3, y3 = sp(rin, a1); x4, y4 = sp(rin, a0)
+                x1, y1 = sp(rout, a0)
+                x2, y2 = sp(rout, a1)
+                x3, y3 = sp(rin, a1)
+                x4, y4 = sp(rin, a0)
                 P.append(f'<polygon points="{x1:.1f},{y1:.1f} {x2:.1f},{y2:.1f} '
                          f'{x3:.1f},{y3:.1f} {x4:.1f},{y4:.1f}" fill="{col}"/>')
         for r in (r_out, r_zod_in, r_hnum_out, r_hub):
@@ -368,7 +369,8 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
     DOFF = r_zod_in * 0.086          # degree label offset below its glyph
     placed = _spread([(n, bodies[n]["lon"]) for n in bodies], min_gap=ANG)
     order = sorted(range(len(placed)), key=lambda k: placed[k][2])
-    last, tier = [], [0] * len(placed)
+    last: list[float] = []
+    tier = [0] * len(placed)
     for k in order:
         d = placed[k][2]
         t = 0
