@@ -38,6 +38,94 @@ open("grid.svg",  "w", encoding="utf-8").write(render_aspect_grid_svg(chart, the
 emits that shape can be rendered** — ephemvis has no dependency on how the chart
 was computed.
 
+## Profections
+
+Two ways to show profections, both from a chart dict carrying a `profections` block
+(openephem's `assemble()` adds one for a given age/date):
+
+**A dedicated wheel** — `render_profection_wheel_svg(chart, theme=…)` draws the
+whole-sign profection wheel: twelve house wedges
+(ASC..12th) with the natal planets in their houses, the signs on the rim, and
+concentric **age rings** (each house lists the ages that profect there — 0,12,24… in
+the 1st, 1,13,25… in the 2nd, …). The profected house + sign are highlighted for the
+chart's age, and the age cells are a **heatmap** keyed to age along the theme's ramp
+(a thermal map of life in `infrared`, black-light in `ultraviolet`). Options:
+
+```python
+from ephemvis import render_profection_wheel_svg
+svg = render_profection_wheel_svg(chart, theme="infrared", max_age=83,
+                                  title="Annual Profections", planets="classical")
+```
+
+`max_age` sets the final year (the outer ring is always completed: 83 → seven rings
+0–83, 84 → eight rings 0–95). `planets` is `"classical"` (default), `"all"`, or a
+list of body names. `title` sets the top-left heading.
+
+**An overlay on the natal wheel** — `render_svg` also marks the profection on the
+ordinary chart in the theme accent: a filled **band** on the annual profected sign and
+a ring tagged **TL** on the **Lord of the Year** glyph, each with a hover tooltip. A
+bottom-left **key** names the annual lord and rising sign (`Lord: Mars · Aries rising`)
+and, when the chart carries an as-of date, tags each part of that date with the sign it
+profects to (`June ♊ · 3rd ♐ · 2030 ♒` — month → Lord of the Month's sign, day →
+Lord of the Day's, year → the annual sign). Pass `show_profection=False` to suppress it.
+All whole-sign, counted from the Ascendant.
+
+## Firdaria
+
+`render_firdaria_svg(chart, theme=…)` draws the Persian firdaria time-lords as a
+horizontal **timeline** (they're a temporal sequence, not a wheel): a top row of major
+planetary periods and a bottom row of their sub-periods, each segment coloured and
+glyphed by its ruling planet, with the current major/sub outlined and a marker at the
+current age. Needs a `firdaria` block (openephem's `assemble(..., firdaria_as_of=)`).
+
+```python
+from ephemvis import render_firdaria_svg
+svg = render_firdaria_svg(chart, theme="dark", max_age=84, title="Firdaria")
+```
+
+`max_age` is the right edge (years). A companion table is trivially built from the same
+`firdaria` block. Planet identity is carried by the glyph (nine categories can't all be
+maximally distinct); colour is a supporting cue.
+
+## Zodiacal Releasing
+
+`render_zodiacal_releasing_svg(chart, theme=…)` draws Valens' zodiacal releasing as a
+horizontal **timeline** of nested periods: a top row of level-1 (L1) periods and a bottom
+row of their level-2 (L2) sub-periods. Each band is coloured by the **element** of its
+sign (Fire/Earth/Air/Water — four categories separate cleanly for colour-vision
+deficiency) and carries the sign's glyph as the primary identifier. Peak periods (angular
+from the Lot of Fortune) get an ink accent bar; a Loosing-of-the-Bond jump is marked where
+it occurs; the current L1 period is outlined with a marker at the current age. Needs a
+`zodiacal_releasing` block (openephem's `assemble(..., releasing_as_of=)`).
+
+```python
+from ephemvis import render_zodiacal_releasing_svg
+svg = render_zodiacal_releasing_svg(chart, theme="dark", max_age=84,
+                                    title="Zodiacal Releasing")
+```
+
+`max_age` is the right edge (years). The Lot released (Fortune by default, or any of the
+seven Hermetic Lots) and the active L1→L4 path are named in the subtitle; a companion
+table is trivially built from the same block.
+
+## Decennials
+
+`render_decennials_svg(chart, theme=…)` draws Valens' decennial time-lords as a horizontal
+**timeline**: a top row of the general decennial periods (each a fixed 10 years 9 months)
+and a bottom row of their planetary sub-periods (unequal — each planet's minor years as
+months), coloured and glyphed by ruling planet, with the current general/sub lord outlined
+and a marker at the current age. Needs a `decennials` block (openephem's `assemble(...,
+decennials_as_of=)`).
+
+```python
+from ephemvis import render_decennials_svg
+svg = render_decennials_svg(chart, theme="dark", max_age=76, title="Decennials")
+```
+
+`max_age` is the right edge (years; a full cycle is ~75¼). The starting planet is named in
+the subtitle; a companion table is trivially built from the same block. Planet identity is
+carried by the glyph; colour is a supporting cue.
+
 ## Themes
 
 `light`, `dark`, `auto`, and eight pastel "pretty" modes with a prism-halo ring:

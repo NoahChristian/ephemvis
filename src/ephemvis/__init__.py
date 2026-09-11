@@ -16,13 +16,27 @@ Themes: 'light', 'dark', 'auto', and the pastel modes 'prism', 'twilight',
 'aurora', 'opal', 'seafoam', 'meadow', 'dawn', 'blossom' (see PALETTES).
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
-from . import aspectgrid, wheel  # noqa: F401
+from . import (  # noqa: F401
+    aspectgrid,
+    decennials,
+    firdaria,
+    profection_wheel,
+    wheel,
+    zodiacal_releasing,
+)
 from .aspectgrid import render_aspect_grid_svg  # noqa: F401
+from .decennials import render_decennials_svg  # noqa: F401
+from .firdaria import render_firdaria_svg  # noqa: F401
+from .profection_wheel import render_profection_wheel_svg  # noqa: F401
 from .wheel import PALETTES, render_svg  # noqa: F401
+from .zodiacal_releasing import render_zodiacal_releasing_svg  # noqa: F401
 
 __all__ = [
-    "__version__", "render_svg", "render_aspect_grid_svg", "PALETTES",
-    "wheel", "aspectgrid",
+    "__version__", "render_svg", "render_aspect_grid_svg",
+    "render_profection_wheel_svg", "render_firdaria_svg",
+    "render_zodiacal_releasing_svg", "render_decennials_svg", "PALETTES",
+    "wheel", "aspectgrid", "profection_wheel", "firdaria", "zodiacal_releasing",
+    "decennials",
 ]

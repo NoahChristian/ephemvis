@@ -18,6 +18,8 @@ import math
 SIGN_GLYPHS = ["♈", "♉", "♊", "♋", "♌", "♍",
                "♎", "♏", "♐", "♑", "♒", "♓"]
 SIGN_ABBR = ["Ar", "Ta", "Ge", "Cn", "Le", "Vi", "Li", "Sc", "Sg", "Cp", "Aq", "Pi"]
+SIGN_NAMES = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+              "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
 
 PLANET_GLYPHS = {
     "Sun": "☉", "Moon": "☽", "Mercury": "☿", "Venus": "♀",
@@ -119,19 +121,21 @@ _L = dict(bg=("#ffffff", "#ffffff"), ring=("#b0b0b0", "#b0b0b0", "#b0b0b0"),
           tick="#b0b0b0", sign="#3a3a3a", cusp="#7f9fd4", cuspA="#3f5f9c",
           hdiv="#a3aab8", leader="#c3c7cf", housenum="#3a3a3a", anglelab="#1c1c1c",
           pmark="#b6b6b6", planet="#111111", deg="#5f5f5f", degRx="#c0392b",
-          title="#222222", aHard="#d7263d", aSoft="#1f7a8c", aNeutral="#8a8a8a", halo=False)
+          title="#222222", aHard="#d7263d", aSoft="#1f7a8c", aNeutral="#8a8a8a",
+          prof="#c9962e", halo=False)
 _D = dict(bg=("#14161a", "#0f1114"), ring=("#3a3f47", "#3a3f47", "#3a3f47"),
           tick="#3a3f47", sign="#c9cdd4", cusp="#6a84ad", cuspA="#a6c1ec",
           hdiv="#5b6474", leader="#4c525e", housenum="#7a828c", anglelab="#d5d9df",
           pmark="#454b54", planet="#f2f4f7", deg="#9aa1ab", degRx="#ff6f6f",
-          title="#e6e9ee", aHard="#e06c78", aSoft="#5fb0c0", aNeutral="#7a828c", halo=False)
+          title="#e6e9ee", aHard="#e06c78", aSoft="#5fb0c0", aNeutral="#7a828c",
+          prof="#e8c15a", halo=False)
 
 
 def _pretty(bg, bg2, ring, ink, mid, line, lineA, accent, hard, soft):
     return dict(bg=(bg, bg2), ring=ring, tick=line, sign=ink, cusp=line, cuspA=lineA,
                 hdiv=mid, leader=line, housenum=ink, anglelab=accent, pmark=mid,
                 planet=ink, deg=mid, degRx=hard, title=ink,
-                aHard=hard, aSoft=soft, aNeutral=mid, halo=True)
+                aHard=hard, aSoft=soft, aNeutral=mid, prof=accent, halo=True)
 
 
 def _lerp_hex(c1, c2, t):
@@ -204,25 +208,52 @@ def _defs(pal):
             '</linearGradient></defs>')
 
 
-def _style(pal):
+def _style(pal, size=760):
     sym = '"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif'
+    # Fonts and stroke widths scale with `size`. They used to be hardcoded px tuned for one
+    # size, so at any smaller size the glyphs bloated relative to the (size-scaled) geometry
+    # and the degree labels collided with their glyphs — a scaling bug present since 0.1.0.
+    # Font PROPORTIONS are set a touch smaller than the old 760 px so a wide retrograde degree
+    # label (e.g. "2°℞") clears its glyph at every size; strokes use a 760 reference so the
+    # 760 output (the snapshot size) keeps its exact line weights.
+    def _n(v):                       # compact number: "2" not "2.0", "3.4" stays "3.4"
+        return f"{round(v, 2):g}"
+    k = size / 760.0                 # stroke reference (identity at 760)
+    f_sign = size * 0.0315           # sign glyph   (~23.9px @760, was 28)
+    f_planet = size * 0.0370         # planet glyph (~28.1px @760, was 33)
+    f_deg = size * 0.0195            # degree label (~14.8px @760, was 18)
+    f_hnum = size * 0.0210           # house number (~16.0px @760, was 19)
+    f_angle = size * 0.0315          # Asc/MC label (~23.9px @760, was 28)
+    f_title = size * 0.0197          # title        (~15.0px @760, unchanged proportion)
     rules = [
-        (".ring", "fill:none;stroke:url(#ringgrad);stroke-width:3.4"),
-        (".tick", "stroke:%s;stroke-width:3.4" % pal["tick"]),
-        (".sign", "fill:%s;font:600 28px %s" % (pal["sign"], sym)),
-        (".cusp", "stroke:%s;stroke-width:2" % pal["cusp"]),
-        (".cusp-angle", "stroke:%s;stroke-width:2.4" % pal["cuspA"]),
-        (".hdiv", "stroke:%s;stroke-width:1.3" % pal["hdiv"]),
-        (".leader", "stroke:%s;stroke-width:2;stroke-dasharray:1 5;stroke-linecap:round" % pal["leader"]),
-        (".housenum", "fill:%s;font:600 19px system-ui,sans-serif" % pal["housenum"]),
-        (".anglelab", "fill:%s;font:800 28px system-ui,sans-serif" % pal["anglelab"]),
+        (".ring", "fill:none;stroke:url(#ringgrad);stroke-width:%s" % _n(3.4 * k)),
+        (".tick", "stroke:%s;stroke-width:%s" % (pal["tick"], _n(3.4 * k))),
+        (".sign", "fill:%s;font:600 %spx %s" % (pal["sign"], _n(f_sign), sym)),
+        (".cusp", "stroke:%s;stroke-width:%s" % (pal["cusp"], _n(2 * k))),
+        (".cusp-angle", "stroke:%s;stroke-width:%s" % (pal["cuspA"], _n(2.4 * k))),
+        (".hdiv", "stroke:%s;stroke-width:%s" % (pal["hdiv"], _n(1.3 * k))),
+        (".leader", "stroke:%s;stroke-width:%s;stroke-dasharray:1 5;stroke-linecap:round"
+         % (pal["leader"], _n(2 * k))),
+        (".housenum", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["housenum"], _n(f_hnum))),
+        (".anglelab", "fill:%s;font:800 %spx system-ui,sans-serif" % (pal["anglelab"], _n(f_angle))),
         (".ac-sm", "font-size:0.5em"),
-        (".pmark", "stroke:%s;stroke-width:1.6" % pal["pmark"]),
-        (".planet", "fill:%s;font:600 33px %s" % (pal["planet"], sym)),
-        (".deg", "fill:%s;font:600 18px system-ui,sans-serif" % pal["deg"]),
+        (".pmark", "stroke:%s;stroke-width:%s" % (pal["pmark"], _n(1.6 * k))),
+        (".planet", "fill:%s;font:600 %spx %s" % (pal["planet"], _n(f_planet), sym)),
+        (".deg", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg))),
         (".deg-rx", "fill:%s" % pal["degRx"]),
-        (".aspect", "stroke-width:1.1;fill:none;opacity:.85"),
-        (".title", "fill:%s;font:600 15px system-ui,sans-serif" % pal["title"]),
+        (".aspect", "stroke-width:%s;fill:none;opacity:.85" % _n(1.1 * k)),
+        (".title", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["title"], _n(f_title))),
+        # profection: annual sign band (filled) + Lord-of-the-Year ring (tagged "TL").
+        # The month/day cadences read in the bottom-left key, not as arcs across the wheel
+        # (an unlabelled arc through a sign glyph is meaningless to a casual viewer).
+        (".prof-band", "fill:%s;fill-opacity:.16;stroke:%s;stroke-opacity:.85;stroke-width:%s"
+         % (pal["prof"], pal["prof"], _n(2 * k))),
+        (".prof-ruler", "fill:none;stroke:%s;stroke-opacity:.9;stroke-width:%s" % (pal["prof"], _n(2.4 * k))),
+        (".prof-tl", "fill:%s;font:800 %spx system-ui,sans-serif" % (pal["prof"], _n(f_deg * 0.86))),
+        (".prof-key", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg))),
+        (".prof-key-em", "fill:%s;font-weight:700" % pal["prof"]),
+        (".prof-key-eyebrow", "fill:%s;font:800 %spx system-ui,sans-serif;letter-spacing:%spx"
+         % (pal["prof"], _n(f_deg * 0.82), _n(1.4 * k))),
     ]
     return "<style>" + "".join("%s{%s}" % (s, p) for s, p in rules) + "</style>"
 
@@ -238,15 +269,19 @@ def _dark_media():
             '.housenum{fill:' + d["housenum"] + '}.anglelab{fill:' + d["anglelab"] + '}'
             '.pmark{stroke:' + d["pmark"] + '}.planet{fill:' + d["planet"] + '}'
             '.deg{fill:' + d["deg"] + '}.deg-rx{fill:' + d["degRx"] + '}'
+            '.prof-band{fill:' + d["prof"] + ';stroke:' + d["prof"] + '}'
+            '.prof-ruler{stroke:' + d["prof"] + '}'
+            '.prof-tl,.prof-key-em,.prof-key-eyebrow{fill:' + d["prof"] + '}'
+            '.prof-key{fill:' + d["deg"] + '}'
             '.title{fill:' + d["title"] + '}}</style>')
 
 
-def _theme_markup(theme):
+def _theme_markup(theme, size=760):
     """Return the <defs> gradients + <style> for a theme (auto = light + dark media)."""
     if theme == "auto":
-        return _defs(_L) + _style(_L) + _dark_media()
+        return _defs(_L) + _style(_L, size) + _dark_media()
     pal = PALETTES.get(theme, _L)
-    return _defs(pal) + _style(pal)
+    return _defs(pal) + _style(pal, size)
 
 
 def _esc(s: str) -> str:
@@ -254,7 +289,8 @@ def _esc(s: str) -> str:
 
 
 def render_svg(chart: dict, size: int = 760, theme: str = "auto",
-               text_labels: bool = False, title: str | None = None) -> str:
+               text_labels: bool = False, title: str | None = None,
+               show_profection: bool = True) -> str:
     cx = cy = size / 2.0
     r_out = size * 0.45              # outer edge (leaves a margin for AC/MC outside)
     r_zod_in = r_out * 0.862         # inner edge of the zodiac band (signs live here)
@@ -285,7 +321,7 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
     P.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {size} {size}" '
              f'width="{size}" height="{size}" style="cursor:default" role="img" '
              f'aria-label="{_esc(title or "natal chart")}">')
-    P.append(_theme_markup(theme))
+    P.append(_theme_markup(theme, size))
     P.append(f'<rect x="0" y="0" width="{size}" height="{size}" class="bg" fill="url(#bggrad)"/>')
 
     # --- rings / prism-halo bands ---
@@ -311,6 +347,30 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
     else:
         for r in (r_out, r_zod_in, r_hnum_out, r_hub):
             P.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" class="ring"/>')
+
+    # --- profection: annual sign band (under ticks/glyphs) ---
+    # The filled 30° band is the annual profected sign (Lord of the Year). The Lord's
+    # glyph gets a ring + "TL" tag later; the month/day cadences are spelled out in the
+    # bottom-left key rather than drawn as arcs across the ring (an unlabelled arc
+    # through a sign glyph tells a casual viewer nothing). Whole-sign, counted from Asc.
+    prof = chart.get("profections") if show_profection else None
+    if prof and prof.get("profected_sign_index") is not None:
+
+        def _place_txt(block):
+            _o = _ORDINALS[(int(block.get("profected_house", 1)) - 1) % 12]
+            return "%s · %s place" % (block.get("profected_sign", ""), _o)
+
+        # annual: a filled 30° wedge across the whole zodiac ring
+        pidx = int(prof["profected_sign_index"]) % 12
+        band = " ".join("%.1f,%.1f" % pol(r_out, pidx * 30.0 + 30.0 * k / 12) for k in range(13))
+        band += " " + " ".join(
+            "%.1f,%.1f" % pol(r_zod_in, pidx * 30.0 + 30.0 - 30.0 * k / 12) for k in range(13))
+        htxt = "Profected sign: " + _place_txt(prof)
+        if prof.get("age") is not None:
+            htxt += " · age %s" % prof["age"]
+        if prof.get("ruler"):
+            htxt += " · Lord of the Year: %s" % prof["ruler"]
+        P.append(f'<polygon class="prof-band" points="{band}"><title>{_esc(htxt)}</title></polygon>')
 
     # --- zodiac: 12 sectors (fixed to longitude) ---
     for i in range(12):
@@ -394,6 +454,13 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
             gx0, gy0 = pol(rg + r_zod_in * 0.045, disp)
             P.append(f'<line x1="{gx0:.1f}" y1="{gy0:.1f}" x2="{tx1:.1f}" y2="{ty1:.1f}" class="leader"/>')
         gx, gy = pol(rg, disp)
+        if prof and name == prof.get("ruler"):   # ring + "TL" tag on the year-lord glyph
+            P.append(f'<circle class="prof-ruler" cx="{gx:.1f}" cy="{gy:.1f}" '
+                     f'r="{size*0.028:.1f}"><title>{_esc("Lord of the Year (time-lord)")}'
+                     f'</title></circle>')
+            P.append(f'<text x="{gx + size*0.026:.1f}" y="{gy - size*0.020:.1f}" class="prof-tl" '
+                     f'text-anchor="start"><title>{_esc("Lord of the Year (time-lord)")}</title>'
+                     f'TL</text>')
         if glyphs:
             g = PLANET_ABBR.get(name, name[:2])
         else:  # fixed stars share one ✦ marker; the name identifies them in the key
@@ -426,6 +493,43 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
 
     # house numbers last, so they sit in front of the cusp lines and ticks
     P.extend(house_labels)
+
+    # --- profection key (bottom-left corner) ---
+    # Annual lord + rising sign (as on the dedicated profection wheel), then the as-of
+    # date with each component tagged by the sign it profects to: month→Lord of the
+    # Month's sign, day→Lord of the Day's sign, year→the annual sign. This spells out
+    # the month/day cadences the old arcs only hinted at, without crossing any glyph.
+    if prof and prof.get("profected_sign_index") is not None:
+        kx = size * 0.024
+        P.append(f'<text x="{kx:.1f}" y="{size*0.898:.1f}" class="prof-key-eyebrow">PROFECTION</text>')
+        seg = []
+        if prof.get("ruler"):
+            seg.append(f'Lord: <tspan class="prof-key-em">{_esc(prof["ruler"])}</tspan>')
+        if angles.get("asc") is not None:
+            seg.append(f'{_esc(SIGN_NAMES[int(asc // 30) % 12])} rising')
+        if seg:
+            P.append(f'<text x="{kx:.1f}" y="{size*0.930:.1f}" class="prof-key">'
+                     + " · ".join(seg) + '</text>')
+        asof = prof.get("as_of")
+        try:
+            y, m, dd = (int(v) for v in str(asof)[:10].split("-")) if asof else (0, 0, 0)
+        except (ValueError, TypeError):
+            y = m = dd = 0
+        if m:
+            MON = ("January", "February", "March", "April", "May", "June", "July",
+                   "August", "September", "October", "November", "December")
+            osfx = "th" if 10 <= dd % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(dd % 10, "th")
+
+            def _gtag(block):
+                if block and block.get("profected_sign_index") is not None:
+                    gi = int(block["profected_sign_index"]) % 12
+                    return f'<tspan class="prof-key-em" dx="3">{SIGN_GLYPHS[gi]}︎</tspan>'
+                return ""
+
+            yr_gly = f'<tspan class="prof-key-em" dx="3">{SIGN_GLYPHS[pidx]}︎</tspan>'
+            line = (f'{MON[m-1]}{_gtag(prof.get("monthly"))} · '
+                    f'{dd}{osfx}{_gtag(prof.get("daily"))} · {y}{yr_gly}')
+            P.append(f'<text x="{kx:.1f}" y="{size*0.962:.1f}" class="prof-key">{line}</text>')
 
     if title:
         P.append(f'<text x="{cx:.1f}" y="{size*0.04:.1f}" class="title" '
