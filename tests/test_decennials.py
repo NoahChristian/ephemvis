@@ -120,6 +120,21 @@ def test_chart_style_sub_styles(sub_style):
     ET.fromstring(s)
 
 
+@pytest.mark.parametrize("sub_style", ["ticks", "gradient"])
+def test_chart_style_spiral_layout(sub_style):
+    # the coil layout of the chart style: well-formed, carries the coil-edge polyline, and the
+    # sub-periods still render (glyphs + the ticks/gradient) over the spiral
+    s = render_decennials_svg(_wheel_chart(), style="chart", layout="spiral", sub_style=sub_style)
+    ET.fromstring(s)
+    assert ">Decennials<" in s and "<polyline" in s
+    assert render_decennials_svg(_wheel_chart(), style="chart", sub_style=sub_style) != s
+
+
+def test_timeline_ignores_layout():
+    # layout applies only to the chart style; the horizontal timeline is unaffected by it
+    assert render_decennials_svg(_chart()) == render_decennials_svg(_chart(), layout="spiral")
+
+
 def test_bad_style_raises():
     with pytest.raises(ValueError):
         render_decennials_svg(_chart(), style="bogus")
@@ -142,11 +157,12 @@ def test_glyphs_by_year_keeps_short_subs():
     # every sub-period must surface in at least one age cell — sampling the sub at each
     # birthday used to drop a sub that opened and closed between two birthdays (a Venus sub
     # is ~8 months). The only permitted miss is a sliver clipped at the horizon.
-    from ephemvis.decennials import _glyphs_by_year, _sub_segments
+    from ephemvis.decennials import _sub_segments
+    from ephemvis.profection_wheel import glyphs_by_year
     dec = _chart()["decennials"]
     n = 84
     segs = _sub_segments(dec, n)
-    glyphs = _glyphs_by_year(segs, n)
+    glyphs = glyphs_by_year(segs, n)
     assert len(glyphs) == n and all(g is not None for g in glyphs)   # every cell filled
     for a0, a1, ruler in segs:
         if a1 >= n - 0.5:                            # skip a fragment clipped at the horizon

@@ -59,7 +59,14 @@ svg = render_profection_wheel_svg(chart, theme="infrared", max_age=83,
 
 `max_age` sets the final year (the outer ring is always completed: 83 → seven rings
 0–83, 84 → eight rings 0–95). `planets` is `"classical"` (default), `"all"`, or a
-list of body names. `title` sets the top-left heading.
+list of body names. `title` sets the top-left heading. Each sign's outer-ring arc is
+tinted with its **Lord of the Year** (domicile-ruler) colour, with two stacked legends
+below (the lord colours, then the age gradient).
+
+Pass **`layout="spiral"`** to unroll the age rings into one continuous expanding coil
+(birth at the centre, one 12-year turn per loop). Because profections are exactly
+12-periodic, each sign holds the same angle on every turn, so the recurrence reads as
+aligned radial wedges. `layout="annulus"` (concentric rings) is the default.
 
 **An overlay on the natal wheel** — `render_svg` also marks the profection on the
 ordinary chart in the theme accent: a filled **band** on the annual profected sign and
@@ -87,6 +94,11 @@ svg = render_firdaria_svg(chart, theme="dark", max_age=84, title="Firdaria")
 `firdaria` block. Planet identity is carried by the glyph (nine categories can't all be
 maximally distinct); colour is a supporting cue.
 
+**Chart style** — `render_firdaria_svg(chart, style="chart")` projects the sequence onto
+the profection wheel instead (band = major lord, glyph = sub lord; the two nodes carried
+through), sharing the natal core with every other chart. Add `layout="spiral"` for the
+coil. Needs a `profections` block alongside the `firdaria` one.
+
 ## Zodiacal Releasing
 
 `render_zodiacal_releasing_svg(chart, theme=…)` draws Valens' zodiacal releasing as a
@@ -108,6 +120,12 @@ svg = render_zodiacal_releasing_svg(chart, theme="dark", max_age=84,
 seven Hermetic Lots) and the active L1→L4 path are named in the subtitle; a companion
 table is trivially built from the same block.
 
+**Chart style** — `render_zodiacal_releasing_svg(chart, style="chart")` projects releasing
+onto the profection wheel, each cell coloured by its L1 sign's element and glyphed by its
+L2 sign (the angularity / peak / loosing-of-the-bond markers stay on the timeline). Add
+`layout="spiral"` for the coil. Needs a `profections` block alongside the
+`zodiacal_releasing` one.
+
 ## Decennials
 
 `render_decennials_svg(chart, theme=…)` draws Valens' decennial time-lords as a horizontal
@@ -125,6 +143,11 @@ svg = render_decennials_svg(chart, theme="dark", max_age=76, title="Decennials")
 `max_age` is the right edge (years; a full cycle is ~75¼). The starting planet is named in
 the subtitle; a companion table is trivially built from the same block. Planet identity is
 carried by the glyph; colour is a supporting cue.
+
+**Chart style** — `render_decennials_svg(chart, style="chart")` rolls the decennial Gantt
+onto the profection wheel (band = major lord, glyph = sub lord, radial ticks at the real
+sub-period boundaries, or `sub_style="gradient"` for sub-lord colour slices). Add
+`layout="spiral"` for the coil. Needs a `profections` block alongside the `decennials` one.
 
 ## Themes
 

@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from datetime import date as _date
 
-from .profection_wheel import theme_lord_colors
+from .profection_wheel import glyphs_by_year, render_profection_wheel_svg, theme_lord_colors
 from .wheel import PALETTES
 
 SIGNS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
@@ -68,19 +68,102 @@ def _ord(iso: str) -> int:
     return _date.fromisoformat(iso[:10]).toordinal()
 
 
+def _l1_element_by_age(zr: dict, ages) -> list:
+    """The element of the level-1 releasing sign at each integer age (band colour)."""
+    tl = zr.get("timeline") or []
+    out: list = []
+    for a in ages:
+        el = None
+        for p in tl:
+            if p["age_start"] <= a < p["age_end"]:
+                el = _element(p["sign_index"])
+                break
+        out.append(el)
+    return out
+
+
+def _l2_segments(zr: dict, max_age: float):
+    """Every level-2 sub-period as (age_start, age_end, sign_index), fractional ages (mapped
+    from the L2 ISO dates onto each L1 span). An L1 period with no L2 contributes itself."""
+    tl = zr.get("timeline") or []
+    out = []
+    for b in tl:
+        a0, a1 = b["age_start"], b["age_end"]
+        l2 = b.get("l2", [])
+        if not l2:
+            if a0 < max_age:
+                out.append((a0, min(a1, max_age), b["sign_index"]))
+            continue
+        po0, po1 = _ord(b["start"]), _ord(b["end"])
+        span = max(po1 - po0, 1)
+        for sub in l2:
+            sa0 = a0 + (a1 - a0) * (_ord(sub["start"]) - po0) / span
+            sa1 = a0 + (a1 - a0) * (_ord(sub["end"]) - po0) / span
+            if sa0 < max_age:
+                out.append((sa0, min(sa1, max_age), sub["sign_index"]))
+    return out
+
+
+def _chart_style(chart: dict, zr: dict, *, theme: str, size: int, title: str,
+                 max_age: int, sub_style: str = "ticks", layout: str = "annulus") -> str:
+    """Roll releasing onto the annual-profection wheel: each age cell takes the L1 sign's
+    element colour and the L2 sign's glyph, on the shared natal-chart core. (Angularity /
+    peak / loosing-of-the-bond markers stay on the horizontal timeline for now.)"""
+    if not chart.get("profections"):
+        raise ValueError("the zodiacal-releasing chart style draws on the annual-profection "
+                         "wheel, so the chart also needs a 'profections' block — assemble with "
+                         "both releasing_as_of= and profection_as_of= (same date)")
+    asc = (chart.get("angles") or {}).get("asc")
+    asc_sign = SIGNS[int(asc // 30) % 12] if asc is not None else ""
+    nring = max_age // 12 + 1
+    ages = range(nring * 12)
+    major_by_age = _l1_element_by_age(zr, ages)                 # band colour = L1 element
+    l2 = _l2_segments(zr, nring * 12)
+    glyph_by_age = glyphs_by_year([(a0, a1, SIGNS[si]) for a0, a1, si in l2], nring * 12)
+    sub_segments = [(a0, a1, _element(si)) for a0, a1, si in l2]   # sub colour = L2 element
+    glyph_map = dict(_GLYPH)          # L2 sign name -> its glyph (cells); legend is element+swatch
+    cur = zr.get("current", {})
+    path = " › ".join(cur[lvl]["sign"] for lvl in ("l1", "l2", "l3", "l4") if lvl in cur)
+    lot = str(zr.get("lot", "fortune")).title()
+    subtitle = [f"{lot} in {zr.get('lot_sign', '')}"]       # short stacked lines: clear of the wheel
+    if asc_sign:
+        subtitle.append(f"{asc_sign} rising")
+    if zr.get("age") is not None:
+        subtitle.append(f"Age {zr['age']}")
+    caption = ((f"Releasing: {path}   " if path else "")
+               + "(band = L1 element · glyph = L2 sign)")
+    return render_profection_wheel_svg(
+        chart, theme=theme, size=size, max_age=max_age, layout=layout,
+        timelord={"title": title, "subtitle_lines": subtitle, "lord_names": list(_ELEMENT),
+                  "lord_colors": theme_lord_colors(theme, _ELEMENT), "glyph_map": glyph_map,
+                  "major_by_age": major_by_age, "glyph_by_age": glyph_by_age,
+                  "sub_segments": sub_segments, "sub_style": sub_style, "footer_caption": caption})
+
+
 def render_zodiacal_releasing_svg(chart: dict, *, theme: str = "light",
                                   max_age: float = 84.0, width: int = 1160,
-                                  title: str = "Zodiacal Releasing") -> str:
-    """Render the zodiacal-releasing timeline for ``chart`` as an SVG string.
+                                  title: str = "Zodiacal Releasing", style: str = "timeline",
+                                  sub_style: str = "ticks", size: int = 620,
+                                  layout: str = "annulus") -> str:
+    """Render the zodiacal releasing for ``chart`` as an SVG string.
 
-    ``theme`` is any key of :data:`ephemvis.PALETTES` ('auto' -> light). ``max_age`` is the
-    right edge of the timeline (years). Raises ``ValueError`` without a
-    ``zodiacal_releasing`` block.
+    ``style`` is ``"timeline"`` (default; the horizontal L1/L2 bars with angularity and
+    loosing-of-the-bond markers) or ``"chart"`` (releasing projected onto the natal
+    whole-sign wheel, coloured by element and glyphed by sign). ``theme`` is any key of
+    :data:`ephemvis.PALETTES` ('auto' -> light). ``max_age`` is the timeline's right edge
+    (years); ``size`` is the chart-wheel side; ``layout`` (``"annulus"`` default or
+    ``"spiral"``) applies only to ``style="chart"``. Raises ``ValueError`` without a
+    ``zodiacal_releasing`` block (or, for the chart style, without a ``profections`` block).
     """
     zr = chart.get("zodiacal_releasing")
     if not zr:
         raise ValueError("chart has no 'zodiacal_releasing' block (build it with "
                          "openephem's assemble(..., releasing_as_of=))")
+    if style == "chart":
+        return _chart_style(chart, zr, theme=theme, size=size, title=title,
+                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout)
+    if style != "timeline":
+        raise ValueError("style must be 'timeline' or 'chart'")
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])
     ink, bg, muted, line = pal["planet"], pal["bg"][0], pal["deg"], pal["cusp"]
     el_col = theme_lord_colors(theme, _ELEMENT)       # per-theme element colours (match the suite)

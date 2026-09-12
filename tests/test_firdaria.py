@@ -60,3 +60,52 @@ def test_requires_firdaria_block():
 def test_deterministic():
     a = render_firdaria_svg(_chart(), theme="infrared")
     assert a == render_firdaria_svg(_chart(), theme="infrared")
+
+
+# --------------------------------------------------------------------------- #
+# chart style (firdaria projected onto the annual-profection wheel)
+# --------------------------------------------------------------------------- #
+
+def _wheel_chart():
+    c = _chart()
+    c["angles"] = {"asc": 15.0}
+    c["bodies"] = {"Sun": {"lon": 10.0}, "Moon": {"lon": 200.0}, "Mercury": {"lon": 25.0},
+                   "Venus": {"lon": 340.0}, "Mars": {"lon": 130.0}, "Jupiter": {"lon": 75.0},
+                   "Saturn": {"lon": 260.0}}
+    c["profections"] = {"age": 40, "ruler": "Mars"}
+    return c
+
+
+@pytest.mark.parametrize("theme", ["meadow", "infrared", "light", "dark", "auto"])
+def test_chart_style_wellformed(theme):
+    s = render_firdaria_svg(_wheel_chart(), style="chart", theme=theme)
+    ET.fromstring(s)
+    assert s.lstrip().startswith("<svg") and s.rstrip().endswith("</svg>")
+    assert ">Firdaria<" in s
+    for g in ("☊", "☋"):                          # the node glyphs survive onto the wheel
+        assert g in s
+    assert "North Node" in s and "South Node" in s   # 9-lord legend wraps, still all present
+
+
+def test_chart_style_needs_profections():
+    c = _wheel_chart()
+    del c["profections"]
+    with pytest.raises(ValueError):
+        render_firdaria_svg(c, style="chart")
+
+
+@pytest.mark.parametrize("sub_style", ["ticks", "gradient"])
+def test_chart_style_spiral_layout(sub_style):
+    s = render_firdaria_svg(_wheel_chart(), style="chart", layout="spiral", sub_style=sub_style)
+    ET.fromstring(s)
+    assert "<polyline" in s                       # coil edge marks the spiral layout
+    assert render_firdaria_svg(_wheel_chart(), style="chart", sub_style=sub_style) != s
+
+
+def test_bad_style_raises():
+    with pytest.raises(ValueError):
+        render_firdaria_svg(_chart(), style="bogus")
+
+
+def test_timeline_ignores_layout():
+    assert render_firdaria_svg(_chart()) == render_firdaria_svg(_chart(), layout="spiral")

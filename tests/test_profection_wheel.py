@@ -70,7 +70,52 @@ def test_deterministic():
 
 
 def test_planets_list_and_bad_arg():
+    # Uranus is in BODIES but not a domicile lord, so its glyph proves the natal-planet filter
+    # (classical glyphs may also appear as Lord-of-the-Year rim colours' legend entries).
     s = render_profection_wheel_svg(_chart(), planets=["Sun", "Moon"])
-    assert "☉" in s and "☽" in s and "♃" not in s
+    assert "☉" in s and "☽" in s and "♅" not in s
+    assert "♅" in render_profection_wheel_svg(_chart(), planets="all")   # Uranus when included
     with pytest.raises(ValueError):
         render_profection_wheel_svg(_chart(), planets="bogus")
+
+
+def test_layout_defaults_to_annulus():
+    # the default is the concentric-ring wheel; passing it explicitly changes nothing
+    assert render_profection_wheel_svg(_chart()) == \
+        render_profection_wheel_svg(_chart(), layout="annulus")
+
+
+@pytest.mark.parametrize("theme", ["light", "meadow", "infrared", "auto"])
+def test_spiral_layout_wellformed(theme):
+    s = render_profection_wheel_svg(_chart(), theme=theme, layout="spiral")
+    ET.fromstring(s)
+    assert s.lstrip().startswith("<svg") and s.rstrip().endswith("</svg>")
+    assert ">40</text>" in s                      # ages still drawn
+    assert ">Lord: Mars<" in s and ">Aries rising<" in s   # shared header unchanged
+
+
+def test_spiral_differs_from_annulus_only_in_band():
+    ann = render_profection_wheel_svg(_chart())
+    spi = render_profection_wheel_svg(_chart(), layout="spiral")
+    assert ann != spi
+    assert "<polyline" in spi and "<polyline" not in ann   # coil edge only in spiral
+    # the shared inner wheel + sign rim are present in both
+    for token in (">Asc<", "☉", "♄"):
+        assert token in ann and token in spi
+
+
+def test_bad_layout_raises():
+    with pytest.raises(ValueError):
+        render_profection_wheel_svg(_chart(), layout="bogus")
+
+
+@pytest.mark.parametrize("layout", ["annulus", "spiral"])
+def test_lord_of_year_rim_and_stacked_legends(layout):
+    # the plain wheel colours each sign's rim arc by its Lord of the Year and carries two stacked
+    # legends: the lord colours, then the age heatmap gradient.
+    s = render_profection_wheel_svg(_chart(), layout=layout)
+    assert "LORD OF THE YEAR" in s and ">AGE</text>" in s
+    for planet in ("Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"):
+        assert f">{planet} (" in s                    # each lord named in the legend
+    for g in ("♄", "♃", "♂", "☉", "♀", "☿", "☽"):
+        assert g in s                                  # each lord glyph present

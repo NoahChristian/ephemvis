@@ -16,7 +16,7 @@ Themes: 'light', 'dark', 'auto', and the pastel modes 'prism', 'twilight',
 'aurora', 'opal', 'seafoam', 'meadow', 'dawn', 'blossom' (see PALETTES).
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.5"
 
 from . import (  # noqa: F401
     aspectgrid,

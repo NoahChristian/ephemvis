@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from datetime import date as _date
 
-from .profection_wheel import render_profection_wheel_svg, theme_lord_colors
+from .profection_wheel import glyphs_by_year, render_profection_wheel_svg, theme_lord_colors
 from .wheel import PALETTES
 
 _SIGNS = ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
@@ -85,48 +85,8 @@ def _sub_segments(dec: dict, max_age: float):
     return out
 
 
-def _glyphs_by_year(sub_segments, n_years: int):
-    """One sub-lord glyph per age-ring cell, chosen so no sub-period is dropped.
-
-    Each age cell has room for a single glyph, but the sub-periods are unequal and several are
-    shorter than a year (a Venus sub is only ~8 months). Sampling the sub-lord at each birthday
-    silently loses any sub that opens *and* closes between two birthdays, so short subs — Venus
-    especially — would just vanish from the ring.
-
-    Instead, every sub-period claims the one year cell where it has the most coverage (its
-    "home" cell), biggest claimant first so ties go to the sub that fills more of the cell; the
-    cell then shows that sub's glyph. Any cell no sub-period called home falls back to whichever
-    sub covers the most of that year. This guarantees each sub-period surfaces in exactly one
-    cell (the sole exception being a sliver clipped at the ``n_years`` horizon).
-    """
-    dom: list[dict] = [dict() for _ in range(n_years)]
-    ranked = []                                   # (peak_coverage, ruler, cells-by-coverage)
-    for a0, a1, ruler in sub_segments:
-        cells = []
-        for y in range(int(a0), min(int(a1) + 1, n_years)):
-            cov = min(a1, y + 1.0) - max(a0, float(y))
-            if cov > 0:
-                dom[y][ruler] = dom[y].get(ruler, 0.0) + cov
-                cells.append((cov, y))
-        if cells:
-            cells.sort(reverse=True)              # highest-coverage cell first
-            ranked.append((cells[0][0], ruler, [y for _, y in cells]))
-    ranked.sort(key=lambda t: t[0], reverse=True)  # let the biggest claimant win a shared cell
-    glyph: list = [None] * n_years
-    claimed = [False] * n_years
-    for _, ruler, cell_ys in ranked:
-        for y in cell_ys:                         # first still-unclaimed cell it overlaps
-            if not claimed[y]:
-                glyph[y], claimed[y] = ruler, True
-                break
-    for y in range(n_years):                      # unclaimed cells: the sub covering most of it
-        if glyph[y] is None and dom[y]:
-            glyph[y] = max(dom[y].items(), key=lambda kv: kv[1])[0]
-    return glyph
-
-
 def _chart_style(chart: dict, dec: dict, *, theme: str, size: int, title: str,
-                 max_age: int, sub_style: str = "ticks") -> str:
+                 max_age: int, sub_style: str = "ticks", layout: str = "annulus") -> str:
     """Roll the decennial timeline onto the annual-profection wheel: keep the age annuli,
     but stamp each age cell with that year's decennial (sub-)lord glyph."""
     if not chart.get("profections"):
@@ -143,14 +103,14 @@ def _chart_style(chart: dict, dec: dict, *, theme: str, size: int, title: str,
     sub_segments = _sub_segments(dec, nring * 12)              # exact sub-period boundaries
     # glyph per year: every sub-period claims its peak-coverage cell (not the sub at the
     # birthday instant), so a short sub — e.g. Venus, ~8 months — never drops out of the ring
-    glyph_by_age = _glyphs_by_year(sub_segments, nring * 12)
+    glyph_by_age = glyphs_by_year(sub_segments, nring * 12)
     subtitle = [f"{asc_sign} rising" if asc_sign else f"From {dec.get('start', '')}"]
     if dec.get("age") is not None:
         subtitle.append(f"Age {dec['age']}")
     caption = (f"Decennial lord: {major or ''}"
                + (f" / {sub}" if sub and sub != major else "") + "   (band = major · glyph = sub)")
     return render_profection_wheel_svg(
-        chart, theme=theme, size=size, max_age=max_age,
+        chart, theme=theme, size=size, max_age=max_age, layout=layout,
         timelord={"title": title, "subtitle_lines": subtitle, "lord_names": list(_LEGEND),
                   "major_by_age": major_by_age, "glyph_by_age": glyph_by_age,
                   "sub_segments": sub_segments, "sub_style": sub_style,
@@ -159,14 +119,18 @@ def _chart_style(chart: dict, dec: dict, *, theme: str, size: int, title: str,
 
 def render_decennials_svg(chart: dict, *, theme: str = "light", style: str = "timeline",
                           sub_style: str = "ticks", max_age: float = 76.0, width: int = 1160,
-                          size: int = 620, title: str = "Decennials") -> str:
+                          size: int = 620, title: str = "Decennials",
+                          layout: str = "annulus") -> str:
     """Render the decennials for ``chart`` as an SVG string.
 
     ``style`` is ``"timeline"`` (default; the horizontal period bars) or ``"chart"`` (the
     active lord projected onto the natal whole-sign wheel). ``theme`` is any key of
     :data:`ephemvis.PALETTES` ('auto' -> light). ``max_age`` is the timeline's right edge
-    (years; a full cycle is ~75¼); ``size`` is the chart-wheel side. Raises ``ValueError``
-    without a ``decennials`` block (or, for the chart style, without an Ascendant).
+    (years; a full cycle is ~75¼); ``size`` is the chart-wheel side. ``layout`` (``"annulus"``
+    default or ``"spiral"``) applies only to ``style="chart"`` — it lays the age bands as
+    concentric rings or as one expanding coil; it is ignored for the horizontal timeline.
+    Raises ``ValueError`` without a ``decennials`` block (or, for the chart style, without an
+    Ascendant).
     """
     dec = chart.get("decennials")
     if not dec:
@@ -174,7 +138,7 @@ def render_decennials_svg(chart: dict, *, theme: str = "light", style: str = "ti
                          "assemble(..., decennials_as_of=))")
     if style == "chart":
         return _chart_style(chart, dec, theme=theme, size=size, title=title,
-                            max_age=int(round(max_age)), sub_style=sub_style)
+                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout)
     if style != "timeline":
         raise ValueError("style must be 'timeline' or 'chart'")
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])

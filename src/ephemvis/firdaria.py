@@ -18,9 +18,11 @@ from __future__ import annotations
 
 from datetime import date as _date
 
-from .profection_wheel import theme_lord_colors
+from .profection_wheel import glyphs_by_year, render_profection_wheel_svg, theme_lord_colors
 from .wheel import PALETTES
 
+_SIGNS = ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
+          "Sagittarius", "Capricorn", "Aquarius", "Pisces")
 _GLYPH = {"Sun": "☉", "Moon": "☽", "Mercury": "☿", "Venus": "♀", "Mars": "♂",
           "Jupiter": "♃", "Saturn": "♄", "North Node": "☊", "South Node": "☋"}
 # The seven classical planets take theme-derived lord colours — the same `theme_lord_colors`
@@ -53,18 +55,100 @@ def _ord(iso: str) -> int:
     return _date.fromisoformat(iso[:10]).toordinal()
 
 
-def render_firdaria_svg(chart: dict, *, theme: str = "light", max_age: float = 84.0,
-                        width: int = 1160, title: str = "Firdaria") -> str:
-    """Render the firdaria timeline for ``chart`` as an SVG string.
+def _major_at(fd: dict, age: float):
+    """The major firdaria lord governing an age, wrapping past the ~75-year sequence."""
+    tl = fd.get("timeline") or []
+    if not tl:
+        return None
+    cycle = tl[-1]["age_end"]
+    if cycle > 0:
+        while age >= cycle:
+            age -= cycle
+    for p in tl:
+        if p["age_start"] <= age < p["age_end"]:
+            return p["ruler"]
+    return tl[-1]["ruler"]
 
-    ``theme`` is any key of :data:`ephemvis.PALETTES` ('auto' -> light). ``max_age`` is
-    the right edge of the timeline (years). Raises ``ValueError`` without a ``firdaria``
-    block.
+
+def _sub_segments(fd: dict, max_age: float):
+    """Every firdaria sub-period as (age_start, age_end, ruler) in fractional ages, out to
+    ``max_age`` (the ~75-year sequence repeats). Subs split their major into equal parts."""
+    tl = fd.get("timeline") or []
+    if not tl:
+        return []
+    cycle = tl[-1]["age_end"]
+    out = []
+    reps = int(max_age / cycle) + 1 if cycle > 0 else 1
+    for rep in range(reps):
+        base = rep * cycle
+        for p in tl:
+            subs = p.get("subs", [])
+            n = len(subs)
+            if n == 0:
+                continue
+            a0p, a1p = p["age_start"], p["age_end"]
+            for i, sub in enumerate(subs):
+                a0 = base + a0p + (a1p - a0p) * i / n
+                a1 = base + a0p + (a1p - a0p) * (i + 1) / n
+                if a0 < max_age:
+                    out.append((a0, min(a1, max_age), sub["ruler"]))
+    return out
+
+
+def _chart_style(chart: dict, fd: dict, *, theme: str, size: int, title: str,
+                 max_age: int, sub_style: str = "ticks", layout: str = "annulus") -> str:
+    """Roll the firdaria major/sub sequence onto the annual-profection wheel: age cells take
+    the major lord's colour and the sub lord's glyph, on the shared natal-chart core."""
+    if not chart.get("profections"):
+        raise ValueError("the firdaria chart style draws on the annual-profection wheel, so the "
+                         "chart also needs a 'profections' block — assemble with both "
+                         "firdaria_as_of= and profection_as_of= (same date)")
+    asc = (chart.get("angles") or {}).get("asc")
+    asc_sign = _SIGNS[int(asc // 30) % 12] if asc is not None else ""
+    nring = max_age // 12 + 1
+    ages = range(nring * 12)
+    major_by_age = [_major_at(fd, a) for a in ages]
+    sub_segments = _sub_segments(fd, nring * 12)
+    glyph_by_age = glyphs_by_year(sub_segments, nring * 12)
+    cur = fd.get("current", {})
+    subtitle = [f"{fd.get('sect', '').title()} chart"]      # short stacked lines: clear of the wheel
+    if asc_sign:
+        subtitle.append(f"{asc_sign} rising")
+    if fd.get("age") is not None:
+        subtitle.append(f"Age {fd['age']}")
+    caption = (f"Firdar lord: {cur.get('major', '')}"
+               + (f" / {cur.get('sub')}" if cur.get("sub") and cur.get("sub") != cur.get("major") else "")
+               + "   (band = major · glyph = sub)")
+    return render_profection_wheel_svg(
+        chart, theme=theme, size=size, max_age=max_age, layout=layout,
+        timelord={"title": title, "subtitle_lines": subtitle, "lord_names": list(_LEGEND),
+                  "lord_colors": {**theme_lord_colors(theme, _CHALDEAN), **_NODE_COLOR},
+                  "glyph_map": _GLYPH, "major_by_age": major_by_age, "glyph_by_age": glyph_by_age,
+                  "sub_segments": sub_segments, "sub_style": sub_style, "footer_caption": caption})
+
+
+def render_firdaria_svg(chart: dict, *, theme: str = "light", max_age: float = 84.0,
+                        width: int = 1160, title: str = "Firdaria", style: str = "timeline",
+                        sub_style: str = "ticks", size: int = 620,
+                        layout: str = "annulus") -> str:
+    """Render the firdaria for ``chart`` as an SVG string.
+
+    ``style`` is ``"timeline"`` (default; the horizontal period bars) or ``"chart"`` (the
+    active lord projected onto the natal whole-sign wheel). ``theme`` is any key of
+    :data:`ephemvis.PALETTES` ('auto' -> light). ``max_age`` is the timeline's right edge
+    (years); ``size`` is the chart-wheel side; ``layout`` (``"annulus"`` default or
+    ``"spiral"``) applies only to ``style="chart"``. Raises ``ValueError`` without a
+    ``firdaria`` block (or, for the chart style, without a ``profections`` block).
     """
     fd = chart.get("firdaria")
     if not fd:
         raise ValueError("chart has no 'firdaria' block (build it with openephem's "
                          "assemble(..., firdaria_as_of=))")
+    if style == "chart":
+        return _chart_style(chart, fd, theme=theme, size=size, title=title,
+                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout)
+    if style != "timeline":
+        raise ValueError("style must be 'timeline' or 'chart'")
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])
     ink, bg, muted, line = pal["planet"], pal["bg"][0], pal["deg"], pal["cusp"]
     col_map = {**theme_lord_colors(theme, _CHALDEAN), **_NODE_COLOR}   # per-theme lord colours

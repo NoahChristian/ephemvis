@@ -24,6 +24,13 @@ from .wheel import PALETTES, PLANET_GLYPHS, SIGN_GLYPHS
 _SIGNS = ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
           "Sagittarius", "Capricorn", "Aquarius", "Pisces")
 _HOUSE_SHORT = ("Asc", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
+# traditional whole-sign domicile rulers by sign index (0 = Aries): the Lord of the Year for
+# each sign when it profects. Fixed, so a sign always carries the same lord on every turn.
+_DOMICILE = ("Mars", "Venus", "Mercury", "Moon", "Sun", "Mercury",
+             "Venus", "Mars", "Jupiter", "Saturn", "Saturn", "Jupiter")
+# Chaldean order — the list firdaria/decennials pass to theme_lord_colors, so a planet keeps its
+# colour across the whole time-lord suite (the profection rim uses the same mapping).
+_LORD_ORDER = ("Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon")
 _CLASSICAL = ("Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn")
 _MODERN_EXTRA = ("Uranus", "Neptune", "Pluto")
 _SYM = "'Segoe UI Symbol','Noto Sans Symbols2','Apple Symbols',system-ui,sans-serif"
@@ -151,15 +158,59 @@ def theme_lord_colors(theme, names):
     return dict(zip(names, _distinct_from_ramp(pal["heat"], len(names)), strict=True))
 
 
+def glyphs_by_year(sub_segments, n_years: int):
+    """One sub-lord glyph per age-ring cell, chosen so no sub-period is dropped — the shared
+    helper every time-lord chart projection uses (decennials, firdaria, zodiacal releasing).
+
+    Each age cell has room for a single glyph, but sub-periods are unequal and several are
+    shorter than a year, so sampling the sub at each birthday silently loses any sub that opens
+    *and* closes between two birthdays. Instead every sub-period claims the one year cell where
+    it has the most coverage (its "home" cell), biggest claimant first so ties go to the sub
+    that fills more of the cell; any cell no sub called home falls back to whichever sub covers
+    the most of that year. Each sub-period thus surfaces in exactly one cell (bar a sliver
+    clipped at the ``n_years`` horizon). ``sub_segments`` is ``(age_start, age_end, name)``.
+    """
+    dom: list[dict] = [dict() for _ in range(n_years)]
+    ranked = []                                   # (peak_coverage, name, cells-by-coverage)
+    for a0, a1, name in sub_segments:
+        cells = []
+        for y in range(int(a0), min(int(a1) + 1, n_years)):
+            cov = min(a1, y + 1.0) - max(a0, float(y))
+            if cov > 0:
+                dom[y][name] = dom[y].get(name, 0.0) + cov
+                cells.append((cov, y))
+        if cells:
+            cells.sort(reverse=True)              # highest-coverage cell first
+            ranked.append((cells[0][0], name, [y for _, y in cells]))
+    ranked.sort(key=lambda t: t[0], reverse=True)  # let the biggest claimant win a shared cell
+    glyph: list = [None] * n_years
+    claimed = [False] * n_years
+    for _, name, cell_ys in ranked:
+        for y in cell_ys:                         # first still-unclaimed cell it overlaps
+            if not claimed[y]:
+                glyph[y], claimed[y] = name, True
+                break
+    for y in range(n_years):                      # unclaimed cells: the sub covering most of it
+        if glyph[y] is None and dom[y]:
+            glyph[y] = max(dom[y].items(), key=lambda kv: kv[1])[0]
+    return glyph
+
+
 def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: int = 83,
                                 size: int = 760, title: str = "Annual Profections",
-                                planets="classical", timelord=None) -> str:
+                                planets="classical", timelord=None,
+                                layout: str = "annulus") -> str:
     """Render the annual-profection wheel for ``chart`` as an SVG string.
 
     ``theme`` is any key of :data:`ephemvis.PALETTES` (``'auto'`` renders as light).
     ``max_age`` sets the final year shown; the outer ring is always completed, so a
     value like 83 gives seven full rings (ages 0-83), 84 gives eight (0-95).
     ``planets`` is ``'classical'`` (default seven), ``'all'``, or a list of body names.
+    ``layout`` is ``'annulus'`` (default — the age bands as concentric rings) or
+    ``'spiral'`` — the same bands unrolled into one continuous expanding coil, each
+    12-year turn abutting the next, the natal hub and sign rim unchanged. ``'spiral'``
+    is purely a layout of the band region; colouring, glyphs, sub-periods and the
+    profection highlight are identical to ``'annulus'``.
     Raises ``ValueError`` if the chart has no ``profections`` block or no Ascendant.
 
     ``timelord`` (optional) projects another time-lord technique onto this same wheel: a
@@ -187,8 +238,12 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
     lord_names = tl.get("lord_names") or []
     major_by_age = tl.get("major_by_age") or []
     glyph_by_age = tl.get("glyph_by_age") or []      # the per-year sub-lord (glyph + stripe)
-    lord_col = dict(zip(lord_names, _distinct_from_ramp(pal["heat"], len(lord_names)),
-                        strict=True))
+    # A technique may supply its own colour and glyph maps (firdaria's two nodes have fixed
+    # identity colours; zodiacal releasing colours by element and glyphs by sign) — otherwise
+    # the lords take farthest-point ramp colours and the classical planet glyphs.
+    lord_col = tl.get("lord_colors") or dict(
+        zip(lord_names, _distinct_from_ramp(pal["heat"], len(lord_names)), strict=True))
+    glyph_map = tl.get("glyph_map") or PLANET_GLYPHS
 
     def cell_fill(a):                        # major-lord colour if given, else age heatmap
         if a < len(major_by_age) and major_by_age[a] in lord_col:
@@ -207,13 +262,36 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
     emax = nring * 12 - 1                 # complete the outer ring
     has_glyphs = bool(tl.get("glyph_by_age"))
     has_legend = bool(tl.get("legend") or lord_names)
+    # Plain annual wheel (no time-lord overlay): colour each sign's rim arc by its Lord of the Year
+    # (the sign's domicile ruler), with a lord-colour legend + the age heatmap gradient beneath it.
+    show_lords = not timelord
+    dom_col = theme_lord_colors(theme, _LORD_ORDER) if show_lords else {}
     s = size / 760.0                     # scale factor: every px below scales with size (the
     #                                      fonts/strokes were hardcoded for 760, so smaller wheels
     #                                      bloated and the 6/9 underline stroke never scaled).
 
     def _n(v):                           # compact number ("1" not "1.0", "3.4" stays "3.4")
         return f"{round(v, 2):g}"
-    footer = (68 if has_legend else 22) * s   # lord legend band, or room for the shifted AGE bar
+    legend_items = ([(nm, lord_col[nm]) for nm in lord_names] if lord_names
+                    else (tl.get("legend") or []))
+
+    def _legend_rows(items):             # wrap the swatch legend to the wheel width
+        rows: list[list] = [[]]
+        lx = 22.0 * s
+        for name, col in items:
+            w = (50 + len(str(name)) * 9.0) * s
+            if rows[-1] and lx + w > size - 22.0 * s:
+                rows.append([])
+                lx = 22.0 * s
+            rows[-1].append((name, col, lx))
+            lx += w
+        return rows
+
+    legend_rows = _legend_rows(legend_items) if (has_legend and not show_lords) else [[]]
+    # footer: the lord-rim wheel carries two stacked legends; a time-lord legend takes one row
+    # per wrapped line (7 planets fit one row, 9 firdaria lords need two).
+    footer = ((96 if show_lords else
+               68 + (len(legend_rows) - 1) * 24 if has_legend else 22) * s)
     height = size + footer
     cx = cy = size / 2.0
     base = asc_idx * 30.0 + 15.0          # centre the 1st sign at 9 o'clock
@@ -244,72 +322,161 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
         pts += [pol(r1, lo + span - span * k / n) for k in range(n + 1)]
         return " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
 
+    # ---- layout: the band region is drawn as concentric rings (annulus) or one coil (spiral) ----
+    # Everything else (hub, house ring, natal planets, sign rim, profection highlight) is shared,
+    # so the two layouts are the same chart with the age bands laid down differently. The coil
+    # advances outward by one band-width per 12-year turn (so successive turns abut seamlessly);
+    # a year's cell keeps the same house angle on every turn, which for profections — exactly
+    # 12-periodic — makes each sign a single aligned radial wedge.
+    if layout not in ("annulus", "spiral"):
+        raise ValueError("layout must be 'annulus' or 'spiral'")
+    spiral = layout == "spiral"
+    sbw = (a_out - a_in) / (nring + 1)            # coil band-width (advance per turn)
+    active_bw = sbw if spiral else bw             # band thickness of a cell in the active layout
+
+    def _coil_r(p):                               # inner edge of the coil at position p (years)
+        return a_in + (sbw / 12.0) * p
+
+    def _coil_ang(p):                             # continuous longitude at position p (30 deg/yr)
+        return asc_idx * 30.0 + 30.0 * p
+
+    def cell_points(a):                           # a year-cell polygon in the active layout
+        h, k = a % 12, a // 12
+        lo = (asc_idx + h) * 30.0
+        if not spiral:
+            return sector(a_in + k * bw, a_in + (k + 1) * bw, lo)
+        m = 8
+        pts = [pol(_coil_r(a + i / m), lo + 30.0 * i / m) for i in range(m + 1)]
+        pts += [pol(_coil_r(a + (m - i) / m) + sbw, lo + 30.0 * (m - i) / m) for i in range(m + 1)]
+        return " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+
+    def stripe_points(a):                         # inner-30% stripe of a cell (stripe sub_style)
+        h, k = a % 12, a // 12
+        lo = (asc_idx + h) * 30.0
+        if not spiral:
+            r1 = a_in + k * bw
+            return sector(r1, r1 + 0.30 * bw, lo)
+        m = 8
+        pts = [pol(_coil_r(a + i / m), lo + 30.0 * i / m) for i in range(m + 1)]
+        pts += [pol(_coil_r(a + (m - i) / m) + 0.30 * sbw, lo + 30.0 * (m - i) / m) for i in range(m + 1)]
+        return " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+
+    def cell_center(a):                           # placement of the age number for a cell
+        h, k = a % 12, a // 12
+        lo = (asc_idx + h) * 30.0
+        rc = (_coil_r(a + 0.5) + sbw / 2.0) if spiral else (a_in + (k + 0.5) * bw)
+        return pol(rc, lo + 15.0)
+
     P = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {size} {height}" '
          f'width="{size}" height="{height}" role="img" aria-label="{_esc(title)}">']
     P.append(f'<rect width="{size}" height="{height}" fill="{pal["bg"]}"/>')
 
-    # sign ring (profected sign highlighted)
+    # sign ring — plain wheel: each arc filled by its Lord of the Year (domicile ruler); time-lord
+    # overlay: the original neutral rim with the profected sign highlighted in the accent.
     for i in range(12):
-        col = pal["accent"] if i == prof_sidx else pal["signbg"]
-        op = "0.85" if i == prof_sidx else "1"
+        if show_lords:
+            col, op = dom_col[_DOMICILE[i]], "1"
+        else:
+            col = pal["accent"] if i == prof_sidx else pal["signbg"]
+            op = "0.85" if i == prof_sidx else "1"
         P.append(f'<polygon points="{sector(R_sign_in, R_out, i*30.0)}" fill="{col}" fill-opacity="{op}"/>')
+    if show_lords:                                  # mark the profected sign with an accent arc outline
+        P.append(f'<polygon points="{sector(R_sign_in, R_out, prof_sidx*30.0)}" fill="none" '
+                 f'stroke="{pal["accent"]}" stroke-width="{_n(2.6*s)}"/>')
 
-    # age heatmap band cells
+    # age heatmap band cells (annulus) / coil cells (spiral)
     for h in range(12):
-        lo = (asc_idx + h) * 30.0
         for k in range(nring):
             a = k * 12 + h
-            r1, r2 = a_in + k * bw, a_in + (k + 1) * bw
-            P.append(f'<polygon points="{sector(r1, r2, lo)}" fill="{cell_fill(a)}"/>')
+            P.append(f'<polygon points="{cell_points(a)}" fill="{cell_fill(a)}"/>')
             if sub_style == "stripe" and a < len(glyph_by_age) and glyph_by_age[a] in lord_col:
-                P.append(f'<polygon points="{sector(r1, r1 + 0.30 * bw, lo)}" '
+                P.append(f'<polygon points="{stripe_points(a)}" '
                          f'fill="{lord_col[glyph_by_age[a]]}"/>')
 
     # sub-period detail: draw each sub-segment (fractional ages) into its year-wedge(s).
     # A wedge spans one year, so a segment's angular slice within it = its share of that year.
-    def _seg_arcs(a0, a1, ifrac, ofrac):
-        a = int(a0)
-        while a < a1 and a < nring * 12:
-            c0, c1 = max(a0, a), min(a1, a + 1)
-            k, h = a // 12, a % 12
-            lo0 = (asc_idx + h) * 30.0 + (c0 - a) * 30.0
-            r1, r2 = a_in + (k + ifrac) * bw, a_in + (k + ofrac) * bw
-            yield r1, r2, lo0, (c1 - c0) * 30.0
-            a += 1
+    if not spiral:
+        def _seg_arcs(a0, a1, ifrac, ofrac):
+            a = int(a0)
+            while a < a1 and a < nring * 12:
+                c0, c1 = max(a0, a), min(a1, a + 1)
+                k, h = a // 12, a % 12
+                lo0 = (asc_idx + h) * 30.0 + (c0 - a) * 30.0
+                r1, r2 = a_in + (k + ifrac) * bw, a_in + (k + ofrac) * bw
+                yield r1, r2, lo0, (c1 - c0) * 30.0
+                a += 1
 
-    if sub_style == "gradient":
-        for a0, a1, name in sub_segments:      # inner ~half of each band = sub-lord slices
-            col = lord_col.get(name)
-            if not col:
-                continue
-            for r1, r2, l0, sp in _seg_arcs(a0, a1, 0.0, 0.5):
-                P.append(f'<polygon points="{sector(r1, r2, l0, span=sp)}" fill="{col}"/>')
+        if sub_style == "gradient":
+            for a0, a1, name in sub_segments:      # inner ~half of each band = sub-lord slices
+                col = lord_col.get(name)
+                if not col:
+                    continue
+                for r1, r2, l0, sp in _seg_arcs(a0, a1, 0.0, 0.5):
+                    P.append(f'<polygon points="{sector(r1, r2, l0, span=sp)}" fill="{col}"/>')
 
-    if sub_style in ("ticks", "gradient"):     # radial ticks at every sub-period boundary
-        for a0, _a1, _name in sub_segments:
-            if a0 <= 0 or a0 >= nring * 12:
-                continue
-            k, h = int(a0) // 12, int(a0) % 12
-            lon = (asc_idx + h) * 30.0 + (a0 - int(a0)) * 30.0
-            x1, y1 = pol(a_in + k * bw, lon)
-            x2, y2 = pol(a_in + (k + 1) * bw, lon)
+        if sub_style in ("ticks", "gradient"):     # radial ticks at every sub-period boundary
+            for a0, _a1, _name in sub_segments:
+                if a0 <= 0 or a0 >= nring * 12:
+                    continue
+                k, h = int(a0) // 12, int(a0) % 12
+                lon = (asc_idx + h) * 30.0 + (a0 - int(a0)) * 30.0
+                x1, y1 = pol(a_in + k * bw, lon)
+                x2, y2 = pol(a_in + (k + 1) * bw, lon)
+                P.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+                         f'stroke="{pal["bg"]}" stroke-width="{_n(1.6*s)}"/>')
+        for k in range(nring + 1):
+            P.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{a_in + k*bw:.1f}" fill="none" '
+                     f'stroke="{pal["grid"]}" stroke-width="{_n(1*s)}"/>')
+        for i in range(12):
+            x1, y1 = pol(a_in, i * 30.0)
+            x2, y2 = pol(a_out, i * 30.0)
             P.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
-                     f'stroke="{pal["bg"]}" stroke-width="{_n(1.6*s)}"/>')
-    for k in range(nring + 1):
-        P.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{a_in + k*bw:.1f}" fill="none" '
-                 f'stroke="{pal["grid"]}" stroke-width="{_n(1*s)}"/>')
-    for i in range(12):
-        x1, y1 = pol(a_in, i * 30.0)
-        x2, y2 = pol(a_out, i * 30.0)
-        P.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
-                 f'stroke="{pal["grid"]}" stroke-width="{_n(1*s)}"/>')
+                     f'stroke="{pal["grid"]}" stroke-width="{_n(1*s)}"/>')
+    else:
+        # spiral: the sub-slices and boundary ticks follow the coil, then one continuous edge
+        # traces every turn seam (outer edge of turn k == inner edge of turn k+1) plus the final
+        # outer edge, and the 12 house spokes cross the whole band exactly as in the annulus.
+        if sub_style == "gradient":
+            for a0, a1, name in sub_segments:      # inner half of the coil = sub-lord slices
+                col = lord_col.get(name)
+                if not col:
+                    continue
+                m = max(2, int((a1 - a0) * 8) + 1)
+                pts = [pol(_coil_r(a0 + (a1 - a0) * i / m), _coil_ang(a0 + (a1 - a0) * i / m))
+                       for i in range(m + 1)]
+                pts += [pol(_coil_r(a0 + (a1 - a0) * (m - i) / m) + 0.5 * sbw,
+                            _coil_ang(a0 + (a1 - a0) * (m - i) / m)) for i in range(m + 1)]
+                P.append(f'<polygon points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in pts)}" fill="{col}"/>')
+        if sub_style in ("ticks", "gradient"):     # radial ticks at every sub-period boundary
+            for a0, _a1, _name in sub_segments:
+                if a0 <= 0 or a0 >= nring * 12:
+                    continue
+                lon = _coil_ang(a0)
+                x1, y1 = pol(_coil_r(a0), lon)
+                x2, y2 = pol(_coil_r(a0) + sbw, lon)
+                P.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+                         f'stroke="{pal["bg"]}" stroke-width="{_n(1.6*s)}"/>')
+        pmax = nring * 12 + 12                      # +12 carries the guide out to the final outer edge
+        steps = pmax * 6
+        edge = []
+        for i in range(steps + 1):
+            p = pmax * i / steps
+            x, y = pol(_coil_r(p), _coil_ang(p))
+            edge.append(f"{x:.1f},{y:.1f}")
+        P.append(f'<polyline points="{" ".join(edge)}" fill="none" stroke="{pal["grid"]}" '
+                 f'stroke-width="{_n(1*s)}" stroke-linejoin="round"/>')
+        for i in range(12):
+            x1, y1 = pol(a_in, i * 30.0)
+            x2, y2 = pol(a_out, i * 30.0)
+            P.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+                     f'stroke="{pal["grid"]}" stroke-width="{_n(1*s)}"/>')
 
     # age numbers — baseline toward centre; 2nd..6th flipped to read upright. When a
     # time-lord's per-age lord series is supplied, each cell also carries that year's
     # lord glyph (the age annuli become the technique's timeline — the "Gantt rolled on").
     # age number — the same dynamic size in both wheels (bw*0.56, capped 15.5)
-    fs = gfs = max(11.5 * s, min(15.5 * s, bw * 0.56))            # bw already scales with size;
-    glyph_fs = max(13.0 * s, min(18.0 * s, bw * 0.65))            # scale the clamp bounds too
+    fs = gfs = max(11.5 * s, min(15.5 * s, active_bw * 0.56))     # active_bw scales with size;
+    glyph_fs = max(13.0 * s, min(18.0 * s, active_bw * 0.65))     # scale the clamp bounds too
 
     def _digit_underline(a, ax, ay, rot, size_fs, dcx, txt, cf):
         # A solitary 6 or 9 is ambiguous under the cell rotation: a rotated 6 reads as a 9, so
@@ -339,7 +506,7 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
             a = k * 12 + h
             cf = cell_fill(a)
             txt = "#141414" if _lum(cf) > 140 else "#ffffff"
-            ax, ay = pol(a_in + (k + 0.5) * bw, lo + 15.0)
+            ax, ay = cell_center(a)
             if a == age:
                 weight = "700" if has_glyphs else "800"
             else:
@@ -348,7 +515,7 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
             if has_glyphs:
                 # one line per cell: "year glyph" (number + its lord glyph, side by side)
                 gl = (f'<tspan font-family="{_SYM}" font-size="{glyph_fs:.0f}" dx="2"> '
-                      f'{_esc(PLANET_GLYPHS.get(name, name[:2]))}︎</tspan>') if name else ""
+                      f'{_esc(glyph_map.get(name, name[:2]))}︎</tspan>') if name else ""
                 # knockout halo in the band's own colour: the number+glyph carve a moat of
                 # band colour around themselves, breaking any sub-period tick that would
                 # otherwise cross (and merge with) the glyph. paint-order draws it behind.
@@ -367,9 +534,8 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
                 _digit_underline(a, ax, ay, rot, fs, ax, txt, cf)   # bare number → centred on ax
 
     # current age cell outline
-    ck = age // 12
-    if ck < nring:
-        P.append(f'<polygon points="{sector(a_in + ck*bw, a_in + (ck+1)*bw, (asc_idx+cur_h)*30.0)}" '
+    if age // 12 < nring:
+        P.append(f'<polygon points="{cell_points(age)}" '
                  f'fill="none" stroke="{pal["accent"]}" stroke-width="{_n(3.4*s)}"/>')
 
     # structural rings + spokes. The empty inner ring is merged into the house ring, so there
@@ -389,7 +555,10 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
     # sign glyphs
     for i in range(12):
         gx, gy = pol(R_sign, i * 30.0 + 15.0)
-        col = "#ffffff" if (i == prof_sidx and _lum(pal["accent"]) < 150) else pal["sign"]
+        if show_lords:                              # ink chosen for contrast against the lord arc
+            col = "#141414" if _lum(dom_col[_DOMICILE[i]]) > 140 else "#ffffff"
+        else:
+            col = "#ffffff" if (i == prof_sidx and _lum(pal["accent"]) < 150) else pal["sign"]
         P.append(f'<text x="{gx:.1f}" y="{gy:.1f}" text-anchor="middle" dominant-baseline="central" '
                  f'fill="{col}" font-family="{_SYM}" font-size="{sign_fs}">{SIGN_GLYPHS[i]}︎</text>')
     # house labels — short ("Asc 2 3…12"), centred and bold in the merged ring, in both modes
@@ -434,24 +603,50 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
         P.append(f'<text x="{_n(22*s)}" y="{_n((58 + i*23)*s)}" fill="{pal["sub"]}" font-family="{_UI}" '
                  f'font-size="{_n(19*s)}" font-weight="600">{_esc(line)}</text>')
 
-    legend = [(nm, lord_col[nm]) for nm in lord_names] if lord_names else tl.get("legend")
-    if legend:
-        # footer band below the wheel: an optional caption (e.g. the current lords) then
-        # the lord-colour legend — kept clear of the wheel so nothing overlaps it
+    if show_lords:
+        # two stacked legends in the footer: Lord of the Year (the rim colours), then the age
+        # heatmap gradient (the coil/annuli colours) below it.
+        ex = 22.0 * s
+        P.append(f'<text x="{ex:.1f}" y="{size + 15*s:.0f}" fill="{pal["sub"]}" font-family="{_UI}" '
+                 f'font-size="{_n(11.5*s)}" letter-spacing="1" font-weight="700">LORD OF THE YEAR</text>')
+        ly = size + 33 * s
+        lx = ex
+        for nm in _LORD_ORDER:
+            gl = PLANET_GLYPHS.get(nm, "")
+            gtag = f' (<tspan font-family="{_SYM}" font-size="{_n(16*s)}">{_esc(gl)}</tspan>)' if gl else ""
+            P.append(f'<rect x="{lx:.1f}" y="{ly-11*s:.1f}" width="{_n(13*s)}" height="{_n(13*s)}" rx="2" fill="{dom_col[nm]}"/>')
+            P.append(f'<text x="{lx+18*s:.1f}" y="{ly:.0f}" fill="{pal["sub"]}" font-family="{_UI}" '
+                     f'font-size="{_n(13*s)}">{_esc(nm)}{gtag}</text>')
+            lx += (50 + len(nm) * 9.0) * s
+        ay0, lw = size + 62 * s, 160 * s           # age heatmap gradient bar
+        cw = lw / 24
+        for j in range(24):
+            P.append(f'<rect x="{ex + j*cw:.1f}" y="{ay0:.1f}" width="{cw + 0.6:.1f}" height="{_n(9*s)}" '
+                     f'fill="{_ramp_at(pal["heat"], j/23)}"/>')
+        P.append(f'<text x="{ex:.1f}" y="{ay0 - 5*s:.0f}" fill="{pal["sub"]}" font-family="{_UI}" '
+                 f'font-size="{_n(11.5*s)}" letter-spacing="1" font-weight="700">AGE</text>')
+        P.append(f'<text x="{ex:.1f}" y="{ay0 + 20*s:.0f}" fill="{pal["sub"]}" font-family="{_UI}" '
+                 f'font-size="{_n(12*s)}">0</text>')
+        P.append(f'<text x="{ex + lw:.0f}" y="{ay0 + 20*s:.0f}" fill="{pal["sub"]}" font-family="{_UI}" '
+                 f'font-size="{_n(12*s)}" text-anchor="end">{emax}</text>')
+    elif legend_items:
+        # footer band below the wheel: an optional caption (e.g. the current lords) then the
+        # lord-colour legend, wrapped to as many rows as the wheel width needs (7 planets fit
+        # one row; firdaria's 9 lords with the node names take two)
         fy = size + 16 * s
         caption = tl.get("footer_caption")
         if caption:
             P.append(f'<text x="{_n(22*s)}" y="{fy:.0f}" fill="{pal["title"]}" font-family="{_UI}" '
                      f'font-size="{_n(13.5*s)}" font-weight="700">{_esc(caption)}</text>')
             fy += 26 * s
-        lx = 22.0 * s
-        for name, col in legend:
-            gl = PLANET_GLYPHS.get(name, "")
-            gtag = f' (<tspan font-family="{_SYM}" font-size="{_n(18*s)}">{_esc(gl)}</tspan>)' if gl else ""
-            P.append(f'<rect x="{lx:.1f}" y="{fy-13*s:.0f}" width="{_n(15*s)}" height="{_n(15*s)}" rx="2" fill="{col}"/>')
-            P.append(f'<text x="{lx+20*s:.1f}" y="{fy:.0f}" fill="{pal["sub"]}" font-family="{_UI}" '
-                     f'font-size="{_n(16*s)}">{_esc(name)}{gtag}</text>')
-            lx += (50 + len(str(name)) * 9.0) * s
+        for r, row in enumerate(legend_rows):
+            ry = fy + r * 24 * s
+            for name, col, lx in row:
+                gl = glyph_map.get(name, "")
+                gtag = f' (<tspan font-family="{_SYM}" font-size="{_n(18*s)}">{_esc(gl)}</tspan>)' if gl else ""
+                P.append(f'<rect x="{lx:.1f}" y="{ry-13*s:.0f}" width="{_n(15*s)}" height="{_n(15*s)}" rx="2" fill="{col}"/>')
+                P.append(f'<text x="{lx+20*s:.1f}" y="{ry:.0f}" fill="{pal["sub"]}" font-family="{_UI}" '
+                         f'font-size="{_n(16*s)}">{_esc(name)}{gtag}</text>')
     else:
         # heatmap legend (discrete swatches; no gradient id -> safe when inlined). Sits a line
         # lower than the wheel and reads at 12px.

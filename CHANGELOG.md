@@ -6,6 +6,43 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.5] — 2026-09-11
+
+An **expanding-spiral layout** for the time-lord charts, and **chart (wheel) projections
+for firdaria and zodiacal releasing** — completing the set so every time-lord technique
+draws on the one shared natal-chart core. Purely additive: every 0.2.0 call still works,
+and the default `layout="annulus"` output is byte-for-byte unchanged.
+
+### Added
+- **Spiral layout** — `render_profection_wheel_svg(chart, layout="spiral")`, and the same
+  `layout=` on the decennials / firdaria / zodiacal-releasing chart styles. Instead of
+  concentric age rings, the years unroll into one continuous coil that winds outward from
+  the centre, each 12-year cycle making one full turn so successive turns abut seamlessly.
+  Because profections are exactly 12-periodic, each sign keeps the same angle on every turn,
+  so the recurrence reads as aligned radial wedges of one colour. `layout="annulus"` (the
+  concentric rings) stays the default and is byte-for-byte identical to before.
+- **Firdaria chart style** — `render_firdaria_svg(chart, style="chart")` projects the
+  firdaria sequence onto the annual-profection wheel (band = major lord, glyph = sub lord),
+  the two nodes carried through with their own colours and glyphs. Needs a `profections`
+  block alongside the `firdaria` one.
+- **Zodiacal-releasing chart style** — `render_zodiacal_releasing_svg(chart, style="chart")`
+  projects releasing onto the wheel, each cell coloured by its L1 sign's **element** and
+  glyphed by its L2 sign. (Angularity, peak and loosing-of-the-bond markers remain on the
+  horizontal timeline.) Needs a `profections` block alongside the `zodiacal_releasing` one.
+- **Lord of the Year on the profection wheel** — the plain `render_profection_wheel_svg`
+  now fills each sign's outer-ring arc with its Lord of the Year (domicile-ruler) colour and
+  carries two stacked legends (the lord colours, then the age-heatmap gradient), while the
+  coil/rings keep the age heatmap. Only the plain wheel is affected; time-lord overlays keep
+  their neutral rim.
+
+### Changed
+- The time-lord footer legend now wraps to as many rows as the width needs, so the nine
+  firdaria lords (with the node names) fit instead of running off the edge; a seven-lord
+  legend still occupies one row unchanged.
+- `glyphs_by_year` (the "one sub-lord glyph per year cell, no short sub dropped" helper) is
+  now a shared function in `ephemvis.profection_wheel`, used by all three chart projections
+  (previously private to decennials).
+
 ## [0.2.0] — 2026-09-11
 
 Time-lord renderers (annual profections, firdaria, zodiacal releasing, decennials)
@@ -128,5 +165,6 @@ Initial public release — themeable SVG rendering for openephem chart data.
 - CI gates: pytest + **SVG snapshot tests** (byte-stable across Linux/Windows) +
   ruff + mypy, on Python 3.10–3.13.
 
+[0.2.5]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.2.5
 [0.2.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.2.0
 [0.1.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.1.0
