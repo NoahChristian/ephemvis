@@ -72,6 +72,48 @@ def _house_of_lon(lon, cusps):
     return 12
 
 
+def _is_wholesign_cusps(cusps, asc):
+    """True iff the 12 cusps ARE the whole-sign sign boundaries (floor(asc/30)*30 + k*30).
+
+    Only whole-sign makes the equal, centered-sign outer ring correct; every other house
+    system (Equal, Porphyry, Placidus, Koch, Campanus, Regiomontanus — and any future one)
+    has cusps that diverge from the signs, so the ring is drawn from the true cusps instead.
+    Detected from the data, not a system name, so it needs no hardcoded list. A missing or
+    NaN cusp counts as "not whole-sign" (→ per-cusp guarded when drawn)."""
+    if not cusps or len(cusps) < 12 or asc is None:
+        return False
+    base = math.floor(asc / 30.0) * 30.0
+    for k, c in enumerate(cusps):
+        if c is None or c != c:                      # None / NaN
+            return False
+        exp = (base + 30.0 * k) % 360.0
+        if abs((c - exp + 180.0) % 360.0 - 180.0) > 0.05:
+            return False
+    return True
+
+
+# Degree/minute/second readout convention.
+# Note: we have deliberately chosen rounding and not truncating when displaying only
+# degrees, degrees and minutes, or DMS.
+def _dm_round(lon):
+    """(sign_index, degree, minute) for `lon`, rounded to the nearest arc-minute — carrying
+    through degree and sign (e.g. 29°59.7' -> next sign 0°00')."""
+    tm = int(round((lon % 360.0) * 60.0)) % 21600      # nearest minute over the whole circle
+    sidx, within = divmod(tm, 1800)                     # 1800 arc-min per 30° sign
+    d, m = divmod(within, 60)
+    return sidx % 12, d, m
+
+
+def _dms_round(lon):
+    """(sign_index, degree, minute, second) for `lon`, rounded to the nearest arc-second —
+    carrying through minute, degree and sign."""
+    ts = int(round((lon % 360.0) * 3600.0)) % 1296000  # nearest second over the whole circle
+    sidx, within = divmod(ts, 108000)                  # 108000 arc-sec per 30° sign
+    d, rem = divmod(within, 3600)
+    m, s = divmod(rem, 60)
+    return sidx % 12, d, m, s
+
+
 def sign_label(i, angles, cusps):
     """Hover text for a zodiac sign: 'Virgo · 2nd house' (+ ' (Rising)' on the Asc sign)."""
     name = _SIGNS[i % 12]
@@ -104,7 +146,7 @@ ASPECT_STYLE = {
     "quintile": ("#7a4fb0", "2 3"),
 }
 
-# Which aspects read as hard / soft / neutral (for per-theme aspect colouring).
+# Which aspects read as hard / soft / neutral (for per-theme aspect coloring).
 ASPECT_CAT = {
     "conjunction": "neutral",
     "opposition": "hard", "square": "hard",
@@ -113,9 +155,9 @@ ASPECT_CAT = {
     "quincunx": "soft", "semisextile": "soft", "quintile": "soft",
 }
 
-# ---- colour palettes -> selectable "modes" ---------------------------------
+# ---- color palettes -> selectable "modes" ---------------------------------
 # Each palette: bg (radial gradient in/out), ring (3 linear-gradient stops), then
-# per-element colours. light/dark are functional; the rest are pastel "pretty"
+# per-element colors. light/dark are functional; the rest are pastel "pretty"
 # modes with a prism-like ring sweep. All are valid `theme=` values.
 _L = dict(bg=("#ffffff", "#ffffff"), ring=("#b0b0b0", "#b0b0b0", "#b0b0b0"),
           tick="#b0b0b0", sign="#3a3a3a", cusp="#7f9fd4", cuspA="#3f5f9c",
@@ -145,7 +187,7 @@ def _lerp_hex(c1, c2, t):
 
 
 def _conic(p, stops):
-    """Colour at fraction p in [0,1) sweeping the three ring stops around a loop."""
+    """Color at fraction p in [0,1) sweeping the three ring stops around a loop."""
     seg = (p % 1.0) * 3.0
     i = int(seg) % 3
     return _lerp_hex(stops[i], stops[(i + 1) % 3], seg - int(seg))
@@ -153,7 +195,7 @@ def _conic(p, stops):
 
 # Rotation applied to the halo sweep so the brightest/warmest ring stop (stops[2],
 # naturally at screen 240° = ~7 o'clock) lands at the TOP of the wheel (screen 90°).
-# colour = _conic(mid/360 + _HALO_TURN); stops[2] shows where the arg == 2/3, so
+# color = _conic(mid/360 + _HALO_TURN); stops[2] shows where the arg == 2/3, so
 # 90/360 + _HALO_TURN == 2/3  ->  _HALO_TURN = 2/3 - 1/4 = 150/360.
 _HALO_TURN = 150.0 / 360.0
 
@@ -220,8 +262,8 @@ def _style(pal, size=760):
         return f"{round(v, 2):g}"
     k = size / 760.0                 # stroke reference (identity at 760)
     f_sign = size * 0.0315           # sign glyph   (~23.9px @760, was 28)
-    f_planet = size * 0.0370         # planet glyph (~28.1px @760, was 33)
-    f_deg = size * 0.0195            # degree label (~14.8px @760, was 18)
+    f_planet = size * 0.0407         # planet glyph (+10%)
+    f_deg = size * 0.0215            # degree/minute label (+10%)
     f_hnum = size * 0.0210           # house number (~16.0px @760, was 19)
     f_angle = size * 0.0315          # Asc/MC label (~23.9px @760, was 28)
     f_title = size * 0.0197          # title        (~15.0px @760, unchanged proportion)
@@ -241,6 +283,15 @@ def _style(pal, size=760):
         (".planet", "fill:%s;font:600 %spx %s" % (pal["planet"], _n(f_planet), sym)),
         (".deg", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg))),
         (".deg-rx", "fill:%s" % pal["degRx"]),
+        # cusp position marks on the outer ring (non-whole-sign systems): the cusp's whole
+        # degree and arc-minute flanking the sign glyph that sits on the house-cusp axis.
+        (".cuspdeg", "fill:%s;font:700 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg * 0.92))),
+        (".cuspmin", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg * 0.76))),
+        (".cuspsec", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg * 0.64))),
+        # sign glyph shown inline in a planet's position readout (the sign the planet is in);
+        # goes red with the degree/minute when the body is retrograde
+        (".signn", "fill:%s;font:600 %spx %s" % (pal["sign"], _n(f_deg * 1.15), sym)),
+        (".signn-rx", "fill:%s" % pal["degRx"]),
         (".aspect", "stroke-width:%s;fill:none;opacity:.85" % _n(1.1 * k)),
         (".title", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["title"], _n(f_title))),
         # profection: annual sign band (filled) + Lord-of-the-Year ring (tagged "TL").
@@ -296,20 +347,37 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
     r_zod_in = r_out * 0.862         # inner edge of the zodiac band (signs live here)
     r_house = r_zod_in               # house-cusp lines reach the zodiac inner edge
     r_tick_in = r_zod_in * 0.905     # inner end of the planet pointer ticks
-    r_glyph = r_zod_in * 0.845       # planet-glyph ring (pushed out for more room)
     r_hnum_out = r_zod_in * 0.43     # house-ring outer = former aspect-circle radius
     r_hub = r_zod_in * 0.33          # aspect circle == house-ring inner edge (they meet)
-    r_hnum = r_zod_in * 0.38         # house numbers, centred in the (wider) ring band
+    r_hnum = r_zod_in * 0.38         # house numbers, centered in the (wider) ring band
     glyphs = None if not text_labels else True
-    apal = _L if theme == "auto" else PALETTES.get(theme, _L)  # aspect colours
+    apal = _L if theme == "auto" else PALETTES.get(theme, _L)  # aspect colors
 
     angles = chart.get("angles") or {}
     asc = angles.get("asc", 0.0)     # unknown-time -> 0 Aries at left
     cusps = chart.get("cusps")
 
+    # Rotation anchor: the house-1 cusp is placed on the left horizon (9 o'clock). For quadrant
+    # and equal systems cusps[0] == the Ascendant, so this is unchanged; but in whole-sign the
+    # house 1/12 division is the SIGN boundary, so anchoring there puts that division straight
+    # across the horizon and lifts the Ascendant degree to its true place inside the first house.
+    rot_ref = asc
+    if cusps and len(cusps) >= 12 and cusps[0] is not None and cusps[0] == cusps[0]:
+        rot_ref = cusps[0]
+
+    # Non-whole-sign house systems (Equal, Porphyry, Placidus, Koch, Campanus, Regiomontanus)
+    # have cusps that diverge from the sign boundaries, so the outer ring shows the TRUE cusps
+    # (the sign glyph on each cusp axis + the cusp's degree/minute) rather than the equal
+    # centered-sign ring. Whole-sign keeps the centered ring exactly as before.
+    label_cusps = bool(cusps and len(cusps) >= 12 and not _is_wholesign_cusps(cusps, asc))
+    wholesign = bool(cusps and len(cusps) >= 12 and _is_wholesign_cusps(cusps, asc))
+    cusp_darc = 4.5                  # arc-step (deg of longitude) for deg/min flanking every cusp glyph
+    cusp_dsec = 3.0                  # tighter arc-gap between the minute and the seconds mark
+    cusp_hband = 5.0                 # within this many deg of the Asc-Desc horizontal -> order top/bottom
+
     def pol(r, lon):
-        """Ecliptic longitude -> (x, y). Asc at left, zodiac CCW."""
-        a = math.radians(180.0 + (lon - asc))
+        """Ecliptic longitude -> (x, y). House-1 cusp at left, zodiac CCW."""
+        a = math.radians(180.0 + (lon - rot_ref))
         return cx + r * math.cos(a), cy - r * math.sin(a)
 
     def sp(r, deg):
@@ -373,16 +441,30 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
         P.append(f'<polygon class="prof-band" points="{band}"><title>{_esc(htxt)}</title></polygon>')
 
     # --- zodiac: 12 sectors (fixed to longitude) ---
-    for i in range(12):
-        lon0 = i * 30.0
-        x1, y1 = pol(r_zod_in, lon0)
-        x2, y2 = pol(r_out, lon0)
-        P.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" class="tick"/>')
-        gx, gy = pol((r_zod_in + r_out) / 2.0, lon0 + 15.0)
-        label = SIGN_ABBR[i] if glyphs else SIGN_GLYPHS[i] + "︎"  # text, not emoji
-        P.append(f'<text x="{gx:.1f}" y="{gy:.1f}" class="sign" '
-                 f'dominant-baseline="central" text-anchor="middle">'
-                 f'<title>{_esc(sign_label(i, angles, cusps))}</title>{label}</text>')
+    if wholesign:
+        # Whole-sign: no dividing lines on the outer ring, and each sign glyph sits ON its house
+        # cusp (the sign boundary) rather than centered in the sector — at the sign's LEADING
+        # cusp, so the rising sign (Leo here) lands on the far-left horizon (its 12/1 cusp).
+        for i in range(12):
+            gx, gy = pol((r_zod_in + r_out) / 2.0, i * 30.0)         # leading cusp of sign i
+            label = SIGN_ABBR[i] if glyphs else SIGN_GLYPHS[i] + "︎"  # text, not emoji
+            P.append(f'<text x="{gx:.1f}" y="{gy:.1f}" class="sign" '
+                     f'dominant-baseline="central" text-anchor="middle">'
+                     f'<title>{_esc(sign_label(i, angles, cusps))}</title>{label}</text>')
+    elif not label_cusps:
+        # No house cusps (timeless chart): the standard equal zodiac ring — 30° dividers with the
+        # sign glyph centered in each sector. (Non-whole-sign house systems draw the ring from the
+        # true cusps in the house block below, so they skip this too.)
+        for i in range(12):
+            lon0 = i * 30.0
+            x1, y1 = pol(r_zod_in, lon0)
+            x2, y2 = pol(r_out, lon0)
+            P.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" class="tick"/>')
+            gx, gy = pol((r_zod_in + r_out) / 2.0, lon0 + 15.0)
+            label = SIGN_ABBR[i] if glyphs else SIGN_GLYPHS[i] + "︎"  # text, not emoji
+            P.append(f'<text x="{gx:.1f}" y="{gy:.1f}" class="sign" '
+                     f'dominant-baseline="central" text-anchor="middle">'
+                     f'<title>{_esc(sign_label(i, angles, cusps))}</title>{label}</text>')
 
     # --- houses (cusp lines here; numbers collected and drawn last, on top) ---
     house_labels = []
@@ -395,65 +477,110 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
                 and abs((cusps[0] - _asc + 180.0) % 360.0 - 180.0) < 0.5
                 and abs((cusps[9] - _mc + 180.0) % 360.0 - 180.0) < 0.5)
         for i, c in enumerate(cusps):
+            if c is None or c != c:              # skip a missing/NaN cusp (Placidus near poles)
+                continue
             cls = "cusp-angle" if (quad and i in (0, 3, 6, 9)) else "cusp"
             # solid divider between house numbers, within the number ring
             hx1, hy1 = pol(r_hub, c)
             hx2, hy2 = pol(r_hnum_out, c)
             P.append(f'<line x1="{hx1:.1f}" y1="{hy1:.1f}" x2="{hx2:.1f}" y2="{hy2:.1f}" class="hdiv"/>')
-            # dotted cusp continues from the number ring out to the zodiac
+            # dotted cusp from the number ring out to the zodiac inner edge only — no divider
+            # crosses the zodiac band (the cusp is marked there by its on-axis glyph instead)
             dx1, dy1 = pol(r_hnum_out, c)
             dx2, dy2 = pol(r_house, c)
             P.append(f'<line x1="{dx1:.1f}" y1="{dy1:.1f}" x2="{dx2:.1f}" y2="{dy2:.1f}" class="{cls}"/>')
-            mid = c + (((cusps[(i + 1) % 12] - c) % 360.0) / 2.0)
-            nx, ny = pol(r_hnum, mid)
-            house_labels.append(f'<text x="{nx:.1f}" y="{ny:.1f}" class="housenum" '
-                                f'dominant-baseline="central" text-anchor="middle">{i + 1}</text>')
-        # Asc / MC labels, OUTSIDE the ring (so the halo bands don't clobber them);
-        # the trailing "C" is half-height, baseline-aligned (not descending).
-        r_ang = r_out + size * 0.03
-        for key, first in (("asc", "A"), ("mc", "M")):
-            if key in angles:
-                lx, ly = pol(r_ang, angles[key])
-                P.append(f'<text x="{lx:.1f}" y="{ly + size*0.008:.1f}" class="anglelab" '
-                         f'text-anchor="middle"><title>{_esc(angle_label(key, angles[key]))}</title>'
-                         f'{first}<tspan class="ac-sm">C</tspan></text>')
+            nc = cusps[(i + 1) % 12]              # next cusp, for the house-number midpoint
+            if nc is not None and nc == nc:
+                mid = c + (((nc - c) % 360.0) / 2.0)
+                nx, ny = pol(r_hnum, mid)
+                house_labels.append(f'<text x="{nx:.1f}" y="{ny:.1f}" class="housenum" '
+                                    f'dominant-baseline="central" text-anchor="middle">{i + 1}</text>')
+            # outer ring (non-whole-sign): the sign glyph on the cusp axis + degree/minute
+            if label_cusps:
+                sidx, d, m, s = _dms_round(c)             # DMS, rounded (see _dms_round)
+                glyph = SIGN_ABBR[sidx] if glyphs else SIGN_GLYPHS[sidx] + "︎"
+                rr = (r_zod_in + r_out) / 2.0
+                ggx, ggy = pol(rr, c)
+                htxt = "House %d cusp: %s %d°%02d′%02d″" % (i + 1, _SIGNS[sidx], d, m, s)
+                P.append(f'<text x="{ggx:.1f}" y="{ggy:.1f}" class="sign" '
+                         f'dominant-baseline="central" text-anchor="middle">'
+                         f'<title>{_esc(htxt)}</title>{glyph}</text>')
+                # degree before the glyph, then minute and seconds after it, all sharing the
+                # glyph's RADIUS and stepping along the arc. Off the horizon they read
+                # left->right (degree on the screen-left); at the Asc/Desc the arc is vertical,
+                # so they order top->bottom (degree on top).
+                da = (c - rot_ref) % 360.0
+                xm, ym = pol(rr, c - cusp_darc)
+                xp, yp = pol(rr, c + cusp_darc)
+                if da < cusp_hband or da > 360.0 - cusp_hband or abs(da - 180.0) < cusp_hband:
+                    forward = ym <= yp           # -darc side is higher on screen -> degree there
+                else:
+                    forward = xm <= xp           # -darc side is further left -> degree there
+                unit = -1.0 if forward else 1.0        # step direction along the arc
+                dgx, dgy = pol(rr, c + unit * cusp_darc)                # degree (before the glyph)
+                mnx, mny = pol(rr, c - unit * cusp_darc)                # minute (after the glyph)
+                scx, scy = pol(rr, c - unit * (cusp_darc + cusp_dsec))  # seconds (tighter to minute)
+                P.append(f'<text x="{dgx:.1f}" y="{dgy:.1f}" class="cuspdeg" '
+                         f'dominant-baseline="central" text-anchor="middle">{d}°</text>')
+                P.append(f'<text x="{mnx:.1f}" y="{mny:.1f}" class="cuspmin" '
+                         f'dominant-baseline="central" text-anchor="middle">{m:02d}′</text>')
+                P.append(f'<text x="{scx:.1f}" y="{scy:.1f}" class="cuspsec" '
+                         f'dominant-baseline="central" text-anchor="middle">{s:02d}″</text>')
+        # Non-whole-sign only: Asc/MC as a guide OUTSIDE the ring (their exact positions are
+        # already published on the rim as cusp labels). Whole-sign draws them inside among the
+        # planets instead. The trailing "C" is half-height, baseline-aligned (not descending).
+        if label_cusps:
+            r_ang = r_out + size * 0.03
+            for key, first in (("asc", "A"), ("mc", "M")):
+                if key in angles:
+                    lx, ly = pol(r_ang, angles[key])
+                    P.append(f'<text x="{lx:.1f}" y="{ly + size*0.008:.1f}" class="anglelab" '
+                             f'text-anchor="middle"><title>{_esc(angle_label(key, angles[key]))}</title>'
+                             f'{first}<tspan class="ac-sm">C</tspan></text>')
 
-    # --- planets (with simple angular de-collision on the display ring) ---
+    # --- planets (+ Asc/MC on whole-sign): radial readouts, angular rubber-band de-collision ---
+    # The planet glyph is the marker, set just inside the zodiac (clear of the tick line so the
+    # ring can't clip it). Its readout runs RADIALLY inward from the glyph — degree nearest the
+    # ring, then the sign glyph, then the minute — each token rotated to the spoke and kept
+    # upright (so it reads one way on the left of the wheel, the other on the right). Bodies too
+    # close in angle are rubber-banded apart (bounded); nothing is drawn below the house numbers.
     bodies = chart.get("bodies") or {}
-    # Combined de-collision: a gentle angular (circumferential) spread PLUS radial
-    # tiers where bodies pile up. Glyphs stay near their true longitude; a dotted
-    # leader ties any displaced glyph back to its true mark, so nothing is lost.
-    ANG = 6.0                        # angular min-gap (deg) — gentle circumferential fan
-    RAD_TH = 12.0                    # within this angular gap, stack radially instead
-    STEP = r_zod_in * 0.173          # radial gap between tiers
-    DOFF = r_zod_in * 0.086          # degree label offset below its glyph
-    placed = _spread([(n, bodies[n]["lon"]) for n in bodies], min_gap=ANG)
-    order = sorted(range(len(placed)), key=lambda k: placed[k][2])
-    last: list[float] = []
-    tier = [0] * len(placed)
-    for k in order:
-        d = placed[k][2]
-        t = 0
-        while t < len(last) and (d - last[t]) % 360.0 < RAD_TH:
-            t += 1
-        if t == len(last):
-            last.append(d)
-        else:
-            last[t] = d
-        tier[k] = t
+    angle_glyph = {"asc": "Ac", "mc": "Mc"}     # Asc/MC drawn as markers among the planets
+    fdeg = size * 0.0215                        # degree/minute label (+10%, matches _style)
+    fpl = size * 0.0407                         # planet glyph (+10%, matches _style)
+    r_sym = r_tick_in - fpl * 0.62             # glyph just inside the ring, with clearance
+    r_lab0 = r_sym - fpl * 0.70                # outer edge of the readout block (gap from the glyph)
+    gap = math.degrees(fpl * 1.40 / r_sym)     # min angular spacing (glyph width + margin) for the fan
+    # Whole-sign only: the Asc/MC sit in the planet band and carry the same degree/sign/minute
+    # readout as a body, de-collided in the same fan; drawn at the true angle longitude. On other
+    # systems they stay as outside guides (above) since the rim already publishes their positions.
+    marker_lons = [(n, bodies[n]["lon"]) for n in bodies]
+    if wholesign:
+        for akey in ("asc", "mc"):
+            av = angles.get(akey)
+            if av is not None and av == av:
+                marker_lons.append((akey, av))
+    placed = _spread(marker_lons, min_gap=gap)
+
+    def _tw(s: str) -> float:                  # approx rendered width of a numeric readout token
+        return sum(fdeg * (0.42 if ch == "°" else 0.30 if ch == "′" else 0.72 if ch == "℞"
+                           else 0.56 if ch.isdigit() else 0.60) for ch in s)
+
     hub_pts = {}
-    for k, (name, lon, disp) in enumerate(placed):
-        rg = r_glyph - tier[k] * STEP
+    for name, lon, disp in placed:
+        is_angle = name in angle_glyph
         # true-position mark: a short spoke just inside the zodiac
         tx1, ty1 = pol(r_tick_in, lon)
         tx2, ty2 = pol(r_house, lon)
         P.append(f'<line x1="{tx1:.1f}" y1="{ty1:.1f}" x2="{tx2:.1f}" y2="{ty2:.1f}" class="pmark"/>')
-        # displaced glyph: dotted leader back to its true mark (keeps the link)
-        drift = abs((disp - lon + 180.0) % 360.0 - 180.0)
-        if tier[k] > 0 or drift > 2.5:
-            gx0, gy0 = pol(rg + r_zod_in * 0.045, disp)
-            P.append(f'<line x1="{gx0:.1f}" y1="{gy0:.1f}" x2="{tx1:.1f}" y2="{ty1:.1f}" class="leader"/>')
-        gx, gy = pol(rg, disp)
+        gx, gy = pol(r_sym, disp)
+        # dotted leader from the glyph's bounding-box EDGE nearest the mark (not its centre)
+        if abs((disp - lon + 180.0) % 360.0 - 180.0) > 1.0:
+            dxl, dyl = tx1 - gx, ty1 - gy
+            te = min(fpl * 0.42 / abs(dxl) if dxl else 1e9,
+                     fpl * 0.46 / abs(dyl) if dyl else 1e9)
+            sx, sy = gx + dxl * te, gy + dyl * te      # exit point on the glyph box toward the mark
+            P.append(f'<line x1="{sx:.1f}" y1="{sy:.1f}" x2="{tx1:.1f}" y2="{ty1:.1f}" class="leader"/>')
         if prof and name == prof.get("ruler"):   # ring + "TL" tag on the year-lord glyph
             P.append(f'<circle class="prof-ruler" cx="{gx:.1f}" cy="{gy:.1f}" '
                      f'r="{size*0.028:.1f}"><title>{_esc("Lord of the Year (time-lord)")}'
@@ -461,22 +588,55 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
             P.append(f'<text x="{gx + size*0.026:.1f}" y="{gy - size*0.020:.1f}" class="prof-tl" '
                      f'text-anchor="start"><title>{_esc("Lord of the Year (time-lord)")}</title>'
                      f'TL</text>')
-        if glyphs:
-            g = PLANET_ABBR.get(name, name[:2])
-        else:  # fixed stars share one ✦ marker; the name identifies them in the key
-            base = PLANET_GLYPHS.get(name) or ("✦" if bodies[name].get("kind") == "star" else name[:2])
-            g = base + "︎"  # text, not emoji
-        retro = bodies[name].get("retro")
-        lbl = _esc(body_label(name, bodies[name]))          # hover: name in sign at deg
-        P.append(f'<text x="{gx:.1f}" y="{gy:.1f}" class="planet" '
-                 f'dominant-baseline="central" text-anchor="middle">'
-                 f'<title>{lbl}</title>{_esc(g)}</text>')
-        dxp, dyp = pol(rg - DOFF, disp)
-        deg = f'{int(lon % 30)}°' + ("℞" if retro else "")
-        dcls = "deg deg-rx" if retro else "deg"
-        P.append(f'<text x="{dxp:.1f}" y="{dyp:.1f}" class="{dcls}" '
-                 f'dominant-baseline="central" text-anchor="middle">'
-                 f'<title>{lbl}</title>{deg}</text>')
+        retro = False if is_angle else bodies[name].get("retro")
+        lbl = _esc(angle_label(name, lon) if is_angle          # hover: name in sign at deg
+                   else body_label(name, bodies[name]))
+        if is_angle:
+            # Asc/MC keep their prior label style ("A"/"M" + a half-height "C"), just moved
+            # inside among the planets (whole-sign only).
+            first = "A" if name == "asc" else "M"
+            # Center the big letter on the marker point like the planet glyphs (so it doesn't
+            # ride high), then drop the half-height "C" down onto that letter's baseline.
+            cdy = size * 0.0055
+            P.append(f'<text x="{gx:.1f}" y="{gy:.1f}" class="anglelab" '
+                     f'dominant-baseline="central" text-anchor="middle">'
+                     f'<title>{lbl}</title>{first}'
+                     f'<tspan class="ac-sm" dy="{cdy:.1f}">C</tspan></text>')
+        else:
+            if glyphs:
+                g = PLANET_ABBR.get(name, name[:2])
+            else:  # fixed stars share one ✦ marker; the name identifies them in the key
+                base = PLANET_GLYPHS.get(name) or ("✦" if bodies[name].get("kind") == "star" else name[:2])
+                g = base + "︎"  # text, not emoji
+            # planet glyph = the marker, upright, just inside the ring
+            P.append(f'<text x="{gx:.1f}" y="{gy:.1f}" class="planet" '
+                     f'dominant-baseline="central" text-anchor="middle">'
+                     f'<title>{lbl}</title>{_esc(g)}</text>')
+        sidx_p, d0, m0 = _dm_round(lon)                     # rounded deg/min + the sign it's in
+        sgl = SIGN_ABBR[sidx_p] if glyphs else SIGN_GLYPHS[sidx_p] + "︎"
+        rxm = "℞" if retro else ""
+        ncls = "deg deg-rx" if retro else "deg"             # degree/minute (red when retro)
+        scls = "signn signn-rx" if retro else "signn"       # sign glyph too (red when retro)
+        # readout tokens down the spoke (degree at the ring, then sign, then minute), each
+        # rotated to the spoke and kept upright
+        a = math.radians(180.0 + disp - rot_ref)
+        rot0 = math.degrees(math.atan2(math.sin(a), -math.cos(a)))   # spoke direction (inward)
+        rot = rot0 - 180.0 if rot0 > 90.0 else (rot0 + 180.0 if rot0 < -90.0 else rot0)
+        deg_t, min_t = f"{d0}°{rxm}", f"{m0:02d}′"
+        # tokens run ALONG the spoke, so each occupies its WIDTH radially — lay them end-to-end
+        # with a gap so ℞/sign never collide. On the LEFT half degree sits at the ring (outer);
+        # on the RIGHT half the order is reversed so both halves read degree→sign→minute L→R.
+        toks = [(deg_t, ncls, _tw(deg_t)), (sgl, scls, fdeg * 1.20), (min_t, ncls, _tw(min_t))]
+        if gx >= cx:                            # right half of the wheel
+            toks.reverse()
+        edge = r_lab0
+        for tok, tcls, w in toks:
+            lx, ly = pol(edge - w / 2.0, disp)
+            P.append(f'<text x="{lx:.1f}" y="{ly:.1f}" class="{tcls}" '
+                     f'transform="rotate({rot:.1f} {lx:.1f} {ly:.1f})" '
+                     f'dominant-baseline="central" text-anchor="middle">'
+                     f'<title>{lbl}</title>{tok}</text>')
+            edge -= w + fdeg * 0.42
         hub_pts[name] = pol(r_hub, lon)
 
     # --- aspects (lines across the hub) ---
@@ -539,10 +699,12 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
 
 
 def _spread(items, min_gap=7.0):
-    """De-collide glyph display angles while preserving zodiacal order. Cut the
-    circle at its widest gap so a cluster can open into free space, enforce the
-    minimum gap in one forward sweep (no crossovers), then recentre on the true
-    centroid to keep drift minimal and symmetric. Returns (name, true_lon, disp)."""
+    """De-collide glyph display angles while preserving zodiacal order. Cut the circle at its
+    widest gap so clusters can open into free space, then push apart ONLY the pairs closer than
+    min_gap, symmetrically (half each). Bodies whose neighbours are already far enough keep their
+    true longitude — no global recenter — so an isolated planet never drifts. A cluster expands
+    evenly about its own centre, cascading into a neighbour only if it genuinely reaches it.
+    Returns (name, true_lon, disp)."""
     items = sorted(items, key=lambda t: t[1])
     n = len(items)
     if n < 2:
@@ -558,14 +720,19 @@ def _spread(items, min_gap=7.0):
             v += 360.0
         u.append(v)
         prev = v
-    tgt = u[:]
-    for k in range(1, n):                              # forward sweep: enforce gap
-        if u[k] < u[k - 1] + min_gap:
-            u[k] = u[k - 1] + min_gap
-    shift = sum(tgt[k] - u[k] for k in range(n)) / n   # recentre on true centroid
+    for _ in range(400):                              # relax: push only-too-close pairs apart
+        moved = False
+        for k in range(n - 1):
+            over = min_gap - (u[k + 1] - u[k])
+            if over > 1e-9:
+                u[k] -= over / 2.0
+                u[k + 1] += over / 2.0
+                moved = True
+        if not moved:
+            break
     disp = [0.0] * n
     for k, idx in enumerate(order):
-        disp[idx] = (u[k] + shift) % 360.0
+        disp[idx] = u[k] % 360.0
     return [(items[i][0], items[i][1], disp[i]) for i in range(n)]
 
 

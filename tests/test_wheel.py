@@ -105,6 +105,56 @@ def test_no_profection_block_no_markers():
     assert '<circle class="prof-ruler"' not in s
 
 
+def _quad_chart():
+    # Placidus-like: unequal cusps, Ascendant at Leo 16°44' (136.727°). Not on sign boundaries.
+    return {
+        "house_system": "Placidus",
+        "angles": {"asc": 136.727, "mc": 36.08},
+        "cusps": [136.727, 157.59, 183.62, 216.08, 252.77, 287.40,
+                  316.727, 337.59, 3.62, 36.08, 72.77, 107.40],
+        "bodies": {"Sun": {"lon": 170.0, "retro": False}},
+        "aspects": [],
+    }
+
+
+def test_cusp_labels_on_quadrant_ring():
+    # Non-whole-sign: the outer ring is drawn from the cusps — a sign glyph on each cusp
+    # axis plus the cusp's degree/minute; the equal sign-boundary ticks are dropped.
+    s = wheel.render_svg(_quad_chart(), theme="light")
+    assert s.count('class="cuspdeg"') == 12          # one degree mark per cusp
+    assert s.count('class="cuspmin"') == 12          # one minute mark per cusp
+    assert s.count('class="cuspsec"') == 12          # one seconds mark per cusp
+    assert 'class="tick"' not in s                    # equal sign dividers dropped
+    # the Ascendant cusp reads Leo 16°43'37" (16.727° -> 16°43'37.2"; deg/min/sec truncated)
+    assert "House 1 cusp: Leo 16°43′37″" in s
+    assert ">16°</text>" in s and ">43′</text>" in s and ">37″</text>" in s
+    assert "♌" in s
+
+
+def test_wholesign_ring_no_dividers():
+    # Whole-sign: no cusp-degree labels and no equal dividing lines on the outer ring; the 12
+    # sign glyphs sit on the house cusps instead.
+    c = _mock_chart()
+    c["angles"] = {"asc": 45.0, "mc": 315.0}
+    c["cusps"] = [(30.0 + 30.0 * k) % 360.0 for k in range(12)]   # boundaries of Taurus-rising
+    c["house_system"] = "WholeSign"
+    s = wheel.render_svg(c, theme="light")
+    assert 'class="cuspdeg"' not in s and 'class="cuspmin"' not in s
+    assert 'class="tick"' not in s                    # equal sign dividers removed
+    assert s.count('class="sign"') == 12              # 12 sign glyphs, on the cusps
+
+
+def test_cusp_labels_skip_nan_cusp():
+    # A NaN cusp (Placidus near the poles) is skipped, not rendered as "nan".
+    c = _quad_chart()
+    c["cusps"] = list(c["cusps"])
+    c["cusps"][5] = float("nan")
+    s = wheel.render_svg(c, theme="light")
+    ET.fromstring(s)
+    assert not re.search(r'"[-\d.]*nan[-\d.]*"', s.lower())
+    assert s.count('class="cuspdeg"') == 11           # the NaN cusp is dropped
+
+
 @pytest.mark.parametrize("theme", ["light", "dark", "prism"])
 def test_aspect_grid_wellformed_xml(theme):
     s = aspectgrid.render_aspect_grid_svg(_mock_chart(), theme=theme)
