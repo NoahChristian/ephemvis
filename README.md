@@ -149,6 +149,33 @@ onto the profection wheel (band = major lord, glyph = sub lord, radial ticks at 
 sub-period boundaries, or `sub_style="gradient"` for sub-lord colour slices). Add
 `layout="spiral"` for the coil. Needs a `profections` block alongside the `decennials` one.
 
+## Jyotiṣa (Vedic) charts
+
+`render_vedic_square_svg(chart, style=…)` draws the classical **rāśi square** in three
+regional styles — `"south"` (South Indian fixed-sign grid), `"north"` (North Indian
+fixed-house diamond), and `"east"` (East Indian / Bengali fixed-house). Grahas are placed by
+their sidereal rāśi (Rāhu/Ketu included), the Lagna is marked, and each house scales its
+contents so a dense stellium stays inside its cell. Needs a **sidereal** chart
+(`assemble(zodiac="sidereal")`); the same function renders any **vārga** (divisional) chart
+when the chart carries a `varga` block (openephem's `varga_chart()`).
+
+```python
+from ephemvis import render_vedic_square_svg
+svg = render_vedic_square_svg(chart, style="south", theme="meadow", title="Rāśi")
+```
+
+`render_vimshottari_svg(chart, style=…, layout=…)` draws the **Vimśottarī daśā** — either a
+horizontal **timeline** (Mahādaśā over Antardaśā, the balance at birth, an as-of marker) or,
+with `style="chart"`, projected onto the shared wheel core (band = Mahādaśā, glyph =
+Antardaśā) as concentric rings (`layout="annulus"`) or an expanding coil (`layout="spiral"`).
+The seven classical lords share the firdaria/decennials theme colours; Rāhu/Ketu carry their
+own. Needs a `vimshottari` block (openephem ≥ 0.2.0's `assemble(..., vimshottari_as_of=)`).
+
+```python
+from ephemvis import render_vimshottari_svg
+svg = render_vimshottari_svg(chart, style="chart", layout="spiral", theme="meadow")
+```
+
 ## Themes
 
 `light`, `dark`, `auto`, and eight pastel "pretty" modes with a prism-halo ring:

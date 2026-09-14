@@ -6,6 +6,43 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-09-14
+
+**Jyotiṣa (Vedic) chart renderers** — the recognizably-Indian square rāśi charts and a
+Vimśottarī daśā view — plus a **whole-sign natal wheel** reworked to traditional
+orientation. Additive: the western renderers keep their APIs; the whole-sign changes affect
+`render_svg`'s output for whole-sign and non-whole-sign house systems (see Changed).
+
+### Added
+- **Vedic square charts** — `render_vedic_square_svg(chart, style="south"|"north"|"east")`
+  draws the classical rāśi square in all three regional styles (South Indian fixed-sign
+  grid, North Indian fixed-house diamond, East Indian / Bengali fixed-house). Grahas placed
+  by sidereal rāśi (Rāhu/Ketu included), Lagna marked, per-house adaptive scaling so dense
+  stelliums stay inside their cells. Needs a sidereal chart (`assemble(zodiac="sidereal")`);
+  renders any vārga (divisional) chart the same way when the chart carries a `varga` block.
+- **Vimśottarī daśā** — `render_vimshottari_svg(chart, style="timeline"|"chart",
+  layout="annulus"|"spiral")` draws the Moon-nakṣatra daśā as a dated timeline (Mahā + Antar
+  rows, balance at birth, as-of marker) or projected onto the shared wheel core (band = Mahā,
+  glyph = Antar) as concentric rings or an expanding coil. Nine grahas — the seven classical
+  lords share the firdaria/decennials theme colours, Rāhu/Ketu their own. Needs a
+  `vimshottari` block (openephem ≥ 0.2.0).
+
+### Changed
+- **Whole-sign natal wheel** (`render_svg`) now uses traditional orientation: the wheel is
+  rotated to the house-1 cusp so the 12/1 division sits straight across the horizon, the
+  Ascendant degree falling in its true place inside the first house. The equal outer-ring
+  dividers are removed and each sign glyph sits on its house cusp; the Asc/MC move inside the
+  planet band (keeping their label style) with a degree/sign/minute readout. Quadrant and
+  equal charts are unaffected (their house-1 cusp already equals the Ascendant).
+- **Non-whole-sign house systems** (Placidus, Koch, Campanus, Regiomontanus, Porphyry, Equal)
+  now label each house cusp on the outer ring — the sign glyph on the cusp axis with the
+  cusp's rounded degree / minute / second — instead of the equal whole-sign ring; the Asc/MC
+  remain as outside guides. Detected from the cusp data, not a house-system name list.
+- **Planet position readouts** on `render_svg` reworked: a radial degree / sign-glyph / minute
+  block reading outward-to-inward along each spoke, retrograde shown in red, with rubber-band
+  angular de-collision for crowded clusters. Degree/minute/second displays round (not
+  truncate). Whole-sign wheel snapshots regenerated accordingly.
+
 ## [0.2.5] — 2026-09-11
 
 An **expanding-spiral layout** for the time-lord charts, and **chart (wheel) projections
@@ -165,6 +202,7 @@ Initial public release — themeable SVG rendering for openephem chart data.
 - CI gates: pytest + **SVG snapshot tests** (byte-stable across Linux/Windows) +
   ruff + mypy, on Python 3.10–3.13.
 
+[0.3.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.0
 [0.2.5]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.2.5
 [0.2.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.2.0
 [0.1.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.1.0
