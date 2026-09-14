@@ -540,10 +540,20 @@ def render_vedic_square_svg(chart: dict, *, style: str = "south", theme: str = "
     ``style`` is ``"south"`` (South-Indian fixed-rāśi grid), ``"north"`` (North-Indian
     fixed-house diamond), or ``"east"`` (East-Indian / Bengali corner-triangle square).
     ``theme`` is any key of :data:`ephemvis.PALETTES` ('auto' -> light). Raises ``ValueError``
-    for an unknown style or a chart without an Ascendant."""
+    for an unknown style, a chart without an Ascendant, or a chart that is
+    explicitly not sidereal."""
     if (chart.get("angles") or {}).get("asc") is None:
         raise ValueError("a Vedic chart needs a known Ascendant (angles.asc); assemble with a "
                          "birth time, zodiac='sidereal'")
+    # A rāśi square drawn from tropical longitudes is wrong by the ayanamsa — ~24° in this
+    # era, so nearly a whole sign: the Lagna and every graha land in the neighbouring rāśi,
+    # and the result is a well-formed chart that quietly says the wrong thing. Refuse only
+    # what we can prove wrong: a chart from another engine may carry no 'zodiac' key at
+    # all, and those still render.
+    zodiac = chart.get("zodiac")
+    if zodiac is not None and zodiac != "sidereal":
+        raise ValueError("a Vedic rāśi chart needs the sidereal zodiac, but this chart is "
+                         f"{zodiac!r}; rebuild it with assemble(..., zodiac='sidereal')")
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])
     lord_col = _lord_colors(theme)
     if style == "south":

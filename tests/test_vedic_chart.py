@@ -33,6 +33,21 @@ def test_requires_ascendant():
         render_vedic_square_svg({"bodies": {"Sun": {"lon": 0.0}}, "angles": {}})
 
 
+def test_tropical_chart_raises():
+    # The renderer uses longitudes as given, so a tropical chart would draw a
+    # well-formed square shifted by the ayanamsa — nearly a whole rāśi.
+    with pytest.raises(ValueError, match="sidereal"):
+        render_vedic_square_svg(dict(_chart(), zodiac="tropical"))
+
+
+def test_zodiac_absent_still_renders():
+    # Any engine emitting the ChartResult shape may omit 'zodiac'. That cannot be
+    # proven wrong, so it must still draw.
+    c = _chart()
+    c.pop("zodiac")
+    ET.fromstring(render_vedic_square_svg(c))
+
+
 def test_bad_style_raises():
     with pytest.raises(ValueError):
         render_vedic_square_svg(_chart(), style="west")

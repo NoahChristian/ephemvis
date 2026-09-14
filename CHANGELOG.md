@@ -6,6 +6,18 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.1] — 2026-09-14
+
+### Fixed
+- **`render_vedic_square_svg` now refuses a tropical chart.** The rāśi square is a sidereal
+  form and the renderer uses each longitude exactly as given, so passing a tropical chart
+  produced a perfectly well-formed square that was wrong by the ayanamsa — ~24° in this era,
+  nearly a whole sign, putting the Lagna and every graha in the neighbouring rāśi. The
+  precondition was documented in the docstring but never checked; it now raises `ValueError`,
+  consistent with the module's existing guards for a missing Ascendant and an unknown style.
+  Charts carrying no `zodiac` key at all (another engine emitting the `ChartResult` shape)
+  still render — only an explicitly non-sidereal chart is refused.
+
 ## [0.3.0] — 2026-09-14
 
 **Jyotiṣa (Vedic) chart renderers** — the recognizably-Indian square rāśi charts and a
@@ -202,6 +214,7 @@ Initial public release — themeable SVG rendering for openephem chart data.
 - CI gates: pytest + **SVG snapshot tests** (byte-stable across Linux/Windows) +
   ruff + mypy, on Python 3.10–3.13.
 
+[0.3.1]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.1
 [0.3.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.0
 [0.2.5]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.2.5
 [0.2.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.2.0
