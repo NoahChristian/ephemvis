@@ -5,13 +5,13 @@ decennials.py — the Decennials (Valens time-lords) as a self-contained SVG.  [
 The Decennials are a temporal sequence of chronocratorships, so they render as a horizontal
 timeline: a top row of the general decennial periods (each a fixed 10 years 9 months) and a
 bottom row of their planetary sub-periods (unequal — each planet's minor years reckoned in
-months), each segment coloured and glyphed by its ruling planet, with the current general/
+months), each segment colored and glyphed by its ruling planet, with the current general/
 sub lord outlined and a marker at the current age. Input is the chart dict openephem's
 ``assemble()`` returns; it must carry a ``decennials`` block (openephem adds one when given
 ``decennials_as_of=``). The table companion is trivially built from the same block.
 
-Planet identity is carried by the glyph on each segment (and the legend); colour is a
-supporting cue (which also covers colour-vision-deficient and print cases).
+Planet identity is carried by the glyph on each segment (and the legend); color is a
+supporting cue (which also covers color-vision-deficient and print cases).
 """
 
 from __future__ import annotations
@@ -99,7 +99,7 @@ def _chart_style(chart: dict, dec: dict, *, theme: str, size: int, title: str,
     asc_sign = _SIGNS[int(asc // 30) % 12] if asc is not None else ""
     nring = max_age // 12 + 1
     ages = range(nring * 12)
-    major_by_age = [_major_lord_at(dec, a) for a in ages]      # band colour = major lord
+    major_by_age = [_major_lord_at(dec, a) for a in ages]      # band color = major lord
     sub_segments = _sub_segments(dec, nring * 12)              # exact sub-period boundaries
     # glyph per year: every sub-period claims its peak-coverage cell (not the sub at the
     # birthday instant), so a short sub — e.g. Venus, ~8 months — never drops out of the ring
@@ -143,7 +143,7 @@ def render_decennials_svg(chart: dict, *, theme: str = "light", style: str = "ti
         raise ValueError("style must be 'timeline' or 'chart'")
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])
     ink, bg, muted, line = pal["planet"], pal["bg"][0], pal["deg"], pal["cusp"]
-    lord_col = theme_lord_colors(theme, _LEGEND)      # theme-derived lord colours (match wheel)
+    lord_col = theme_lord_colors(theme, _LEGEND)      # theme-derived lord colors (match wheel)
     cur_age = dec.get("age")                          # whole years, for the subtitle text
     # the marker / current-outline track the *actual* as-of date (sub-periods can be short,
     # so the integer-age birthday can fall in a different sub than the as-of date does)

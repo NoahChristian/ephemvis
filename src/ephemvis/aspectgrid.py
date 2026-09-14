@@ -4,7 +4,7 @@ aspectgrid.py — render the aspectarian (triangular aspect grid) as a self-cont
 
 Takes an openephem chart dict (needs ``bodies`` and ``aspects``) and returns an SVG
 string: bodies run down the diagonal as glyphs; each lower-left cell shows the aspect
-between its row and column body, coloured by nature (hard / soft / neutral). Themed
+between its row and column body, colored by nature (hard / soft / neutral). Themed
 via the same PALETTES as the wheel. Uses inline presentation attributes (no <style>),
 so it is safe to embed in the same page as other inline SVGs.
 """
@@ -37,8 +37,8 @@ DEFAULT_ORDER = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn",
                  "Chiron", "Ceres", "Pallas", "Juno", "Vesta",
                  "Astraea", "Hygeia", "Eros", "Eris", "Sedna", "AsteroidLilith"]
 SYM = '"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif'
-# Themes whose two grid-gradient colours read better swapped (perceptual). The
-# direction/anchoring is unchanged — only which colour sits at the bottom-left nexus.
+# Themes whose two grid-gradient colors read better swapped (perceptual). The
+# direction/anchoring is unchanged — only which color sits at the bottom-left nexus.
 _GRID_GRAD_REVERSE = {"infrared"}
 
 
@@ -58,9 +58,9 @@ def render_aspect_grid_svg(chart: dict, theme: str = "light", order=None,
     C, pad = float(cell), 8.0
     bg0 = cast("tuple[str, str]", pal["bg"])[0]
     diagbg = _lerp_hex(bg0, pal["planet"], 0.10)       # subtle diagonal-cell tint over bg
-    accent = pal["anglelab"]                           # diagonal glyph colour
+    accent = pal["anglelab"]                           # diagonal glyph color
     muted = pal["deg"]
-    # grid gradient: two theme colours, nexus at the bottom-left corner
+    # grid gradient: two theme colors, nexus at the bottom-left corner
     gwarm, gcool = pal["aHard"], pal["aSoft"]
     if theme in _GRID_GRAD_REVERSE:                    # perceptual per-theme swap
         gwarm, gcool = gcool, gwarm
@@ -82,7 +82,7 @@ def render_aspect_grid_svg(chart: dict, theme: str = "light", order=None,
 
     # gradient DIRECTION (pass one): warm nexus pinned at the bottom-left corner,
     # radiating perpendicular to the symbol diagonal toward the top-right. The axis
-    # runs along (1,-1), so iso-colour bands are straight lines PARALLEL to the symbol
+    # runs along (1,-1), so iso-color bands are straight lines PARALLEL to the symbol
     # diagonal; the cool 100% stop-band lands exactly on the line through the symbols'
     # top-right corners (x - y == one cell). End point (X((n+1)/2), Y((n-1)/2)) has
     # x - y == C and BL->end is along (1,-1).

@@ -4,14 +4,14 @@ firdaria.py — the firdaria (Persian time-lord) timeline as a self-contained SV
 
 Firdaria is a temporal sequence, not a zodiac wheel, so it renders as a horizontal
 timeline: a top row of major planetary periods and a bottom row of their sub-periods,
-each segment coloured by its ruling planet, with a marker at the current age. Input is
+each segment colored by its ruling planet, with a marker at the current age. Input is
 the chart dict openephem's ``assemble()`` returns; it must carry a ``firdaria`` block
 (openephem adds one when given ``firdaria_as_of=``). The table companion is trivially
 built from the same block.
 
-Planet identity is carried by the glyph on each segment (and the legend); colour is a
+Planet identity is carried by the glyph on each segment (and the legend); color is a
 supporting cue — nine categories can't all be maximally distinct, so the glyph is the
-primary identifier (which also covers colour-vision-deficient and print cases).
+primary identifier (which also covers color-vision-deficient and print cases).
 """
 
 from __future__ import annotations
@@ -25,10 +25,10 @@ _SIGNS = ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorp
           "Sagittarius", "Capricorn", "Aquarius", "Pisces")
 _GLYPH = {"Sun": "☉", "Moon": "☽", "Mercury": "☿", "Venus": "♀", "Mars": "♂",
           "Jupiter": "♃", "Saturn": "♄", "North Node": "☊", "South Node": "☋"}
-# The seven classical planets take theme-derived lord colours — the same `theme_lord_colors`
+# The seven classical planets take theme-derived lord colors — the same `theme_lord_colors`
 # the decennials timeline/chart use, in the same Chaldean order, so a planet reads the SAME
-# colour across every renderer and the whole suite recolours together per theme. The two nodes
-# keep fixed identity colours (they are not lords on the ramp). Glyph labels carry identity
+# color across every renderer and the whole suite recolors together per theme. The two nodes
+# keep fixed identity colors (they are not lords on the ramp). Glyph labels carry identity
 # regardless — nine categories can't all be maximally distinct (checked with the dataviz validator).
 _CHALDEAN = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"]
 _NODE_COLOR = {"North Node": "#0e8d92", "South Node": "#a9782f"}
@@ -98,7 +98,7 @@ def _sub_segments(fd: dict, max_age: float):
 def _chart_style(chart: dict, fd: dict, *, theme: str, size: int, title: str,
                  max_age: int, sub_style: str = "ticks", layout: str = "annulus") -> str:
     """Roll the firdaria major/sub sequence onto the annual-profection wheel: age cells take
-    the major lord's colour and the sub lord's glyph, on the shared natal-chart core."""
+    the major lord's color and the sub lord's glyph, on the shared natal-chart core."""
     if not chart.get("profections"):
         raise ValueError("the firdaria chart style draws on the annual-profection wheel, so the "
                          "chart also needs a 'profections' block — assemble with both "
@@ -151,7 +151,7 @@ def render_firdaria_svg(chart: dict, *, theme: str = "light", max_age: float = 8
         raise ValueError("style must be 'timeline' or 'chart'")
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])
     ink, bg, muted, line = pal["planet"], pal["bg"][0], pal["deg"], pal["cusp"]
-    col_map = {**theme_lord_colors(theme, _CHALDEAN), **_NODE_COLOR}   # per-theme lord colours
+    col_map = {**theme_lord_colors(theme, _CHALDEAN), **_NODE_COLOR}   # per-theme lord colors
     cur_age = fd.get("age")                           # whole years, for the subtitle text
     # the marker / current outline track the actual as-of date (a fractional age)
     mark_age = cur_age

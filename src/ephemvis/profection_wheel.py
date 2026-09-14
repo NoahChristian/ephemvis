@@ -29,7 +29,7 @@ _HOUSE_SHORT = ("Asc", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
 _DOMICILE = ("Mars", "Venus", "Mercury", "Moon", "Sun", "Mercury",
              "Venus", "Mars", "Jupiter", "Saturn", "Saturn", "Jupiter")
 # Chaldean order — the list firdaria/decennials pass to theme_lord_colors, so a planet keeps its
-# colour across the whole time-lord suite (the profection rim uses the same mapping).
+# color across the whole time-lord suite (the profection rim uses the same mapping).
 _LORD_ORDER = ("Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon")
 _CLASSICAL = ("Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn")
 _MODERN_EXTRA = ("Uranus", "Neptune", "Pluto")
@@ -96,7 +96,7 @@ def _hsl2hex(h, s, lum):
 
 
 def _distinct_from_ramp(stops, n):
-    """Return ``n`` lord colours drawn from a theme ramp: hues picked farthest-point along
+    """Return ``n`` lord colors drawn from a theme ramp: hues picked farthest-point along
     the ramp (so they keep the theme's character), then their lightness staggered evenly so
     the bands stay legible even when the ramp is narrow."""
     if n <= 0:
@@ -151,9 +151,9 @@ def _resolve_planets(planets):
 
 
 def theme_lord_colors(theme, names):
-    """Theme-derived categorical colours for a set of lords, using the same derivation the
+    """Theme-derived categorical colors for a set of lords, using the same derivation the
     chart wheel uses (hue from the theme ramp, lightness staggered) — so any other view
-    (e.g. the horizontal timeline) can colour the same lords identically."""
+    (e.g. the horizontal timeline) can color the same lords identically."""
     pal = _adapt(PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"]))
     return dict(zip(names, _distinct_from_ramp(pal["heat"], len(names)), strict=True))
 
@@ -209,7 +209,7 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
     ``layout`` is ``'annulus'`` (default — the age bands as concentric rings) or
     ``'spiral'`` — the same bands unrolled into one continuous expanding coil, each
     12-year turn abutting the next, the natal hub and sign rim unchanged. ``'spiral'``
-    is purely a layout of the band region; colouring, glyphs, sub-periods and the
+    is purely a layout of the band region; coloring, glyphs, sub-periods and the
     profection highlight are identical to ``'annulus'``.
     Raises ``ValueError`` if the chart has no ``profections`` block or no Ascendant.
 
@@ -231,21 +231,21 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
     tl = timelord or {}
     tl_roles = {r["name"]: r.get("role", "major") for r in tl.get("ring_bodies", [])}
     tl_ring = pal["title"]                    # the time-lord ring, distinct from the accent
-    # A time-lord may colour the annuli by the ruling lord. The lord palette is derived
-    # from THIS theme's ramp (so every theme codes the lords in its own colours). We pick
-    # the lords' colours by farthest-point selection along the ramp, so they are as
-    # mutually distinct as that ramp allows (a narrow ramp simply yields closer colours).
+    # A time-lord may color the annuli by the ruling lord. The lord palette is derived
+    # from THIS theme's ramp (so every theme codes the lords in its own colors). We pick
+    # the lords' colors by farthest-point selection along the ramp, so they are as
+    # mutually distinct as that ramp allows (a narrow ramp simply yields closer colors).
     lord_names = tl.get("lord_names") or []
     major_by_age = tl.get("major_by_age") or []
     glyph_by_age = tl.get("glyph_by_age") or []      # the per-year sub-lord (glyph + stripe)
-    # A technique may supply its own colour and glyph maps (firdaria's two nodes have fixed
-    # identity colours; zodiacal releasing colours by element and glyphs by sign) — otherwise
-    # the lords take farthest-point ramp colours and the classical planet glyphs.
+    # A technique may supply its own color and glyph maps (firdaria's two nodes have fixed
+    # identity colors; zodiacal releasing colors by element and glyphs by sign) — otherwise
+    # the lords take farthest-point ramp colors and the classical planet glyphs.
     lord_col = tl.get("lord_colors") or dict(
         zip(lord_names, _distinct_from_ramp(pal["heat"], len(lord_names)), strict=True))
     glyph_map = tl.get("glyph_map") or PLANET_GLYPHS
 
-    def cell_fill(a):                        # major-lord colour if given, else age heatmap
+    def cell_fill(a):                        # major-lord color if given, else age heatmap
         if a < len(major_by_age) and major_by_age[a] in lord_col:
             return lord_col[major_by_age[a]]
         return _ramp_at(pal["heat"], a / emax)
@@ -262,8 +262,8 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
     emax = nring * 12 - 1                 # complete the outer ring
     has_glyphs = bool(tl.get("glyph_by_age"))
     has_legend = bool(tl.get("legend") or lord_names)
-    # Plain annual wheel (no time-lord overlay): colour each sign's rim arc by its Lord of the Year
-    # (the sign's domicile ruler), with a lord-colour legend + the age heatmap gradient beneath it.
+    # Plain annual wheel (no time-lord overlay): color each sign's rim arc by its Lord of the Year
+    # (the sign's domicile ruler), with a lord-color legend + the age heatmap gradient beneath it.
     show_lords = not timelord
     dom_col = theme_lord_colors(theme, _LORD_ORDER) if show_lords else {}
     s = size / 760.0                     # scale factor: every px below scales with size (the
@@ -294,7 +294,7 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
                68 + (len(legend_rows) - 1) * 24 if has_legend else 22) * s)
     height = size + footer
     cx = cy = size / 2.0
-    base = asc_idx * 30.0 + 15.0          # centre the 1st sign at 9 o'clock
+    base = asc_idx * 30.0 + 15.0          # center the 1st sign at 9 o'clock
     # Locked outer split (share of R_out): inner white ring 30% · annuli 60% · sign rim 10% —
     # shared by the plain annual wheel and the time-lord chart, so the whole wheel is one size.
     R_out = size * 0.478
@@ -303,13 +303,13 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
     R_sign_in = R_out * 0.905     # sign rim ~90% → 100%
     sign_fs, planet_fs = 22 * s, 18 * s
     # Inside the inner ring, three stacked bands tile it (hub 22% / house numbers 35% / natal
-    # planets = the remaining 43%), with one merged house ring and centred numbers — shared by
+    # planets = the remaining 43%), with one merged house ring and centered numbers — shared by
     # the plain annual wheel and the time-lord chart so both inner hubs are identical.
     hub_pct, house_pct = 0.22, 0.35
     R_hub = a_in * hub_pct
     R_mid = a_in * (hub_pct + house_pct)      # house | planet boundary
-    R_house = (R_hub + R_mid) / 2.0           # house numbers centred in the merged ring
-    R_planet = (R_mid + a_in) / 2.0           # natal planets centred in the planet band
+    R_house = (R_hub + R_mid) / 2.0           # house numbers centered in the merged ring
+    R_planet = (R_mid + a_in) / 2.0           # natal planets centered in the planet band
     R_sign = (R_out + R_sign_in) / 2.0
     bw = (a_out - a_in) / nring
 
@@ -471,7 +471,7 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
             P.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
                      f'stroke="{pal["grid"]}" stroke-width="{_n(1*s)}"/>')
 
-    # age numbers — baseline toward centre; 2nd..6th flipped to read upright. When a
+    # age numbers — baseline toward center; 2nd..6th flipped to read upright. When a
     # time-lord's per-age lord series is supplied, each cell also carries that year's
     # lord glyph (the age annuli become the technique's timeline — the "Gantt rolled on").
     # age number — the same dynamic size in both wheels (bw*0.56, capped 15.5)
@@ -484,8 +484,8 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
         # Underline the digit's foot to fix which end is down. It must be an explicit <line>:
         # CSS `text-underline-offset` is a no-op on SVG <text> in Chromium (verified in both
         # Chrome and Edge — the underline never moves), so a drawn rule is the only placeable
-        # one. `dcx` is the digit's centre (= ax for a bare number, shifted left when a glyph
-        # follows it); a band-colour knockout sits behind so a grid line / tick can't cross it.
+        # one. `dcx` is the digit's center (= ax for a bare number, shifted left when a glyph
+        # follows it); a band-color knockout sits behind so a grid line / tick can't cross it.
         # Shared by the plain age wheel and the time-lord (glyph) overlay so they never diverge.
         if a not in (6, 9):
             return
@@ -516,22 +516,22 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
                 # one line per cell: "year glyph" (number + its lord glyph, side by side)
                 gl = (f'<tspan font-family="{_SYM}" font-size="{glyph_fs:.0f}" dx="2"> '
                       f'{_esc(glyph_map.get(name, name[:2]))}︎</tspan>') if name else ""
-                # knockout halo in the band's own colour: the number+glyph carve a moat of
-                # band colour around themselves, breaking any sub-period tick that would
+                # knockout halo in the band's own color: the number+glyph carve a moat of
+                # band color around themselves, breaking any sub-period tick that would
                 # otherwise cross (and merge with) the glyph. paint-order draws it behind.
                 P.append(f'<text x="{ax:.1f}" y="{ay:.1f}" text-anchor="middle" '
                          f'dominant-baseline="central" transform="rotate({rot:.1f} {ax:.1f} {ay:.1f})" '
                          f'fill="{txt}" font-size="{gfs:.0f}" paint-order="stroke" stroke="{cf}" '
                          f'stroke-width="{_n(3.4*s)}" stroke-linejoin="round">'
                          f'<tspan font-family="{_UI}" font-weight="{weight}">{a}</tspan>{gl}</text>')
-                # digit sits at the left of the centred "N glyph" string, so its centre is half
+                # digit sits at the left of the centered "N glyph" string, so its center is half
                 # the glyph-part's advance (≈0.445·glyph_fs) left of ax — pixel-verified.
                 _digit_underline(a, ax, ay, rot, gfs, ax - 0.445 * glyph_fs, txt, cf)
             else:
                 P.append(f'<text x="{ax:.1f}" y="{ay:.1f}" text-anchor="middle" dominant-baseline="central" '
                          f'transform="rotate({rot:.1f} {ax:.1f} {ay:.1f})" fill="{txt}" '
                          f'font-family="{_UI}" font-size="{fs:.0f}" font-weight="{weight}">{a}</text>')
-                _digit_underline(a, ax, ay, rot, fs, ax, txt, cf)   # bare number → centred on ax
+                _digit_underline(a, ax, ay, rot, fs, ax, txt, cf)   # bare number → centered on ax
 
     # current age cell outline
     if age // 12 < nring:
@@ -561,7 +561,7 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
             col = "#ffffff" if (i == prof_sidx and _lum(pal["accent"]) < 150) else pal["sign"]
         P.append(f'<text x="{gx:.1f}" y="{gy:.1f}" text-anchor="middle" dominant-baseline="central" '
                  f'fill="{col}" font-family="{_SYM}" font-size="{sign_fs}">{SIGN_GLYPHS[i]}︎</text>')
-    # house labels — short ("Asc 2 3…12"), centred and bold in the merged ring, in both modes
+    # house labels — short ("Asc 2 3…12"), centered and bold in the merged ring, in both modes
     # (ordinals overran the merged ring); light so they don't fight the annuli.
     h_labels = _HOUSE_SHORT
     h_col = pal["sub"]
@@ -604,8 +604,8 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
                  f'font-size="{_n(19*s)}" font-weight="600">{_esc(line)}</text>')
 
     if show_lords:
-        # two stacked legends in the footer: Lord of the Year (the rim colours), then the age
-        # heatmap gradient (the coil/annuli colours) below it.
+        # two stacked legends in the footer: Lord of the Year (the rim colors), then the age
+        # heatmap gradient (the coil/annuli colors) below it.
         ex = 22.0 * s
         P.append(f'<text x="{ex:.1f}" y="{size + 15*s:.0f}" fill="{pal["sub"]}" font-family="{_UI}" '
                  f'font-size="{_n(11.5*s)}" letter-spacing="1" font-weight="700">LORD OF THE YEAR</text>')
@@ -631,7 +631,7 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
                  f'font-size="{_n(12*s)}" text-anchor="end">{emax}</text>')
     elif legend_items:
         # footer band below the wheel: an optional caption (e.g. the current lords) then the
-        # lord-colour legend, wrapped to as many rows as the wheel width needs (7 planets fit
+        # lord-color legend, wrapped to as many rows as the wheel width needs (7 planets fit
         # one row; firdaria's 9 lords with the node names take two)
         fy = size + 16 * s
         caption = tl.get("footer_caption")

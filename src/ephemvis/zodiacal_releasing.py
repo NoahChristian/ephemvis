@@ -4,10 +4,10 @@ zodiacal_releasing.py — the Zodiacal Releasing (Valens) timeline as a self-con
 
 Zodiacal Releasing is a nested temporal sequence, not a zodiac wheel, so it renders as a
 horizontal timeline: a top row of level-1 (L1) periods and a bottom row of their level-2
-(L2) sub-periods, each segment coloured by the *element* of its sign (Fire/Earth/Air/Water
-— four categories separate cleanly for colour-vision deficiency) and carrying the sign's
+(L2) sub-periods, each segment colored by the *element* of its sign (Fire/Earth/Air/Water
+— four categories separate cleanly for color-vision deficiency) and carrying the sign's
 glyph as the primary identifier. Each period's **angularity** from the Lot is shown as a
-top accent bar: a solid ink bar for *angular* (a peak), a two-colour *dotted* bar (ink
+top accent bar: a solid ink bar for *angular* (a peak), a two-color *dotted* bar (ink
 interleaved with a light tone, so it stays legible on the dark Earth/Water bands) for
 *succedent*, nothing for *cadent* — pattern, not opacity, carrying the "less angular" distinction. A Loosing-of-the-Bond
 jump is marked where it occurs, its weight matching its structural depth: an **L1** loosing is
@@ -34,9 +34,9 @@ _GLYPH = {"Aries": "♈", "Taurus": "♉", "Gemini": "♊", "Cancer": "♋", "Le
 _ELEMENT = ["Fire", "Earth", "Air", "Water"]      # by sign_index % 4 (Aries=Fire)
 _EL_SIGNS = {"Fire": ("Aries", "Leo", "Sagittarius"), "Earth": ("Taurus", "Virgo", "Capricorn"),
              "Air": ("Gemini", "Libra", "Aquarius"), "Water": ("Cancer", "Scorpio", "Pisces")}
-# The four elements take theme-derived colours (the shared theme_lord_colors derivation, four
-# categories off each theme's ramp) so releasing recolours per theme like the rest of the suite.
-# The sign glyph on every band — and in the legend — is the primary identifier; colour supports.
+# The four elements take theme-derived colors (the shared theme_lord_colors derivation, four
+# categories off each theme's ramp) so releasing recolors per theme like the rest of the suite.
+# The sign glyph on every band — and in the legend — is the primary identifier; color supports.
 _SYM = "'Segoe UI Symbol','Noto Sans Symbols2','Apple Symbols',system-ui,sans-serif"
 _UI = "system-ui,-apple-system,Segoe UI,Roboto,sans-serif"
 
@@ -69,7 +69,7 @@ def _ord(iso: str) -> int:
 
 
 def _l1_element_by_age(zr: dict, ages) -> list:
-    """The element of the level-1 releasing sign at each integer age (band colour)."""
+    """The element of the level-1 releasing sign at each integer age (band color)."""
     tl = zr.get("timeline") or []
     out: list = []
     for a in ages:
@@ -107,7 +107,7 @@ def _l2_segments(zr: dict, max_age: float):
 def _chart_style(chart: dict, zr: dict, *, theme: str, size: int, title: str,
                  max_age: int, sub_style: str = "ticks", layout: str = "annulus") -> str:
     """Roll releasing onto the annual-profection wheel: each age cell takes the L1 sign's
-    element colour and the L2 sign's glyph, on the shared natal-chart core. (Angularity /
+    element color and the L2 sign's glyph, on the shared natal-chart core. (Angularity /
     peak / loosing-of-the-bond markers stay on the horizontal timeline for now.)"""
     if not chart.get("profections"):
         raise ValueError("the zodiacal-releasing chart style draws on the annual-profection "
@@ -117,10 +117,10 @@ def _chart_style(chart: dict, zr: dict, *, theme: str, size: int, title: str,
     asc_sign = SIGNS[int(asc // 30) % 12] if asc is not None else ""
     nring = max_age // 12 + 1
     ages = range(nring * 12)
-    major_by_age = _l1_element_by_age(zr, ages)                 # band colour = L1 element
+    major_by_age = _l1_element_by_age(zr, ages)                 # band color = L1 element
     l2 = _l2_segments(zr, nring * 12)
     glyph_by_age = glyphs_by_year([(a0, a1, SIGNS[si]) for a0, a1, si in l2], nring * 12)
-    sub_segments = [(a0, a1, _element(si)) for a0, a1, si in l2]   # sub colour = L2 element
+    sub_segments = [(a0, a1, _element(si)) for a0, a1, si in l2]   # sub color = L2 element
     glyph_map = dict(_GLYPH)          # L2 sign name -> its glyph (cells); legend is element+swatch
     cur = zr.get("current", {})
     path = " › ".join(cur[lvl]["sign"] for lvl in ("l1", "l2", "l3", "l4") if lvl in cur)
@@ -149,7 +149,7 @@ def render_zodiacal_releasing_svg(chart: dict, *, theme: str = "light",
 
     ``style`` is ``"timeline"`` (default; the horizontal L1/L2 bars with angularity and
     loosing-of-the-bond markers) or ``"chart"`` (releasing projected onto the natal
-    whole-sign wheel, coloured by element and glyphed by sign). ``theme`` is any key of
+    whole-sign wheel, colored by element and glyphed by sign). ``theme`` is any key of
     :data:`ephemvis.PALETTES` ('auto' -> light). ``max_age`` is the timeline's right edge
     (years); ``size`` is the chart-wheel side; ``layout`` (``"annulus"`` default or
     ``"spiral"``) applies only to ``style="chart"``. Raises ``ValueError`` without a
@@ -166,7 +166,7 @@ def render_zodiacal_releasing_svg(chart: dict, *, theme: str = "light",
         raise ValueError("style must be 'timeline' or 'chart'")
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])
     ink, bg, muted, line = pal["planet"], pal["bg"][0], pal["deg"], pal["cusp"]
-    el_col = theme_lord_colors(theme, _ELEMENT)       # per-theme element colours (match the suite)
+    el_col = theme_lord_colors(theme, _ELEMENT)       # per-theme element colors (match the suite)
     cur_age = zr.get("age")                           # whole years, for the subtitle text
     # the marker / current outline track the actual as-of date (a fractional age)
     mark_age = cur_age
@@ -233,8 +233,8 @@ def render_zodiacal_releasing_svg(chart: dict, *, theme: str = "light",
             P.append(f'<rect x="{xa+1:.1f}" y="{y+1}" width="{xb-xa-2:.1f}" height="{bh-2}" '
                      f'fill="none" stroke="{ink}" stroke-width="2.4" rx="2"/>')
         # angularity accent bar along the top edge, drawn on top: a *solid* ink bar = angular (a
-        # peak), a two-colour *dotted* bar = succedent, nothing = cadent. The succedent dots
-        # interleave ink with the light band-border colour (no transparent gaps), so one colour
+        # peak), a two-color *dotted* bar = succedent, nothing = cadent. The succedent dots
+        # interleave ink with the light band-border color (no transparent gaps), so one color
         # always contrasts — legible on the dark Earth/Water bands where an ink-only dash blends.
         if angularity == "angular":
             P.append(f'<rect x="{xa+1.5:.1f}" y="{y}" width="{max(xb-xa-3,0):.1f}" height="3.5" '
@@ -304,7 +304,7 @@ def render_zodiacal_releasing_svg(chart: dict, *, theme: str = "light",
         P.append(f'<text x="{lx+19:.1f}" y="{ly}" fill="{muted}" font-size="13.5">{el}{gtag}</text>')
         lx += 40 + len(el) * 7.6 + 56
     lx += 6
-    # angularity, most to least active: angular (a peak) = solid bar, succedent = two-colour
+    # angularity, most to least active: angular (a peak) = solid bar, succedent = two-color
     # dotted bar (ink + band-border, legible on any band), cadent = none.
     P.append(f'<rect x="{lx:.1f}" y="{ly-9}" width="14" height="5" rx="1.5" fill="{ink}"/>')
     P.append(f'<text x="{lx+19:.1f}" y="{ly}" fill="{muted}" font-size="13.5">angular (peak)</text>')
