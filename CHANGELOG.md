@@ -6,6 +6,17 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.2] — 2026-09-14
+
+### Added
+- **Intercepted signs shown on unequal house wheels.** In a quadrant/unequal chart (Placidus,
+  Koch, Campanus, Regiomontanus, Porphyry) a sign can hold no house cusp — it falls entirely
+  inside one house while its opposite sign holds two. `render_svg` now draws each such
+  intercepted sign faded at its zodiacal midpoint, between its two neighbouring cusp signs (no
+  degree readout, since it owns no cusp), with an "…intercepted (no house cusp)" tooltip.
+  Detected from the cusp data, not a house-system name list, so whole-sign and equal charts —
+  which always place exactly one cusp per sign — are unaffected.
+
 ## [0.3.1] — 2026-09-14
 
 ### Fixed
@@ -214,6 +225,7 @@ Initial public release — themeable SVG rendering for openephem chart data.
 - CI gates: pytest + **SVG snapshot tests** (byte-stable across Linux/Windows) +
   ruff + mypy, on Python 3.10–3.13.
 
+[0.3.2]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.2
 [0.3.1]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.1
 [0.3.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.0
 [0.2.5]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.2.5

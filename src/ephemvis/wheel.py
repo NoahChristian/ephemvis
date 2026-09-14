@@ -271,6 +271,9 @@ def _style(pal, size=760):
         (".ring", "fill:none;stroke:url(#ringgrad);stroke-width:%s" % _n(3.4 * k)),
         (".tick", "stroke:%s;stroke-width:%s" % (pal["tick"], _n(3.4 * k))),
         (".sign", "fill:%s;font:600 %spx %s" % (pal["sign"], _n(f_sign), sym)),
+        # an intercepted sign (unequal systems): present on the ring but holding no
+        # house cusp, so drawn faded and without a degree readout
+        (".sign-icept", "fill:%s;font:600 %spx %s;opacity:0.5" % (pal["sign"], _n(f_sign), sym)),
         (".cusp", "stroke:%s;stroke-width:%s" % (pal["cusp"], _n(2 * k))),
         (".cusp-angle", "stroke:%s;stroke-width:%s" % (pal["cuspA"], _n(2.4 * k))),
         (".hdiv", "stroke:%s;stroke-width:%s" % (pal["hdiv"], _n(1.3 * k))),
@@ -526,6 +529,22 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
                          f'dominant-baseline="central" text-anchor="middle">{m:02d}′</text>')
                 P.append(f'<text x="{scx:.1f}" y="{scy:.1f}" class="cuspsec" '
                          f'dominant-baseline="central" text-anchor="middle">{s:02d}″</text>')
+        # Intercepted signs (unequal/quadrant systems): a sign holding no house cusp
+        # sits entirely inside one house. Show its glyph at the sign's own midpoint —
+        # between its two neighbouring cusp signs on the ring — faded and with no degree
+        # readout, since it owns no cusp. Whole-sign has one cusp per sign, so none here.
+        if label_cusps:
+            placed = {_dms_round(c)[0] for c in cusps if c is not None and c == c}
+            rr = (r_zod_in + r_out) / 2.0
+            for si in range(12):
+                if si in placed:
+                    continue
+                gx, gy = pol(rr, si * 30.0 + 15.0)
+                glyph = SIGN_ABBR[si] if glyphs else SIGN_GLYPHS[si] + "︎"
+                htxt = "%s — intercepted (no house cusp)" % _SIGNS[si]
+                P.append(f'<text x="{gx:.1f}" y="{gy:.1f}" class="sign-icept" '
+                         f'dominant-baseline="central" text-anchor="middle">'
+                         f'<title>{_esc(htxt)}</title>{glyph}</text>')
         # Non-whole-sign only: Asc/MC as a guide OUTSIDE the ring (their exact positions are
         # already published on the rim as cusp labels). Whole-sign draws them inside among the
         # planets instead. The trailing "C" is half-height, baseline-aligned (not descending).
