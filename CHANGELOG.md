@@ -6,6 +6,8 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.1] — 2026-09-16
+
 ### Added
 - **`render_svg(..., show_aspects=True)`** - the single wheel's aspect lines can now be
   switched off, matching `show_profection` beside it and the bi-wheel's three
@@ -266,6 +268,7 @@ Initial public release — themeable SVG rendering for openephem chart data.
 - CI gates: pytest + **SVG snapshot tests** (byte-stable across Linux/Windows) +
   ruff + mypy, on Python 3.10–3.13.
 
+[0.5.1]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.5.1
 [0.5.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.5.0
 [0.3.2]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.2
 [0.3.1]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.1
