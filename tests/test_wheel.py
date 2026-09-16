@@ -31,6 +31,22 @@ def test_svg_wellformed():
     assert "planet" in s and "aspect" in s and "sign" in s
 
 
+def test_svg_show_aspects_toggle():
+    chart = _mock_chart()
+    on = wheel.render_svg(chart)
+    off = wheel.render_svg(chart, show_aspects=False)
+    assert on.count('class="aspect"') == len(chart["aspects"])
+    assert 'class="aspect"' not in off
+    # everything else still draws: this suppresses one layer, not the wheel
+    assert "planet" in off and "sign" in off
+    # and it is a drawing choice, not an edit to the caller's chart
+    assert len(chart["aspects"]) == 3
+
+
+def test_svg_show_aspects_off_is_wellformed():
+    ET.fromstring(wheel.render_svg(_mock_chart(), show_aspects=False))
+
+
 def test_svg_no_nan_coordinates():
     s = wheel.render_svg(_mock_chart())
     assert not re.search(r'"[-\d.]*nan[-\d.]*"', s.lower())

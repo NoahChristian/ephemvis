@@ -359,7 +359,7 @@ def _esc(s: str) -> str:
 
 def render_svg(chart: dict, size: int = 760, theme: str = "auto",
                text_labels: bool = False, title: str | None = None,
-               show_profection: bool = True) -> str:
+               show_profection: bool = True, show_aspects: bool = True) -> str:
     cx = cy = size / 2.0
     r_out = size * 0.45              # outer edge (leaves a margin for AC/MC outside)
     r_zod_in = r_out * 0.890         # inner edge of the zodiac band (signs live here); matches the
@@ -675,7 +675,11 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
         hub_pts[name] = pol(r_hub, lon)
 
     # --- aspects (lines across the hub) ---
-    for asp in chart.get("aspects") or []:
+    # Switchable like the profection overlay above and the bi-wheel's three
+    # aspect layers, so an uncluttered wheel does not require handing in a chart
+    # that claims to have no aspects at all.
+    aspects = (chart.get("aspects") or []) if show_aspects else []
+    for asp in aspects:
         a, b = asp.get("a"), asp.get("b")
         if a in hub_pts and b in hub_pts:
             cat = ASPECT_CAT.get(asp.get("aspect"), "soft")

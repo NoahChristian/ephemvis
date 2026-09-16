@@ -6,6 +6,15 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- **`render_svg(..., show_aspects=True)`** - the single wheel's aspect lines can now be
+  switched off, matching `show_profection` beside it and the bi-wheel's three
+  `show_*_aspects` switches. The single wheel was the only renderer whose aspect layer
+  could not be suppressed, which left callers emptying `chart["aspects"]` to get an
+  uncluttered wheel - a workaround that conflates "no aspects were computed" with "do
+  not draw them", and misinforms anything else reading that key off the same dict.
+  Defaults to `True`, so existing output is unchanged.
+
 ## [0.5.0] — 2026-09-15
 
 ### Added
