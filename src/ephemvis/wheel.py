@@ -15,6 +15,20 @@ from __future__ import annotations
 
 import math
 
+from . import _fontdata
+
+# Deterministic glyph rendering: the astrology glyphs are embedded (subset OFL Noto fonts, via
+# the astroglyphs_2K toolkit) so charts render identically regardless of the viewer's fonts.
+# Set EMBED_FONTS = False to skip the embed and fall back to the viewer's system fonts.
+EMBED_FONTS = True
+SYM_FAMILY = _fontdata.SYM_FAMILY    # font-family stack for symbol glyphs
+TXT_FAMILY = _fontdata.TXT_FAMILY    # font-family stack for numerals / labels / ℞ / ° / ′ / ″
+
+
+def font_face_css() -> str:
+    """The ``@font-face`` ``<style>`` for the embedded glyphs, or ``""`` when EMBED_FONTS is off."""
+    return _fontdata.font_face_css() if EMBED_FONTS else ""
+
 SIGN_GLYPHS = ["♈", "♉", "♊", "♋", "♌", "♍",
                "♎", "♏", "♐", "♑", "♒", "♓"]
 SIGN_ABBR = ["Ar", "Ta", "Ge", "Cn", "Le", "Vi", "Li", "Sc", "Sg", "Cp", "Aq", "Pi"]
@@ -251,7 +265,8 @@ def _defs(pal):
 
 
 def _style(pal, size=760):
-    sym = '"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif'
+    sym = SYM_FAMILY                 # embedded symbol family (falls back to system symbol fonts)
+    txt = TXT_FAMILY                 # embedded text family (falls back to system-ui)
     # Fonts and stroke widths scale with `size`. They used to be hardcoded px tuned for one
     # size, so at any smaller size the glyphs bloated relative to the (size-scaled) geometry
     # and the degree labels collided with their glyphs — a scaling bug present since 0.1.0.
@@ -279,35 +294,35 @@ def _style(pal, size=760):
         (".hdiv", "stroke:%s;stroke-width:%s" % (pal["hdiv"], _n(1.3 * k))),
         (".leader", "stroke:%s;stroke-width:%s;stroke-dasharray:1 5;stroke-linecap:round"
          % (pal["leader"], _n(2 * k))),
-        (".housenum", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["housenum"], _n(f_hnum))),
-        (".anglelab", "fill:%s;font:800 %spx system-ui,sans-serif" % (pal["anglelab"], _n(f_angle))),
+        (".housenum", "fill:%s;font:600 %spx %s" % (pal["housenum"], _n(f_hnum), txt)),
+        (".anglelab", "fill:%s;font:800 %spx %s" % (pal["anglelab"], _n(f_angle), txt)),
         (".ac-sm", "font-size:0.5em"),
         (".pmark", "stroke:%s;stroke-width:%s" % (pal["pmark"], _n(1.6 * k))),
         (".planet", "fill:%s;font:600 %spx %s" % (pal["planet"], _n(f_planet), sym)),
-        (".deg", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg))),
+        (".deg", "fill:%s;font:600 %spx %s" % (pal["deg"], _n(f_deg), txt)),
         (".deg-rx", "fill:%s" % pal["degRx"]),
         # cusp position marks on the outer ring (non-whole-sign systems): the cusp's whole
         # degree and arc-minute flanking the sign glyph that sits on the house-cusp axis.
-        (".cuspdeg", "fill:%s;font:700 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg * 0.92))),
-        (".cuspmin", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg * 0.76))),
-        (".cuspsec", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg * 0.64))),
+        (".cuspdeg", "fill:%s;font:700 %spx %s" % (pal["deg"], _n(f_deg * 0.92), txt)),
+        (".cuspmin", "fill:%s;font:600 %spx %s" % (pal["deg"], _n(f_deg * 0.76), txt)),
+        (".cuspsec", "fill:%s;font:600 %spx %s" % (pal["deg"], _n(f_deg * 0.64), txt)),
         # sign glyph shown inline in a planet's position readout (the sign the planet is in);
         # goes red with the degree/minute when the body is retrograde
         (".signn", "fill:%s;font:600 %spx %s" % (pal["sign"], _n(f_deg * 1.15), sym)),
         (".signn-rx", "fill:%s" % pal["degRx"]),
         (".aspect", "stroke-width:%s;fill:none;opacity:.85" % _n(1.1 * k)),
-        (".title", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["title"], _n(f_title))),
+        (".title", "fill:%s;font:600 %spx %s" % (pal["title"], _n(f_title), txt)),
         # profection: annual sign band (filled) + Lord-of-the-Year ring (tagged "TL").
         # The month/day cadences read in the bottom-left key, not as arcs across the wheel
         # (an unlabelled arc through a sign glyph is meaningless to a casual viewer).
         (".prof-band", "fill:%s;fill-opacity:.16;stroke:%s;stroke-opacity:.85;stroke-width:%s"
          % (pal["prof"], pal["prof"], _n(2 * k))),
         (".prof-ruler", "fill:none;stroke:%s;stroke-opacity:.9;stroke-width:%s" % (pal["prof"], _n(2.4 * k))),
-        (".prof-tl", "fill:%s;font:800 %spx system-ui,sans-serif" % (pal["prof"], _n(f_deg * 0.86))),
-        (".prof-key", "fill:%s;font:600 %spx system-ui,sans-serif" % (pal["deg"], _n(f_deg))),
+        (".prof-tl", "fill:%s;font:800 %spx %s" % (pal["prof"], _n(f_deg * 0.86), txt)),
+        (".prof-key", "fill:%s;font:600 %spx %s" % (pal["deg"], _n(f_deg), txt)),
         (".prof-key-em", "fill:%s;font-weight:700" % pal["prof"]),
-        (".prof-key-eyebrow", "fill:%s;font:800 %spx system-ui,sans-serif;letter-spacing:%spx"
-         % (pal["prof"], _n(f_deg * 0.82), _n(1.4 * k))),
+        (".prof-key-eyebrow", "fill:%s;font:800 %spx %s;letter-spacing:%spx"
+         % (pal["prof"], _n(f_deg * 0.82), txt, _n(1.4 * k))),
     ]
     return "<style>" + "".join("%s{%s}" % (s, p) for s, p in rules) + "</style>"
 
@@ -331,11 +346,11 @@ def _dark_media():
 
 
 def _theme_markup(theme, size=760):
-    """Return the <defs> gradients + <style> for a theme (auto = light + dark media)."""
+    """Return the embedded @font-face + <defs> gradients + <style> for a theme (auto = light + dark)."""
     if theme == "auto":
-        return _defs(_L) + _style(_L, size) + _dark_media()
+        return font_face_css() + _defs(_L) + _style(_L, size) + _dark_media()
     pal = PALETTES.get(theme, _L)
-    return _defs(pal) + _style(pal, size)
+    return font_face_css() + _defs(pal) + _style(pal, size)
 
 
 def _esc(s: str) -> str:
@@ -347,7 +362,8 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
                show_profection: bool = True) -> str:
     cx = cy = size / 2.0
     r_out = size * 0.45              # outer edge (leaves a margin for AC/MC outside)
-    r_zod_in = r_out * 0.862         # inner edge of the zodiac band (signs live here)
+    r_zod_in = r_out * 0.890         # inner edge of the zodiac band (signs live here); matches the
+    #                                  bi-wheel's outer ring width (~20% thinner than the old 0.862)
     r_house = r_zod_in               # house-cusp lines reach the zodiac inner edge
     r_tick_in = r_zod_in * 0.905     # inner end of the planet pointer ticks
     r_hnum_out = r_zod_in * 0.43     # house-ring outer = former aspect-circle radius
@@ -717,18 +733,25 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
     return "\n".join(P)
 
 
-def _spread(items, min_gap=7.0):
+def _spread(items, min_gap=7.0, half_widths=None, pad=0.0):
     """De-collide glyph display angles while preserving zodiacal order. Cut the circle at its
-    widest gap so clusters can open into free space, then push apart ONLY the pairs closer than
-    min_gap, symmetrically (half each). Bodies whose neighbours are already far enough keep their
-    true longitude — no global recenter — so an isolated planet never drifts. A cluster expands
-    evenly about its own centre, cascading into a neighbour only if it genuinely reaches it.
+    widest gap so clusters can open into free space, then push apart ONLY the pairs that would
+    actually collide, symmetrically (half each). Bodies whose neighbours are already far enough
+    keep their true longitude — no global recenter — so an isolated planet never drifts. A cluster
+    expands evenly about its own centre, cascading into a neighbour only if it genuinely reaches it.
+
+    When ``half_widths`` (a ``{name: angular half-width in degrees}`` map, derived from the real
+    glyph metrics) is given, an adjacent pair is separated only until centre-to-centre reaches
+    ``half_widths[a] + half_widths[b] + pad`` — true per-glyph collision spacing, so each glyph
+    stays as near its true longitude as its own width allows (a narrow node barely moves; only a
+    wide glyph pushes). Otherwise the flat ``min_gap`` is used for every pair.
     Returns (name, true_lon, disp)."""
     items = sorted(items, key=lambda t: t[1])
     n = len(items)
     if n < 2:
         return [(nm, lo, lo) for nm, lo in items]
     lons = [lo for _, lo in items]
+    hw = [half_widths.get(nm, min_gap / 2.0) for nm, _ in items] if half_widths is not None else None
     gaps = [(lons[(i + 1) % n] - lons[i]) % 360.0 for i in range(n)]
     s = max(range(n), key=lambda i: gaps[i])          # widest gap -> seam
     order = [(s + 1 + k) % n for k in range(n)]        # chain order from the seam
@@ -742,7 +765,8 @@ def _spread(items, min_gap=7.0):
     for _ in range(400):                              # relax: push only-too-close pairs apart
         moved = False
         for k in range(n - 1):
-            over = min_gap - (u[k + 1] - u[k])
+            need = (hw[order[k]] + hw[order[k + 1]] + pad) if hw is not None else min_gap
+            over = need - (u[k + 1] - u[k])
             if over > 1e-9:
                 u[k] -= over / 2.0
                 u[k + 1] += over / 2.0

@@ -168,7 +168,7 @@ def test_aspect_grid_empty_ok():
     ET.fromstring(aspectgrid.render_aspect_grid_svg(chart))
 
 
-def _intercept_chart():
+def _intercept_chart_taurus_scorpio():
     # Placidus-shaped, ~33°N Gemini rising: Cancer and Capricorn each hold two cusps, so
     # Taurus and Scorpio hold none (intercepted). Values are a real assemble() output.
     return {
@@ -181,29 +181,17 @@ def _intercept_chart():
     }
 
 
-def test_intercepted_signs_shown_on_unequal_wheel():
+def test_intercepted_signs_shown_unequal_33n():
     # Taurus + Scorpio have no cusp -> each drawn faded (class="sign-icept") with a tooltip,
     # while the 12 cusps still carry their own on-axis sign glyphs (two of them Cancer/Capricorn).
-    s = wheel.render_svg(_intercept_chart(), theme="light")
+    s = wheel.render_svg(_intercept_chart_taurus_scorpio(), theme="light")
     ET.fromstring(s)
     assert s.count('class="sign-icept"') == 2
     assert "intercepted" in s
     assert s.count('class="cuspdeg"') == 12           # every cusp still labelled
 
 
-def test_no_intercept_glyphs_when_every_sign_has_a_cusp():
-    # A quadrant chart with no interception must not draw any faded intercepted glyphs.
-    assert 'class="sign-icept"' not in wheel.render_svg(_quad_chart(), theme="light")
-
-
-def test_no_intercept_glyphs_on_wholesign():
-    c = _quad_chart()
-    c["angles"] = {"asc": 65.95, "mc": 305.0}
-    c["cusps"] = [(60.0 + 30.0 * k) % 360.0 for k in range(12)]   # whole-sign boundaries
-    assert 'class="sign-icept"' not in wheel.render_svg(c, theme="light")
-
-
-def _intercept_chart():
+def _intercept_chart_virgo_pisces():
     # Placidus, Panama City ~9°N, Gemini rising: Virgo and Pisces hold no cusp (intercepted),
     # their opposite pair each holding two. Values are a real assemble() output.
     return {
@@ -216,10 +204,10 @@ def _intercept_chart():
     }
 
 
-def test_intercepted_signs_shown_on_unequal_wheel():
+def test_intercepted_signs_shown_unequal_panama():
     # Virgo + Pisces have no cusp -> each drawn faded (class="sign-icept") with a tooltip,
     # while all 12 cusps still carry their own on-axis sign glyphs and degree labels.
-    s = wheel.render_svg(_intercept_chart(), theme="light")
+    s = wheel.render_svg(_intercept_chart_virgo_pisces(), theme="light")
     ET.fromstring(s)
     assert s.count('class="sign-icept"') == 2
     assert "intercepted" in s

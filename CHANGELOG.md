@@ -6,6 +6,38 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-09-15
+
+### Added
+- **Embedded OFL glyph fonts — deterministic rendering everywhere.** Every SVG now inlines
+  its astrology glyphs *and* numerals/labels as `@font-face` data URIs, so a chart renders
+  pixel-identical on any device instead of falling back to whatever symbol font the viewer
+  has. The glyphs are a curated subset of the OFL **Noto** fonts, packaged by the new sibling
+  toolkit [`astroglyphs_2K`](https://github.com/NoahChristian/astroglyphs_2K) and vendored into
+  `ephemvis/_fontdata.py` at build time — ephemvis keeps **zero runtime dependencies**. Font
+  data is SIL Open Font License 1.1 (`NOTICE`, `LICENSES/OFL.txt`); the code stays MIT. Toggle
+  with `ephemvis.wheel.EMBED_FONTS`.
+- **Bi-wheel (double wheel)** — `render_biwheel_svg(inner, outer, …)` overlays two charts
+  on one wheel for comparison (natal + transit, two transits, synastry, returns,
+  progressions). The inner chart (radix) owns the zodiac ring, house cusps and
+  orientation; the outer chart's planets are placed against it on a second band, with a
+  shared divider ring between the two bands (the bands sit symmetric about it and every
+  planet's short true-position tick points to it). Both rings carry the full readout
+  (glyph · degree · sign · minute) in the same order; house dividers run out through both
+  rings. Three switchable aspect layers cross the hub — cross-aspects (inner × outer,
+  bold, on by default) plus each chart's own internal aspects (faint, off by default).
+  The outer chart may be an untimed transit (no houses of its own). The renderer only
+  draws: cross-aspects are supplied as data (openephem 0.3.0's `cross_aspects()`).
+- **Synastry grid** — `render_synastry_grid_svg(inner, outer, cross, …)`, a rectangular
+  cross-aspect matrix (inner bodies down, outer across), coloured by aspect nature, with
+  a gradient folded inward from both corners — two triangular aspectarians folded into
+  one rectangle. The companion tabular view to the bi-wheel.
+- **Bi-wheel spacing from real glyph metrics.** The bi-wheel's per-glyph readout clearance
+  and token widths now come from the embedded font's measured ink bounding boxes and advance
+  widths (`_fontdata.GLYPH_METRICS`) instead of hand-tuned heuristics, so tall glyphs
+  (Saturn/Uranus) reserve exactly the room they need and short ones (the lunar nodes) don't
+  waste it — closing the glyph-vs-readout overlap on the crowded double wheel.
+
 ## [0.3.2] — 2026-09-14
 
 ### Added
@@ -225,6 +257,7 @@ Initial public release — themeable SVG rendering for openephem chart data.
 - CI gates: pytest + **SVG snapshot tests** (byte-stable across Linux/Windows) +
   ruff + mypy, on Python 3.10–3.13.
 
+[0.5.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.5.0
 [0.3.2]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.2
 [0.3.1]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.1
 [0.3.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.0

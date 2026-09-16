@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import math
 
-from .wheel import PALETTES, PLANET_GLYPHS, SIGN_GLYPHS
+from .wheel import PALETTES, PLANET_GLYPHS, SIGN_GLYPHS, SYM_FAMILY, TXT_FAMILY, font_face_css
 
 _SIGNS = ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
           "Sagittarius", "Capricorn", "Aquarius", "Pisces")
@@ -33,8 +33,8 @@ _DOMICILE = ("Mars", "Venus", "Mercury", "Moon", "Sun", "Mercury",
 _LORD_ORDER = ("Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon")
 _CLASSICAL = ("Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn")
 _MODERN_EXTRA = ("Uranus", "Neptune", "Pluto")
-_SYM = "'Segoe UI Symbol','Noto Sans Symbols2','Apple Symbols',system-ui,sans-serif"
-_UI = "system-ui,-apple-system,Segoe UI,Roboto,sans-serif"
+_SYM = SYM_FAMILY        # embedded symbol family (or system fallback)
+_UI = TXT_FAMILY         # embedded text family (or system-ui)
 
 
 def _rgb(h):
@@ -661,6 +661,7 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
                  f'font-size="{_n(12*s)}">0</text>')
         P.append(f'<text x="{lx + lw:.0f}" y="{ly + 24*s:.0f}" fill="{pal["sub"]}" font-family="{_UI}" '
                  f'font-size="{_n(12*s)}" text-anchor="end">{emax}</text>')
+    P.append(font_face_css())
     P.append("</svg>")
     return "\n".join(P)
 

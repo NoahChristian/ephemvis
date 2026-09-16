@@ -176,11 +176,62 @@ from ephemvis import render_vimshottari_svg
 svg = render_vimshottari_svg(chart, style="chart", layout="spiral", theme="meadow")
 ```
 
+## Bi-wheel & synastry
+
+`render_biwheel_svg(inner, outer, …)` draws a **double wheel** — two charts on one
+wheel, for comparing any pair: natal + transit, two transits, synastry
+(compatibility), natal + solar/lunar return, natal + progressed. The **inner** chart
+(the radix) owns the zodiac ring, the house cusps and the orientation; the **outer**
+chart's planets are placed against that same ring on their own band. Between the two
+planet bands sits a shared divider ring — every planet's short true-position tick
+points to it — and the bands sit symmetric about it. Both rings carry the full readout
+(glyph · degree · sign · minute) in the same order. The outer chart may be an untimed
+transit (no houses of its own); only the inner chart needs a house framework.
+
+Three aspect layers cross the hub, each switchable: **cross-aspects** (inner × outer,
+bold, on by default) plus each chart's own internal aspects (faint, off by default).
+Cross-aspects are computed upstream — openephem's `cross_aspects()` returns the list:
+
+```python
+from openephem import resolve, assemble, cross_aspects   # needs ephemvis[compute]
+from ephemvis import render_biwheel_svg, render_synastry_grid_svg
+
+natal   = assemble(resolve(date=(1990, 5, 15), time=(14, 30), place="New York, NY"))
+transit = assemble(resolve(date=(2026, 9, 15), time=(12, 0),  place="New York, NY"))
+cross   = cross_aspects(natal, transit)                  # flat 5° orb by default, adjustable
+
+wheel = render_biwheel_svg(natal, transit, cross_aspects=cross,
+                           labels=("Natal", "Transit"), theme="prism")
+grid  = render_synastry_grid_svg(natal, transit, cross, labels=("Natal", "Transit"))
+```
+
+`labels` names the two charts (hover text, and a small legend when `key=True`); toggle
+the intra-chart layers with `show_inner_aspects` / `show_outer_aspects`, or the cross
+layer with `show_cross_aspects`. The renderer only draws — pass any two chart dicts and
+a cross-aspect list, from any engine that emits the shape.
+
+`render_synastry_grid_svg(inner, outer, cross, …)` is the companion **synastry grid**:
+a rectangular matrix with the inner chart's bodies down the left and the outer chart's
+across the top, each cell showing the cross-aspect between its row and column, coloured
+by nature — two folded aspectarians, its gradient falling inward from both corners.
+
 ## Themes
 
 `light`, `dark`, `auto`, and eight pastel "pretty" modes with a prism-halo ring:
 `prism`, `twilight`, `aurora`, `opal`, `seafoam`, `meadow`, `dawn`, `blossom`.
 See `ephemvis.PALETTES`.
+
+## Embedded glyphs
+
+Every SVG embeds its astrology glyphs and numerals as `@font-face` data URIs, so a
+chart renders **pixel-identical on any device** — no dependence on whatever symbol
+font the viewer happens to have (which was the source of the classic "℞ looks like a
+serif here, a box there" and glyph-overlap problems). The glyphs are a curated subset
+of the OFL **Noto** fonts, packaged by the sibling
+[`astroglyphs_2K`](https://github.com/NoahChristian/astroglyphs_2K) toolkit and vendored
+into `ephemvis/_fontdata.py` at build time — so ephemvis still has **zero runtime
+dependencies**. The font data is under the SIL Open Font License 1.1 (see `NOTICE`
+and `LICENSES/OFL.txt`); the code stays MIT.
 
 ## The data contract
 

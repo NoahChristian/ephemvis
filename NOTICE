@@ -1,0 +1,27 @@
+ephemvis
+========
+
+ephemvis is licensed under the MIT License (see LICENSE).
+
+Embedded fonts (SIL Open Font License 1.1)
+------------------------------------------
+Every SVG ephemvis renders embeds a small set of astrology glyphs so charts
+render identically on any device. Those glyphs are a curated subset of the
+Google **Noto** fonts, re-packaged by the `astroglyphs_2K` toolkit and vendored
+into `src/ephemvis/_fontdata.py` at build time. They are NOT MIT-licensed — they
+are distributed under the SIL Open Font License, Version 1.1 (see LICENSES/OFL.txt).
+
+The subsets are renamed per the OFL Reserved Font Name clause (AstroSym,
+AstroSym2, AstroMath, AstroText) and derive from:
+
+    Noto Sans Symbols    (Version 2.003)   -> AstroSym
+    Noto Sans Symbols 2  (Version 2.008)   -> AstroSym2
+    Noto Sans Math       (Version 3.000)   -> AstroMath
+    Noto Sans            (Version 2.015)   -> AstroText
+
+Copyright 2022 The Noto Project Authors
+(https://github.com/notofonts/latin-greek-cyrillic)
+
+The full OFL text, with FAQ, is in LICENSES/OFL.txt and at https://scripts.sil.org/OFL.
+Glyph curation and packaging: the astroglyphs_2K toolkit (MIT-licensed code;
+OFL-licensed font data).

@@ -14,10 +14,16 @@ then review the diff before committing the updated snapshots.
 """
 import os
 import pathlib
+import re
 
 import pytest
 
-from ephemvis import render_svg, render_aspect_grid_svg
+from ephemvis import (
+    render_aspect_grid_svg,
+    render_biwheel_svg,
+    render_svg,
+    render_synastry_grid_svg,
+)
 from ephemvis.wheel import PALETTES
 
 SNAP = pathlib.Path(__file__).parent / "snapshots"
@@ -61,14 +67,63 @@ SAMPLE_CHART = {
 }
 
 
+# A second chart for the bi-wheel / synastry snapshots: an UNTIMED transit
+# (angles=None, cusps=None — must be tolerated), placed against SAMPLE_CHART's houses.
+SAMPLE_OUTER = {
+    "zodiac": "tropical",
+    "angles": None,
+    "cusps": None,
+    "bodies": {
+        "Sun":      {"lon": 172.6, "sign": "Virgo", "deg_in_sign": 22.6, "retro": False},
+        "Moon":     {"lon": 44.2, "sign": "Taurus", "deg_in_sign": 14.2, "retro": False},
+        "Mercury":  {"lon": 158.0, "sign": "Virgo", "deg_in_sign": 8.0, "retro": True},
+        "Venus":    {"lon": 100.4, "sign": "Cancer", "deg_in_sign": 10.4, "retro": False},
+        "Mars":     {"lon": 12.9, "sign": "Aries", "deg_in_sign": 12.9, "retro": False},
+        "Jupiter":  {"lon": 62.1, "sign": "Gemini", "deg_in_sign": 2.1, "retro": False},
+        "Saturn":   {"lon": 4.6, "sign": "Aries", "deg_in_sign": 4.6, "retro": False},
+        "Uranus":   {"lon": 65.3, "sign": "Gemini", "deg_in_sign": 5.3, "retro": True},
+        "Neptune":  {"lon": 2.5, "sign": "Aries", "deg_in_sign": 2.5, "retro": True},
+        "Pluto":    {"lon": 303.1, "sign": "Aquarius", "deg_in_sign": 3.1, "retro": True},
+    },
+    "aspects": [
+        {"a": "Sun", "b": "Mercury", "aspect": "conjunction", "angle": 0.0, "orb": -0.6, "applying": True},
+        {"a": "Mars", "b": "Uranus", "aspect": "opposition", "angle": 180.0, "orb": -0.4, "applying": False},
+    ],
+    "warnings": [],
+}
+
+# Hand-written cross-aspects (a = SAMPLE_CHART body, b = SAMPLE_OUTER body), a spread
+# of natures so the aspect-line / cell colouring is all exercised.
+SAMPLE_CROSS = [
+    {"a": "Sun", "b": "Mercury", "aspect": "trine", "orb": 1.7, "chart_a": "inner", "chart_b": "outer"},
+    {"a": "Moon", "b": "Mars", "aspect": "conjunction", "orb": 2.6, "chart_a": "inner", "chart_b": "outer"},
+    {"a": "Venus", "b": "Venus", "aspect": "square", "orb": 0.5, "chart_a": "inner", "chart_b": "outer"},
+    {"a": "Mars", "b": "Pluto", "aspect": "opposition", "orb": 2.7, "chart_a": "inner", "chart_b": "outer"},
+    {"a": "Saturn", "b": "Uranus", "aspect": "sextile", "orb": 4.6, "chart_a": "inner", "chart_b": "outer"},
+]
+
+
+# Every renderer now embeds the OFL fonts as `@font-face` rules carrying big constant base64
+# woff2 blobs (from _fontdata, via astroglyphs_2K). Baking those into the snapshots would bloat
+# them and couple every snapshot to the font binary, so we strip the `@font-face` rules — and any
+# `<style>` left empty by that — before both writing and comparing. The family *references* on
+# the elements (and the theme-class `<style>`) stay, so a font-routing regression still shows up.
+_FONTFACE = re.compile(r"@font-face\{[^}]*\}")
+
+
+def _strip_fonts(s):
+    return _FONTFACE.sub("", s).replace("<style></style>", "")
+
+
 def _check(name, content):
+    content = _strip_fonts(content)
     f = SNAP / name
     if os.environ.get("UPDATE_SNAPSHOTS"):
         SNAP.mkdir(exist_ok=True)
         f.write_text(content, encoding="utf-8", newline="\n")
         pytest.skip(f"updated snapshot {name}")
     assert f.exists(), f"missing snapshot {name} — run `UPDATE_SNAPSHOTS=1 pytest` to create it"
-    assert content == f.read_text(encoding="utf-8"), (
+    assert content == _strip_fonts(f.read_text(encoding="utf-8")), (
         f"{name} differs from its snapshot. If the rendering change is intended, "
         f"regenerate with `UPDATE_SNAPSHOTS=1 pytest` and review the diff.")
 
@@ -83,6 +138,23 @@ def test_wheel_snapshot(theme):
 def test_grid_snapshot(theme):
     _check("grid_%s.svg" % theme,
            render_aspect_grid_svg(SAMPLE_CHART, theme=theme, cell=30))
+
+
+@pytest.mark.parametrize("theme", SNAP_THEMES)
+def test_biwheel_snapshot(theme):
+    # all three aspect layers + key, to lock every draw path in one file
+    _check("biwheel_%s.svg" % theme,
+           render_biwheel_svg(SAMPLE_CHART, SAMPLE_OUTER, cross_aspects=SAMPLE_CROSS,
+                              size=760, theme=theme, title="Sample", key=True,
+                              labels=("Natal", "Transit"),
+                              show_inner_aspects=True, show_outer_aspects=True))
+
+
+@pytest.mark.parametrize("theme", SNAP_THEMES)
+def test_synastry_grid_snapshot(theme):
+    _check("synastry_%s.svg" % theme,
+           render_synastry_grid_svg(SAMPLE_CHART, SAMPLE_OUTER, SAMPLE_CROSS,
+                                    theme=theme, labels=("Natal", "Transit")))
 
 
 def test_every_theme_renders():

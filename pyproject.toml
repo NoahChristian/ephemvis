@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ephemvis"
-version = "0.3.2"
+version = "0.5.0"
 description = "Themeable SVG chart-wheel & aspect-grid rendering for openephem chart data"
 readme = "README.md"
 license = "MIT"
@@ -28,13 +28,17 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 # The renderers take a plain chart dict and have NO runtime dependencies — this is
-# a pure, engine-agnostic SVG layer. Install [compute] to also pull the openephem
-# calculation core for the one-liner (compute + render together).
+# a pure, engine-agnostic SVG layer. The embedded OFL glyph fonts are vendored at build
+# time into src/ephemvis/_fontdata.py (committed), so they add no runtime dependency either.
+# Install [compute] to also pull the openephem calculation core for the one-liner.
 dependencies = []
 
 [project.optional-dependencies]
 compute = ["openephem>=0.1.0"]
 test = ["pytest>=7", "ruff>=0.6", "mypy>=1.10"]
+# Build-time only: the glyph toolkit that regenerates _fontdata.py (tools/refresh_fontdata.py).
+# Not needed at runtime or to run the tests — the generated data is committed.
+fonts = ["astroglyphs_2K>=0.1.0"]
 
 [project.urls]
 Homepage = "https://github.com/NoahChristian/ephemvis"
@@ -46,7 +50,7 @@ Issues = "https://github.com/NoahChristian/ephemvis/issues"
 packages = ["src/ephemvis"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/ephemvis", "README.md", "CHANGELOG.md", "LICENSE"]
+include = ["src/ephemvis", "README.md", "CHANGELOG.md", "LICENSE", "LICENSES", "NOTICE"]
 
 [tool.ruff]
 line-length = 100

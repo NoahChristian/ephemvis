@@ -21,7 +21,7 @@ from __future__ import annotations
 import math
 
 from .profection_wheel import theme_lord_colors
-from .wheel import PALETTES, SIGN_GLYPHS
+from .wheel import PALETTES, SIGN_GLYPHS, SYM_FAMILY, TXT_FAMILY, font_face_css
 
 # the nine grahas (Rāhu = the north node, Ketu = its opposite point). Classical Vedic uses
 # these only — the outer planets are omitted.
@@ -44,8 +44,8 @@ _SOUTH_CELL = {11: (0, 0), 0: (0, 1), 1: (0, 2), 2: (0, 3),
                3: (1, 3), 4: (2, 3), 5: (3, 3),
                6: (3, 2), 7: (3, 1), 8: (3, 0),
                9: (2, 0), 10: (1, 0)}
-_SYM = "'Segoe UI Symbol','Noto Sans Symbols2','Apple Symbols',system-ui,sans-serif"
-_UI = "system-ui,-apple-system,Segoe UI,Roboto,sans-serif"
+_SYM = SYM_FAMILY        # embedded symbol family (or system fallback)
+_UI = TXT_FAMILY         # embedded text family (or system-ui)
 
 
 def _esc(s):
@@ -170,6 +170,7 @@ def _render_south(chart, pal, lord_col, size, title):
     if asc_sign is not None:
         P.append(f'<text x="{cx:.1f}" y="{cx+cs*0.34:.1f}" text-anchor="middle" fill="{muted}" '
                  f'font-family="{_UI}" font-size="{cs*0.16:.1f}">Lagna {_RASHI[asc_sign]}</text>')
+    P.append(font_face_css())
     P.append("</svg>")
     return "\n".join(P)
 
@@ -365,6 +366,7 @@ def _render_north(chart, pal, lord_col, size, title):
     P.append(f'<text x="{m+G:.1f}" y="{m - size*0.022:.1f}" text-anchor="end" fill="{muted}" '
              f'font-family="{_UI}" font-size="{size*0.021:.1f}">{_esc(_varga_label(chart))} · '
              f'North Indian · Lagna {_RASHI[asc_sign]}</text>')
+    P.append(font_face_css())
     P.append("</svg>")
     return "\n".join(P)
 
@@ -529,6 +531,7 @@ def _render_east(chart, pal, lord_col, size, title):
              f'font-family="{_UI}" font-size="{G*0.028:.1f}">{_esc(_varga_label(chart))}</text>')
     P.append(f'<text x="{cxp:.1f}" y="{Y(0.5)+G*0.055:.1f}" text-anchor="middle" fill="{muted}" '
              f'font-family="{_UI}" font-size="{G*0.026:.1f}">East Indian · Lagna {_RASHI[asc_sign]}</text>')
+    P.append(font_face_css())
     P.append("</svg>")
     return "\n".join(P)
 

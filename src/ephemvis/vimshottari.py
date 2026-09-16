@@ -21,7 +21,7 @@ from __future__ import annotations
 from datetime import date as _date
 
 from .profection_wheel import glyphs_by_year, render_profection_wheel_svg, theme_lord_colors
-from .wheel import PALETTES
+from .wheel import PALETTES, SYM_FAMILY, TXT_FAMILY, font_face_css
 
 _SIGNS = ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
           "Sagittarius", "Capricorn", "Aquarius", "Pisces")
@@ -34,8 +34,8 @@ _GLYPH = {"Sun": "☉", "Moon": "☽", "Mercury": "☿", "Venus": "♀", "Mars":
 _CHALDEAN = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"]
 _NODE_COLOR = {"Rahu": "#0e8d92", "Ketu": "#a9782f"}
 _LEGEND = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
-_SYM = "'Segoe UI Symbol','Noto Sans Symbols2','Apple Symbols',system-ui,sans-serif"
-_UI = "system-ui,-apple-system,Segoe UI,Roboto,sans-serif"
+_SYM = SYM_FAMILY        # embedded symbol family (or system fallback)
+_UI = TXT_FAMILY         # embedded text family (or system-ui)
 
 
 def _lum(h):
@@ -242,6 +242,7 @@ def render_vimshottari_svg(chart: dict, *, theme: str = "light", max_age: float 
         P.append(f'<rect x="{lx:.1f}" y="{ly-11}" width="14" height="14" rx="2" fill="{col_map[r]}"/>')
         P.append(f'<text x="{lx+19:.1f}" y="{ly}" fill="{muted}" font-size="13.5">{_esc(r)}{gtag}</text>')
         lx += 52 + len(r) * 7.6
+    P.append(font_face_css())
     P.append("</svg>")
     return "\n".join(P)
 

@@ -24,7 +24,7 @@ from __future__ import annotations
 from datetime import date as _date
 
 from .profection_wheel import glyphs_by_year, render_profection_wheel_svg, theme_lord_colors
-from .wheel import PALETTES
+from .wheel import PALETTES, SYM_FAMILY, TXT_FAMILY, font_face_css
 
 SIGNS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
          "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
@@ -37,8 +37,8 @@ _EL_SIGNS = {"Fire": ("Aries", "Leo", "Sagittarius"), "Earth": ("Taurus", "Virgo
 # The four elements take theme-derived colors (the shared theme_lord_colors derivation, four
 # categories off each theme's ramp) so releasing recolors per theme like the rest of the suite.
 # The sign glyph on every band — and in the legend — is the primary identifier; color supports.
-_SYM = "'Segoe UI Symbol','Noto Sans Symbols2','Apple Symbols',system-ui,sans-serif"
-_UI = "system-ui,-apple-system,Segoe UI,Roboto,sans-serif"
+_SYM = SYM_FAMILY        # embedded symbol family (or system fallback)
+_UI = TXT_FAMILY         # embedded text family (or system-ui)
 
 
 def _element(sign_index: int) -> str:
@@ -317,6 +317,7 @@ def render_zodiacal_releasing_svg(chart: dict, *, theme: str = "light",
     P.append(f'<line x1="{lx+6:.1f}" y1="{ly-12}" x2="{lx+6:.1f}" y2="{ly+2}" stroke="{ink}" '
              f'stroke-width="1.6" stroke-dasharray="3 2"/>')
     P.append(f'<text x="{lx+16:.1f}" y="{ly}" fill="{muted}" font-size="13.5">loosing of the bond</text>')
+    P.append(font_face_css())
     P.append("</svg>")
     return "\n".join(P)
 

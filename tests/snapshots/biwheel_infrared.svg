@@ -1,0 +1,438 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 760" width="760" height="760" style="cursor:default" role="img" aria-label="Sample">
+<defs><radialGradient id="bggrad" cx="50%" cy="40%" r="82%"><stop id="bs0" offset="0%" stop-color="#1a0a0a"/><stop id="bs1" offset="100%" stop-color="#0d0404"/></radialGradient><linearGradient id="ringgrad" x1="0.05" y1="0.05" x2="0.95" y2="0.95"><stop id="rs0" offset="0%" stop-color="#7a0d0d"/><stop id="rs1" offset="50%" stop-color="#e0431f"/><stop id="rs2" offset="100%" stop-color="#f2b705"/></linearGradient></defs><style>.ring{fill:none;stroke:url(#ringgrad);stroke-width:3.4}.tick{stroke:#5a2f28;stroke-width:3.4}.sign{fill:#f6e3d8;font:600 23.94px 'AstroSym','AstroSym2','AstroMath','Segoe UI Symbol','Noto Sans Symbols2','Apple Symbols',system-ui,sans-serif}.sign-icept{fill:#f6e3d8;font:600 23.94px 'AstroSym','AstroSym2','AstroMath','Segoe UI Symbol','Noto Sans Symbols2','Apple Symbols',system-ui,sans-serif;opacity:0.5}.cusp{stroke:#5a2f28;stroke-width:2}.cusp-angle{stroke:#ff7a3c;stroke-width:2.4}.hdiv{stroke:#a06a52;stroke-width:1.3}.leader{stroke:#5a2f28;stroke-width:2;stroke-dasharray:1 5;stroke-linecap:round}.housenum{fill:#f6e3d8;font:600 15.96px 'AstroText',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.anglelab{fill:#ff5a2e;font:800 23.94px 'AstroText',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.ac-sm{font-size:0.5em}.pmark{stroke:#a06a52;stroke-width:1.6}.planet{fill:#f6e3d8;font:600 30.93px 'AstroSym','AstroSym2','AstroMath','Segoe UI Symbol','Noto Sans Symbols2','Apple Symbols',system-ui,sans-serif}.deg{fill:#a06a52;font:600 16.34px 'AstroText',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.deg-rx{fill:#ff3b2f}.cuspdeg{fill:#a06a52;font:700 15.03px 'AstroText',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.cuspmin{fill:#a06a52;font:600 12.42px 'AstroText',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.cuspsec{fill:#a06a52;font:600 10.46px 'AstroText',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.signn{fill:#f6e3d8;font:600 18.79px 'AstroSym','AstroSym2','AstroMath','Segoe UI Symbol','Noto Sans Symbols2','Apple Symbols',system-ui,sans-serif}.signn-rx{fill:#ff3b2f}.aspect{stroke-width:1.1;fill:none;opacity:.85}.title{fill:#f6e3d8;font:600 14.97px 'AstroText',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.prof-band{fill:#ff5a2e;fill-opacity:.16;stroke:#ff5a2e;stroke-opacity:.85;stroke-width:2}.prof-ruler{fill:none;stroke:#ff5a2e;stroke-opacity:.9;stroke-width:2.4}.prof-tl{fill:#ff5a2e;font:800 14.05px 'AstroText',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.prof-key{fill:#a06a52;font:600 16.34px 'AstroText',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.prof-key-em{fill:#ff5a2e;font-weight:700}.prof-key-eyebrow{fill:#ff5a2e;font:800 13.4px 'AstroText',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;letter-spacing:1.4px}</style>
+<rect x="0" y="0" width="760" height="760" class="bg" fill="url(#bggrad)"/>
+<polygon points="722.0,380.0 721.5,362.1 684.0,364.1 684.4,380.0" fill="#e0441f"/>
+<polygon points="721.5,362.1 720.1,344.3 682.7,348.2 684.0,364.1" fill="#e1471e"/>
+<polygon points="720.1,344.3 717.8,326.5 680.6,332.4 682.7,348.2" fill="#e14a1d"/>
+<polygon points="717.8,326.5 714.5,308.9 677.7,316.7 680.6,332.4" fill="#e24d1d"/>
+<polygon points="714.5,308.9 710.3,291.5 674.0,301.2 677.7,316.7" fill="#e2501c"/>
+<polygon points="710.3,291.5 705.3,274.3 669.5,285.9 674.0,301.2" fill="#e2531b"/>
+<polygon points="705.3,274.3 699.3,257.4 664.2,270.9 669.5,285.9" fill="#e3561b"/>
+<polygon points="699.3,257.4 692.4,240.9 658.1,256.2 664.2,270.9" fill="#e3591a"/>
+<polygon points="692.4,240.9 684.7,224.7 651.2,241.8 658.1,256.2" fill="#e45c19"/>
+<polygon points="684.7,224.7 676.2,209.0 643.6,227.8 651.2,241.8" fill="#e45f19"/>
+<polygon points="676.2,209.0 666.8,193.7 635.3,214.2 643.6,227.8" fill="#e56118"/>
+<polygon points="666.8,193.7 656.7,179.0 626.2,201.1 635.3,214.2" fill="#e56418"/>
+<polygon points="656.7,179.0 645.8,164.8 616.5,188.4 626.2,201.1" fill="#e66717"/>
+<polygon points="645.8,164.8 634.2,151.2 606.2,176.3 616.5,188.4" fill="#e66a16"/>
+<polygon points="634.2,151.2 621.8,138.2 595.2,164.8 606.2,176.3" fill="#e76d16"/>
+<polygon points="621.8,138.2 608.8,125.8 583.7,153.8 595.2,164.8" fill="#e77015"/>
+<polygon points="608.8,125.8 595.2,114.2 571.6,143.5 583.7,153.8" fill="#e77314"/>
+<polygon points="595.2,114.2 581.0,103.3 558.9,133.8 571.6,143.5" fill="#e87614"/>
+<polygon points="581.0,103.3 566.3,93.2 545.8,124.7 558.9,133.8" fill="#e87913"/>
+<polygon points="566.3,93.2 551.0,83.8 532.2,116.4 545.8,124.7" fill="#e97c12"/>
+<polygon points="551.0,83.8 535.3,75.3 518.2,108.8 532.2,116.4" fill="#e97e12"/>
+<polygon points="535.3,75.3 519.1,67.6 503.8,101.9 518.2,108.8" fill="#ea8111"/>
+<polygon points="519.1,67.6 502.6,60.7 489.1,95.8 503.8,101.9" fill="#ea8410"/>
+<polygon points="502.6,60.7 485.7,54.7 474.1,90.5 489.1,95.8" fill="#eb8710"/>
+<polygon points="485.7,54.7 468.5,49.7 458.8,86.0 474.1,90.5" fill="#eb8a0f"/>
+<polygon points="468.5,49.7 451.1,45.5 443.3,82.3 458.8,86.0" fill="#eb8d0e"/>
+<polygon points="451.1,45.5 433.5,42.2 427.6,79.4 443.3,82.3" fill="#ec900e"/>
+<polygon points="433.5,42.2 415.7,39.9 411.8,77.3 427.6,79.4" fill="#ec930d"/>
+<polygon points="415.7,39.9 397.9,38.5 395.9,76.0 411.8,77.3" fill="#ed960c"/>
+<polygon points="397.9,38.5 380.0,38.0 380.0,75.6 395.9,76.0" fill="#ed990c"/>
+<polygon points="380.0,38.0 362.1,38.5 364.1,76.0 380.0,75.6" fill="#ee9b0b"/>
+<polygon points="362.1,38.5 344.3,39.9 348.2,77.3 364.1,76.0" fill="#ee9e0b"/>
+<polygon points="344.3,39.9 326.5,42.2 332.4,79.4 348.2,77.3" fill="#efa10a"/>
+<polygon points="326.5,42.2 308.9,45.5 316.7,82.3 332.4,79.4" fill="#efa409"/>
+<polygon points="308.9,45.5 291.5,49.7 301.2,86.0 316.7,82.3" fill="#f0a709"/>
+<polygon points="291.5,49.7 274.3,54.7 285.9,90.5 301.2,86.0" fill="#f0aa08"/>
+<polygon points="274.3,54.7 257.4,60.7 270.9,95.8 285.9,90.5" fill="#f0ad07"/>
+<polygon points="257.4,60.7 240.9,67.6 256.2,101.9 270.9,95.8" fill="#f1b007"/>
+<polygon points="240.9,67.6 224.7,75.3 241.8,108.8 256.2,101.9" fill="#f1b306"/>
+<polygon points="224.7,75.3 209.0,83.8 227.8,116.4 241.8,108.8" fill="#f2b605"/>
+<polygon points="209.0,83.8 193.7,93.2 214.2,124.7 227.8,116.4" fill="#f0b505"/>
+<polygon points="193.7,93.2 179.0,103.3 201.1,133.8 214.2,124.7" fill="#eeb105"/>
+<polygon points="179.0,103.3 164.8,114.2 188.4,143.5 201.1,133.8" fill="#eaac06"/>
+<polygon points="164.8,114.2 151.2,125.8 176.3,153.8 188.4,143.5" fill="#e8a806"/>
+<polygon points="151.2,125.8 138.2,138.2 164.8,164.8 176.3,153.8" fill="#e4a406"/>
+<polygon points="138.2,138.2 125.8,151.2 153.8,176.3 164.8,164.8" fill="#e1a006"/>
+<polygon points="125.8,151.2 114.2,164.8 143.5,188.4 153.8,176.3" fill="#de9b06"/>
+<polygon points="114.2,164.8 103.3,179.0 133.8,201.1 143.5,188.4" fill="#dc9706"/>
+<polygon points="103.3,179.0 93.2,193.7 124.7,214.2 133.8,201.1" fill="#d89307"/>
+<polygon points="93.2,193.7 83.8,209.0 116.4,227.8 124.7,214.2" fill="#d68f07"/>
+<polygon points="83.8,209.0 75.3,224.7 108.8,241.8 116.4,227.8" fill="#d28a07"/>
+<polygon points="75.3,224.7 67.6,240.9 101.9,256.2 108.8,241.8" fill="#d08607"/>
+<polygon points="67.6,240.9 60.7,257.4 95.8,270.9 101.9,256.2" fill="#cc8208"/>
+<polygon points="60.7,257.4 54.7,274.3 90.5,285.9 95.8,270.9" fill="#c97e08"/>
+<polygon points="54.7,274.3 49.7,291.5 86.0,301.2 90.5,285.9" fill="#c67908"/>
+<polygon points="49.7,291.5 45.5,308.9 82.3,316.7 86.0,301.2" fill="#c37508"/>
+<polygon points="45.5,308.9 42.2,326.5 79.4,332.4 82.3,316.7" fill="#c07108"/>
+<polygon points="42.2,326.5 39.9,344.3 77.3,348.2 79.4,332.4" fill="#be6d08"/>
+<polygon points="39.9,344.3 38.5,362.1 76.0,364.1 77.3,348.2" fill="#ba6809"/>
+<polygon points="38.5,362.1 38.0,380.0 75.6,380.0 76.0,364.1" fill="#b76409"/>
+<polygon points="38.0,380.0 38.5,397.9 76.0,395.9 75.6,380.0" fill="#b46009"/>
+<polygon points="38.5,397.9 39.9,415.7 77.3,411.8 76.0,395.9" fill="#b25c09"/>
+<polygon points="39.9,415.7 42.2,433.5 79.4,427.6 77.3,411.8" fill="#ae570a"/>
+<polygon points="42.2,433.5 45.5,451.1 82.3,443.3 79.4,427.6" fill="#ab530a"/>
+<polygon points="45.5,451.1 49.7,468.5 86.0,458.8 82.3,443.3" fill="#a94f0a"/>
+<polygon points="49.7,468.5 54.7,485.7 90.5,474.1 86.0,458.8" fill="#a54b0a"/>
+<polygon points="54.7,485.7 60.7,502.6 95.8,489.1 90.5,474.1" fill="#a2460a"/>
+<polygon points="60.7,502.6 67.6,519.1 101.9,503.8 95.8,489.1" fill="#a0420a"/>
+<polygon points="67.6,519.1 75.3,535.3 108.8,518.2 101.9,503.8" fill="#9c3e0b"/>
+<polygon points="75.3,535.3 83.8,551.0 116.4,532.2 108.8,518.2" fill="#993a0b"/>
+<polygon points="83.8,551.0 93.2,566.3 124.7,545.8 116.4,532.2" fill="#96350b"/>
+<polygon points="93.2,566.3 103.3,581.0 133.8,558.9 124.7,545.8" fill="#94310b"/>
+<polygon points="103.3,581.0 114.2,595.2 143.5,571.6 133.8,558.9" fill="#902d0c"/>
+<polygon points="114.2,595.2 125.8,608.8 153.8,583.7 143.5,571.6" fill="#8d290c"/>
+<polygon points="125.8,608.8 138.2,621.8 164.8,595.2 153.8,583.7" fill="#8a240c"/>
+<polygon points="138.2,621.8 151.2,634.2 176.3,606.2 164.8,595.2" fill="#87200c"/>
+<polygon points="151.2,634.2 164.8,645.8 188.4,616.5 176.3,606.2" fill="#841c0c"/>
+<polygon points="164.8,645.8 179.0,656.7 201.1,626.2 188.4,616.5" fill="#82180c"/>
+<polygon points="179.0,656.7 193.7,666.8 214.2,635.3 201.1,626.2" fill="#7e130d"/>
+<polygon points="193.7,666.8 209.0,676.2 227.8,643.6 214.2,635.3" fill="#7c0f0d"/>
+<polygon points="209.0,676.2 224.7,684.7 241.8,651.2 227.8,643.6" fill="#7b0e0d"/>
+<polygon points="224.7,684.7 240.9,692.4 256.2,658.1 241.8,651.2" fill="#7e0f0e"/>
+<polygon points="240.9,692.4 257.4,699.3 270.9,664.2 256.2,658.1" fill="#80100e"/>
+<polygon points="257.4,699.3 274.3,705.3 285.9,669.5 270.9,664.2" fill="#83120f"/>
+<polygon points="274.3,705.3 291.5,710.3 301.2,674.0 285.9,669.5" fill="#85130f"/>
+<polygon points="291.5,710.3 308.9,714.5 316.7,677.7 301.2,674.0" fill="#88140f"/>
+<polygon points="308.9,714.5 326.5,717.8 332.4,680.6 316.7,677.7" fill="#8b1610"/>
+<polygon points="326.5,717.8 344.3,720.1 348.2,682.7 332.4,680.6" fill="#8d1710"/>
+<polygon points="344.3,720.1 362.1,721.5 364.1,684.0 348.2,682.7" fill="#901811"/>
+<polygon points="362.1,721.5 380.0,722.0 380.0,684.4 364.1,684.0" fill="#921a11"/>
+<polygon points="380.0,722.0 397.9,721.5 395.9,684.0 380.0,684.4" fill="#951b12"/>
+<polygon points="397.9,721.5 415.7,720.1 411.8,682.7 395.9,684.0" fill="#971d12"/>
+<polygon points="415.7,720.1 433.5,717.8 427.6,680.6 411.8,682.7" fill="#9a1e13"/>
+<polygon points="433.5,717.8 451.1,714.5 443.3,677.7 427.6,680.6" fill="#9c1f13"/>
+<polygon points="451.1,714.5 468.5,710.3 458.8,674.0 443.3,677.7" fill="#9f2114"/>
+<polygon points="468.5,710.3 485.7,705.3 474.1,669.5 458.8,674.0" fill="#a22214"/>
+<polygon points="485.7,705.3 502.6,699.3 489.1,664.2 474.1,669.5" fill="#a42314"/>
+<polygon points="502.6,699.3 519.1,692.4 503.8,658.1 489.1,664.2" fill="#a72515"/>
+<polygon points="519.1,692.4 535.3,684.7 518.2,651.2 503.8,658.1" fill="#a92615"/>
+<polygon points="535.3,684.7 551.0,676.2 532.2,643.6 518.2,651.2" fill="#ac2716"/>
+<polygon points="551.0,676.2 566.3,666.8 545.8,635.3 532.2,643.6" fill="#ae2916"/>
+<polygon points="566.3,666.8 581.0,656.7 558.9,626.2 545.8,635.3" fill="#b12a17"/>
+<polygon points="581.0,656.7 595.2,645.8 571.6,616.5 558.9,626.2" fill="#b32b17"/>
+<polygon points="595.2,645.8 608.8,634.2 583.7,606.2 571.6,616.5" fill="#b62d18"/>
+<polygon points="608.8,634.2 621.8,621.8 595.2,595.2 583.7,606.2" fill="#b82e18"/>
+<polygon points="621.8,621.8 634.2,608.8 606.2,583.7 595.2,595.2" fill="#bb2f18"/>
+<polygon points="634.2,608.8 645.8,595.2 616.5,571.6 606.2,583.7" fill="#be3119"/>
+<polygon points="645.8,595.2 656.7,581.0 626.2,558.9 616.5,571.6" fill="#c03219"/>
+<polygon points="656.7,581.0 666.8,566.3 635.3,545.8 626.2,558.9" fill="#c3331a"/>
+<polygon points="666.8,566.3 676.2,551.0 643.6,532.2 635.3,545.8" fill="#c5351a"/>
+<polygon points="676.2,551.0 684.7,535.3 651.2,518.2 643.6,532.2" fill="#c8361b"/>
+<polygon points="684.7,535.3 692.4,519.1 658.1,503.8 651.2,518.2" fill="#ca381b"/>
+<polygon points="692.4,519.1 699.3,502.6 664.2,489.1 658.1,503.8" fill="#cd391c"/>
+<polygon points="699.3,502.6 705.3,485.7 669.5,474.1 664.2,489.1" fill="#cf3a1c"/>
+<polygon points="705.3,485.7 710.3,468.5 674.0,458.8 669.5,474.1" fill="#d23c1d"/>
+<polygon points="710.3,468.5 714.5,451.1 677.7,443.3 674.0,458.8" fill="#d53d1d"/>
+<polygon points="714.5,451.1 717.8,433.5 680.6,427.6 677.7,443.3" fill="#d73e1d"/>
+<polygon points="717.8,433.5 720.1,415.7 682.7,411.8 680.6,427.6" fill="#da401e"/>
+<polygon points="720.1,415.7 721.5,397.9 684.0,395.9 682.7,411.8" fill="#dc411e"/>
+<polygon points="721.5,397.9 722.0,380.0 684.4,380.0 684.0,395.9" fill="#df421f"/>
+<polygon points="467.4,380.0 467.2,375.4 448.4,376.4 448.5,380.0" fill="#e0441f"/>
+<polygon points="467.2,375.4 466.9,370.9 448.1,372.8 448.4,376.4" fill="#e1471e"/>
+<polygon points="466.9,370.9 466.3,366.3 447.6,369.3 448.1,372.8" fill="#e14a1d"/>
+<polygon points="466.3,366.3 465.4,361.8 447.0,365.8 447.6,369.3" fill="#e24d1d"/>
+<polygon points="465.4,361.8 464.4,357.4 446.2,362.3 447.0,365.8" fill="#e2501c"/>
+<polygon points="464.4,357.4 463.1,353.0 445.1,358.8 446.2,362.3" fill="#e2531b"/>
+<polygon points="463.1,353.0 461.6,348.7 443.9,355.5 445.1,358.8" fill="#e3561b"/>
+<polygon points="461.6,348.7 459.8,344.5 442.6,352.1 443.9,355.5" fill="#e3591a"/>
+<polygon points="459.8,344.5 457.8,340.3 441.0,348.9 442.6,352.1" fill="#e45c19"/>
+<polygon points="457.8,340.3 455.7,336.3 439.3,345.8 441.0,348.9" fill="#e45f19"/>
+<polygon points="455.7,336.3 453.3,332.4 437.4,342.7 439.3,345.8" fill="#e56118"/>
+<polygon points="453.3,332.4 450.7,328.7 435.4,339.7 437.4,342.7" fill="#e56418"/>
+<polygon points="450.7,328.7 447.9,325.0 433.2,336.9 435.4,339.7" fill="#e66717"/>
+<polygon points="447.9,325.0 444.9,321.5 430.9,334.2 433.2,336.9" fill="#e66a16"/>
+<polygon points="444.9,321.5 441.8,318.2 428.4,331.6 430.9,334.2" fill="#e76d16"/>
+<polygon points="441.8,318.2 438.5,315.1 425.8,329.1 428.4,331.6" fill="#e77015"/>
+<polygon points="438.5,315.1 435.0,312.1 423.1,326.8 425.8,329.1" fill="#e77314"/>
+<polygon points="435.0,312.1 431.3,309.3 420.3,324.6 423.1,326.8" fill="#e87614"/>
+<polygon points="431.3,309.3 427.6,306.7 417.3,322.6 420.3,324.6" fill="#e87913"/>
+<polygon points="427.6,306.7 423.7,304.3 414.2,320.7 417.3,322.6" fill="#e97c12"/>
+<polygon points="423.7,304.3 419.7,302.2 411.1,319.0 414.2,320.7" fill="#e97e12"/>
+<polygon points="419.7,302.2 415.5,300.2 407.9,317.4 411.1,319.0" fill="#ea8111"/>
+<polygon points="415.5,300.2 411.3,298.4 404.5,316.1 407.9,317.4" fill="#ea8410"/>
+<polygon points="411.3,298.4 407.0,296.9 401.2,314.9 404.5,316.1" fill="#eb8710"/>
+<polygon points="407.0,296.9 402.6,295.6 397.7,313.8 401.2,314.9" fill="#eb8a0f"/>
+<polygon points="402.6,295.6 398.2,294.6 394.2,313.0 397.7,313.8" fill="#eb8d0e"/>
+<polygon points="398.2,294.6 393.7,293.7 390.7,312.4 394.2,313.0" fill="#ec900e"/>
+<polygon points="393.7,293.7 389.1,293.1 387.2,311.9 390.7,312.4" fill="#ec930d"/>
+<polygon points="389.1,293.1 384.6,292.8 383.6,311.6 387.2,311.9" fill="#ed960c"/>
+<polygon points="384.6,292.8 380.0,292.6 380.0,311.5 383.6,311.6" fill="#ed990c"/>
+<polygon points="380.0,292.6 375.4,292.8 376.4,311.6 380.0,311.5" fill="#ee9b0b"/>
+<polygon points="375.4,292.8 370.9,293.1 372.8,311.9 376.4,311.6" fill="#ee9e0b"/>
+<polygon points="370.9,293.1 366.3,293.7 369.3,312.4 372.8,311.9" fill="#efa10a"/>
+<polygon points="366.3,293.7 361.8,294.6 365.8,313.0 369.3,312.4" fill="#efa409"/>
+<polygon points="361.8,294.6 357.4,295.6 362.3,313.8 365.8,313.0" fill="#f0a709"/>
+<polygon points="357.4,295.6 353.0,296.9 358.8,314.9 362.3,313.8" fill="#f0aa08"/>
+<polygon points="353.0,296.9 348.7,298.4 355.5,316.1 358.8,314.9" fill="#f0ad07"/>
+<polygon points="348.7,298.4 344.5,300.2 352.1,317.4 355.5,316.1" fill="#f1b007"/>
+<polygon points="344.5,300.2 340.3,302.2 348.9,319.0 352.1,317.4" fill="#f1b306"/>
+<polygon points="340.3,302.2 336.3,304.3 345.8,320.7 348.9,319.0" fill="#f2b605"/>
+<polygon points="336.3,304.3 332.4,306.7 342.7,322.6 345.8,320.7" fill="#f0b505"/>
+<polygon points="332.4,306.7 328.7,309.3 339.7,324.6 342.7,322.6" fill="#eeb105"/>
+<polygon points="328.7,309.3 325.0,312.1 336.9,326.8 339.7,324.6" fill="#eaac06"/>
+<polygon points="325.0,312.1 321.5,315.1 334.2,329.1 336.9,326.8" fill="#e8a806"/>
+<polygon points="321.5,315.1 318.2,318.2 331.6,331.6 334.2,329.1" fill="#e4a406"/>
+<polygon points="318.2,318.2 315.1,321.5 329.1,334.2 331.6,331.6" fill="#e1a006"/>
+<polygon points="315.1,321.5 312.1,325.0 326.8,336.9 329.1,334.2" fill="#de9b06"/>
+<polygon points="312.1,325.0 309.3,328.7 324.6,339.7 326.8,336.9" fill="#dc9706"/>
+<polygon points="309.3,328.7 306.7,332.4 322.6,342.7 324.6,339.7" fill="#d89307"/>
+<polygon points="306.7,332.4 304.3,336.3 320.7,345.8 322.6,342.7" fill="#d68f07"/>
+<polygon points="304.3,336.3 302.2,340.3 319.0,348.9 320.7,345.8" fill="#d28a07"/>
+<polygon points="302.2,340.3 300.2,344.5 317.4,352.1 319.0,348.9" fill="#d08607"/>
+<polygon points="300.2,344.5 298.4,348.7 316.1,355.5 317.4,352.1" fill="#cc8208"/>
+<polygon points="298.4,348.7 296.9,353.0 314.9,358.8 316.1,355.5" fill="#c97e08"/>
+<polygon points="296.9,353.0 295.6,357.4 313.8,362.3 314.9,358.8" fill="#c67908"/>
+<polygon points="295.6,357.4 294.6,361.8 313.0,365.8 313.8,362.3" fill="#c37508"/>
+<polygon points="294.6,361.8 293.7,366.3 312.4,369.3 313.0,365.8" fill="#c07108"/>
+<polygon points="293.7,366.3 293.1,370.9 311.9,372.8 312.4,369.3" fill="#be6d08"/>
+<polygon points="293.1,370.9 292.8,375.4 311.6,376.4 311.9,372.8" fill="#ba6809"/>
+<polygon points="292.8,375.4 292.6,380.0 311.5,380.0 311.6,376.4" fill="#b76409"/>
+<polygon points="292.6,380.0 292.8,384.6 311.6,383.6 311.5,380.0" fill="#b46009"/>
+<polygon points="292.8,384.6 293.1,389.1 311.9,387.2 311.6,383.6" fill="#b25c09"/>
+<polygon points="293.1,389.1 293.7,393.7 312.4,390.7 311.9,387.2" fill="#ae570a"/>
+<polygon points="293.7,393.7 294.6,398.2 313.0,394.2 312.4,390.7" fill="#ab530a"/>
+<polygon points="294.6,398.2 295.6,402.6 313.8,397.7 313.0,394.2" fill="#a94f0a"/>
+<polygon points="295.6,402.6 296.9,407.0 314.9,401.2 313.8,397.7" fill="#a54b0a"/>
+<polygon points="296.9,407.0 298.4,411.3 316.1,404.5 314.9,401.2" fill="#a2460a"/>
+<polygon points="298.4,411.3 300.2,415.5 317.4,407.9 316.1,404.5" fill="#a0420a"/>
+<polygon points="300.2,415.5 302.2,419.7 319.0,411.1 317.4,407.9" fill="#9c3e0b"/>
+<polygon points="302.2,419.7 304.3,423.7 320.7,414.2 319.0,411.1" fill="#993a0b"/>
+<polygon points="304.3,423.7 306.7,427.6 322.6,417.3 320.7,414.2" fill="#96350b"/>
+<polygon points="306.7,427.6 309.3,431.3 324.6,420.3 322.6,417.3" fill="#94310b"/>
+<polygon points="309.3,431.3 312.1,435.0 326.8,423.1 324.6,420.3" fill="#902d0c"/>
+<polygon points="312.1,435.0 315.1,438.5 329.1,425.8 326.8,423.1" fill="#8d290c"/>
+<polygon points="315.1,438.5 318.2,441.8 331.6,428.4 329.1,425.8" fill="#8a240c"/>
+<polygon points="318.2,441.8 321.5,444.9 334.2,430.9 331.6,428.4" fill="#87200c"/>
+<polygon points="321.5,444.9 325.0,447.9 336.9,433.2 334.2,430.9" fill="#841c0c"/>
+<polygon points="325.0,447.9 328.7,450.7 339.7,435.4 336.9,433.2" fill="#82180c"/>
+<polygon points="328.7,450.7 332.4,453.3 342.7,437.4 339.7,435.4" fill="#7e130d"/>
+<polygon points="332.4,453.3 336.3,455.7 345.8,439.3 342.7,437.4" fill="#7c0f0d"/>
+<polygon points="336.3,455.7 340.3,457.8 348.9,441.0 345.8,439.3" fill="#7b0e0d"/>
+<polygon points="340.3,457.8 344.5,459.8 352.1,442.6 348.9,441.0" fill="#7e0f0e"/>
+<polygon points="344.5,459.8 348.7,461.6 355.5,443.9 352.1,442.6" fill="#80100e"/>
+<polygon points="348.7,461.6 353.0,463.1 358.8,445.1 355.5,443.9" fill="#83120f"/>
+<polygon points="353.0,463.1 357.4,464.4 362.3,446.2 358.8,445.1" fill="#85130f"/>
+<polygon points="357.4,464.4 361.8,465.4 365.8,447.0 362.3,446.2" fill="#88140f"/>
+<polygon points="361.8,465.4 366.3,466.3 369.3,447.6 365.8,447.0" fill="#8b1610"/>
+<polygon points="366.3,466.3 370.9,466.9 372.8,448.1 369.3,447.6" fill="#8d1710"/>
+<polygon points="370.9,466.9 375.4,467.2 376.4,448.4 372.8,448.1" fill="#901811"/>
+<polygon points="375.4,467.2 380.0,467.4 380.0,448.5 376.4,448.4" fill="#921a11"/>
+<polygon points="380.0,467.4 384.6,467.2 383.6,448.4 380.0,448.5" fill="#951b12"/>
+<polygon points="384.6,467.2 389.1,466.9 387.2,448.1 383.6,448.4" fill="#971d12"/>
+<polygon points="389.1,466.9 393.7,466.3 390.7,447.6 387.2,448.1" fill="#9a1e13"/>
+<polygon points="393.7,466.3 398.2,465.4 394.2,447.0 390.7,447.6" fill="#9c1f13"/>
+<polygon points="398.2,465.4 402.6,464.4 397.7,446.2 394.2,447.0" fill="#9f2114"/>
+<polygon points="402.6,464.4 407.0,463.1 401.2,445.1 397.7,446.2" fill="#a22214"/>
+<polygon points="407.0,463.1 411.3,461.6 404.5,443.9 401.2,445.1" fill="#a42314"/>
+<polygon points="411.3,461.6 415.5,459.8 407.9,442.6 404.5,443.9" fill="#a72515"/>
+<polygon points="415.5,459.8 419.7,457.8 411.1,441.0 407.9,442.6" fill="#a92615"/>
+<polygon points="419.7,457.8 423.7,455.7 414.2,439.3 411.1,441.0" fill="#ac2716"/>
+<polygon points="423.7,455.7 427.6,453.3 417.3,437.4 414.2,439.3" fill="#ae2916"/>
+<polygon points="427.6,453.3 431.3,450.7 420.3,435.4 417.3,437.4" fill="#b12a17"/>
+<polygon points="431.3,450.7 435.0,447.9 423.1,433.2 420.3,435.4" fill="#b32b17"/>
+<polygon points="435.0,447.9 438.5,444.9 425.8,430.9 423.1,433.2" fill="#b62d18"/>
+<polygon points="438.5,444.9 441.8,441.8 428.4,428.4 425.8,430.9" fill="#b82e18"/>
+<polygon points="441.8,441.8 444.9,438.5 430.9,425.8 428.4,428.4" fill="#bb2f18"/>
+<polygon points="444.9,438.5 447.9,435.0 433.2,423.1 430.9,425.8" fill="#be3119"/>
+<polygon points="447.9,435.0 450.7,431.3 435.4,420.3 433.2,423.1" fill="#c03219"/>
+<polygon points="450.7,431.3 453.3,427.6 437.4,417.3 435.4,420.3" fill="#c3331a"/>
+<polygon points="453.3,427.6 455.7,423.7 439.3,414.2 437.4,417.3" fill="#c5351a"/>
+<polygon points="455.7,423.7 457.8,419.7 441.0,411.1 439.3,414.2" fill="#c8361b"/>
+<polygon points="457.8,419.7 459.8,415.5 442.6,407.9 441.0,411.1" fill="#ca381b"/>
+<polygon points="459.8,415.5 461.6,411.3 443.9,404.5 442.6,407.9" fill="#cd391c"/>
+<polygon points="461.6,411.3 463.1,407.0 445.1,401.2 443.9,404.5" fill="#cf3a1c"/>
+<polygon points="463.1,407.0 464.4,402.6 446.2,397.7 445.1,401.2" fill="#d23c1d"/>
+<polygon points="464.4,402.6 465.4,398.2 447.0,394.2 446.2,397.7" fill="#d53d1d"/>
+<polygon points="465.4,398.2 466.3,393.7 447.6,390.7 447.0,394.2" fill="#d73e1d"/>
+<polygon points="466.3,393.7 466.9,389.1 448.1,387.2 447.6,390.7" fill="#da401e"/>
+<polygon points="466.9,389.1 467.2,384.6 448.4,383.6 448.1,387.2" fill="#dc411e"/>
+<polygon points="467.2,384.6 467.4,380.0 448.5,380.0 448.4,383.6" fill="#df421f"/>
+<circle cx="380.0" cy="380.0" r="342.0" fill="none" stroke="rgba(38,44,60,.28)" stroke-width="1.4"/>
+<circle cx="380.0" cy="380.0" r="304.4" fill="none" stroke="rgba(38,44,60,.28)" stroke-width="1.4"/>
+<circle cx="380.0" cy="380.0" r="195.9" fill="none" stroke="rgba(38,44,60,.28)" stroke-width="1.4"/>
+<circle cx="380.0" cy="380.0" r="87.4" fill="none" stroke="rgba(38,44,60,.28)" stroke-width="1.4"/>
+<circle cx="380.0" cy="380.0" r="68.5" fill="none" stroke="rgba(38,44,60,.28)" stroke-width="1.4"/>
+<text x="380.0" y="56.8" class="sign" dominant-baseline="central" text-anchor="middle"><title>Aries · 10th house</title>♈︎</text>
+<text x="218.4" y="100.1" class="sign" dominant-baseline="central" text-anchor="middle"><title>Taurus · 11th house</title>♉︎</text>
+<text x="100.1" y="218.4" class="sign" dominant-baseline="central" text-anchor="middle"><title>Gemini · 12th house</title>♊︎</text>
+<text x="56.8" y="380.0" class="sign" dominant-baseline="central" text-anchor="middle"><title>Cancer · 1st house (Rising)</title>♋︎</text>
+<text x="100.1" y="541.6" class="sign" dominant-baseline="central" text-anchor="middle"><title>Leo · 2nd house</title>♌︎</text>
+<text x="218.4" y="659.9" class="sign" dominant-baseline="central" text-anchor="middle"><title>Virgo · 3rd house</title>♍︎</text>
+<text x="380.0" y="703.2" class="sign" dominant-baseline="central" text-anchor="middle"><title>Libra · 4th house</title>♎︎</text>
+<text x="541.6" y="659.9" class="sign" dominant-baseline="central" text-anchor="middle"><title>Scorpio · 5th house</title>♏︎</text>
+<text x="659.9" y="541.6" class="sign" dominant-baseline="central" text-anchor="middle"><title>Sagittarius · 6th house</title>♐︎</text>
+<text x="703.2" y="380.0" class="sign" dominant-baseline="central" text-anchor="middle"><title>Capricorn · 7th house</title>♑︎</text>
+<text x="659.9" y="218.4" class="sign" dominant-baseline="central" text-anchor="middle"><title>Aquarius · 8th house</title>♒︎</text>
+<text x="541.6" y="100.1" class="sign" dominant-baseline="central" text-anchor="middle"><title>Pisces · 9th house</title>♓︎</text>
+<line x1="311.5" y1="380.0" x2="292.6" y2="380.0" class="hdiv"/>
+<line x1="292.6" y1="380.0" x2="75.6" y2="380.0" class="cusp"/>
+<line x1="320.7" y1="414.2" x2="304.3" y2="423.7" class="hdiv"/>
+<line x1="304.3" y1="423.7" x2="116.4" y2="532.2" class="cusp"/>
+<line x1="345.8" y1="439.3" x2="336.3" y2="455.7" class="hdiv"/>
+<line x1="336.3" y1="455.7" x2="227.8" y2="643.6" class="cusp"/>
+<line x1="380.0" y1="448.5" x2="380.0" y2="467.4" class="hdiv"/>
+<line x1="380.0" y1="467.4" x2="380.0" y2="684.4" class="cusp"/>
+<line x1="414.2" y1="439.3" x2="423.7" y2="455.7" class="hdiv"/>
+<line x1="423.7" y1="455.7" x2="532.2" y2="643.6" class="cusp"/>
+<line x1="439.3" y1="414.2" x2="455.7" y2="423.7" class="hdiv"/>
+<line x1="455.7" y1="423.7" x2="643.6" y2="532.2" class="cusp"/>
+<line x1="448.5" y1="380.0" x2="467.4" y2="380.0" class="hdiv"/>
+<line x1="467.4" y1="380.0" x2="684.4" y2="380.0" class="cusp"/>
+<line x1="439.3" y1="345.8" x2="455.7" y2="336.3" class="hdiv"/>
+<line x1="455.7" y1="336.3" x2="643.6" y2="227.8" class="cusp"/>
+<line x1="414.2" y1="320.7" x2="423.7" y2="304.3" class="hdiv"/>
+<line x1="423.7" y1="304.3" x2="532.2" y2="116.4" class="cusp"/>
+<line x1="380.0" y1="311.5" x2="380.0" y2="292.6" class="hdiv"/>
+<line x1="380.0" y1="292.6" x2="380.0" y2="75.6" class="cusp"/>
+<line x1="345.8" y1="320.7" x2="336.3" y2="304.3" class="hdiv"/>
+<line x1="336.3" y1="304.3" x2="227.8" y2="116.4" class="cusp"/>
+<line x1="320.7" y1="345.8" x2="304.3" y2="336.3" class="hdiv"/>
+<line x1="304.3" y1="336.3" x2="116.4" y2="227.8" class="cusp"/>
+<line x1="371.5" y1="184.3" x2="371.2" y2="178.2" class="pmark"/>
+<line x1="374.8" y1="105.9" x2="371.2" y2="178.2" class="leader"/>
+<text x="375.5" y="92.4" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Neptune in Aries at 2.50° ℞</title>♆︎</text>
+<text x="375.9" y="119.7" class="deg deg-rx" transform="rotate(89.1 375.9 119.7)" dominant-baseline="central" text-anchor="middle"><title>Neptune in Aries at 2.50° ℞</title>2°℞</text>
+<text x="376.3" y="144.7" class="signn signn-rx" style="font-size:16.3px" transform="rotate(89.1 376.3 144.7)" dominant-baseline="central" text-anchor="middle"><title>Neptune in Aries at 2.50° ℞</title>♈︎</text>
+<text x="376.6" y="165.1" class="deg deg-rx" style="font-size:12.4px" transform="rotate(89.1 376.6 165.1)" dominant-baseline="central" text-anchor="middle"><title>Neptune in Aries at 2.50° ℞</title>30′</text>
+<line x1="364.3" y1="184.8" x2="363.8" y2="178.7" class="pmark"/>
+<line x1="351.3" y1="107.6" x2="363.8" y2="178.7" class="leader"/>
+<text x="348.9" y="94.0" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Saturn in Aries at 4.60°</title>♄︎</text>
+<text x="351.3" y="116.2" class="deg" transform="rotate(83.8 351.3 116.2)" dominant-baseline="central" text-anchor="middle"><title>Saturn in Aries at 4.60°</title>4°</text>
+<text x="353.5" y="136.1" class="signn" style="font-size:16.3px" transform="rotate(83.8 353.5 136.1)" dominant-baseline="central" text-anchor="middle"><title>Saturn in Aries at 4.60°</title>♈︎</text>
+<text x="355.7" y="156.3" class="deg" style="font-size:12.4px" transform="rotate(83.8 355.7 156.3)" dominant-baseline="central" text-anchor="middle"><title>Saturn in Aries at 4.60°</title>36′</text>
+<line x1="336.3" y1="189.1" x2="334.9" y2="183.1" class="pmark"/>
+<text x="315.8" y="99.6" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Mars in Aries at 12.90°</title>♂︎</text>
+<text x="321.1" y="122.7" class="deg" transform="rotate(77.1 321.1 122.7)" dominant-baseline="central" text-anchor="middle"><title>Mars in Aries at 12.90°</title>12°</text>
+<text x="326.6" y="146.7" class="signn" style="font-size:16.3px" transform="rotate(77.1 326.6 146.7)" dominant-baseline="central" text-anchor="middle"><title>Mars in Aries at 12.90°</title>♈︎</text>
+<text x="331.1" y="166.5" class="deg" style="font-size:12.4px" transform="rotate(77.1 331.1 166.5)" dominant-baseline="central" text-anchor="middle"><title>Mars in Aries at 12.90°</title>54′</text>
+<line x1="243.4" y1="239.6" x2="239.2" y2="235.2" class="pmark"/>
+<text x="179.5" y="173.8" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Moon in Taurus at 14.20°</title>☽︎</text>
+<text x="197.6" y="192.4" class="deg" transform="rotate(45.8 197.6 192.4)" dominant-baseline="central" text-anchor="middle"><title>Moon in Taurus at 14.20°</title>14°</text>
+<text x="214.8" y="210.1" class="signn" style="font-size:16.3px" transform="rotate(45.8 214.8 210.1)" dominant-baseline="central" text-anchor="middle"><title>Moon in Taurus at 14.20°</title>♉︎</text>
+<text x="229.0" y="224.7" class="deg" style="font-size:12.4px" transform="rotate(45.8 229.0 224.7)" dominant-baseline="central" text-anchor="middle"><title>Moon in Taurus at 14.20°</title>12′</text>
+<line x1="206.9" y1="288.3" x2="201.5" y2="285.5" class="pmark"/>
+<line x1="140.8" y1="248.1" x2="201.5" y2="285.5" class="leader"/>
+<text x="128.4" y="240.6" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Jupiter in Gemini at 2.10°</title>♃︎</text>
+<text x="147.2" y="251.0" class="deg" transform="rotate(29.0 147.2 251.0)" dominant-baseline="central" text-anchor="middle"><title>Jupiter in Gemini at 2.10°</title>2°</text>
+<text x="164.7" y="260.7" class="signn" style="font-size:16.3px" transform="rotate(29.0 164.7 260.7)" dominant-baseline="central" text-anchor="middle"><title>Jupiter in Gemini at 2.10°</title>♊︎</text>
+<text x="182.5" y="270.5" class="deg" style="font-size:12.4px" transform="rotate(29.0 182.5 270.5)" dominant-baseline="central" text-anchor="middle"><title>Jupiter in Gemini at 2.10°</title>06′</text>
+<line x1="202.1" y1="298.2" x2="196.5" y2="295.6" class="pmark"/>
+<line x1="128.8" y1="269.6" x2="196.5" y2="295.6" class="leader"/>
+<text x="116.4" y="264.8" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Uranus in Gemini at 5.30° ℞</title>♅︎</text>
+<text x="141.0" y="275.6" class="deg deg-rx" transform="rotate(23.6 141.0 275.6)" dominant-baseline="central" text-anchor="middle"><title>Uranus in Gemini at 5.30° ℞</title>5°℞</text>
+<text x="164.0" y="285.6" class="signn signn-rx" style="font-size:16.3px" transform="rotate(23.6 164.0 285.6)" dominant-baseline="central" text-anchor="middle"><title>Uranus in Gemini at 5.30° ℞</title>♊︎</text>
+<text x="182.6" y="293.8" class="deg deg-rx" style="font-size:12.4px" transform="rotate(23.6 182.6 293.8)" dominant-baseline="central" text-anchor="middle"><title>Uranus in Gemini at 5.30° ℞</title>18′</text>
+<line x1="187.3" y1="415.4" x2="181.4" y2="416.5" class="pmark"/>
+<text x="97.1" y="431.9" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Venus in Cancer at 10.40°</title>♀︎</text>
+<text x="122.1" y="427.3" class="deg" transform="rotate(-10.4 122.1 427.3)" dominant-baseline="central" text-anchor="middle"><title>Venus in Cancer at 10.40°</title>10°</text>
+<text x="146.3" y="422.9" class="signn" style="font-size:16.3px" transform="rotate(-10.4 146.3 422.9)" dominant-baseline="central" text-anchor="middle"><title>Venus in Cancer at 10.40°</title>♋︎</text>
+<text x="166.4" y="419.2" class="deg" style="font-size:12.4px" transform="rotate(-10.4 166.4 419.2)" dominant-baseline="central" text-anchor="middle"><title>Venus in Cancer at 10.40°</title>24′</text>
+<line x1="306.6" y1="561.6" x2="304.3" y2="567.3" class="pmark"/>
+<text x="272.2" y="646.7" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Mercury in Virgo at 8.00° ℞</title>☿︎</text>
+<text x="282.8" y="620.6" class="deg deg-rx" transform="rotate(-68.0 282.8 620.6)" dominant-baseline="central" text-anchor="middle"><title>Mercury in Virgo at 8.00° ℞</title>8°℞</text>
+<text x="292.2" y="597.4" class="signn signn-rx" style="font-size:16.3px" transform="rotate(-68.0 292.2 597.4)" dominant-baseline="central" text-anchor="middle"><title>Mercury in Virgo at 8.00° ℞</title>♍︎</text>
+<text x="299.8" y="578.5" class="deg deg-rx" style="font-size:12.4px" transform="rotate(-68.0 299.8 578.5)" dominant-baseline="central" text-anchor="middle"><title>Mercury in Virgo at 8.00° ℞</title>00′</text>
+<line x1="354.8" y1="574.2" x2="354.0" y2="580.3" class="pmark"/>
+<text x="343.0" y="665.2" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Sun in Virgo at 22.60°</title>☉︎</text>
+<text x="346.3" y="639.5" class="deg" transform="rotate(-82.6 346.3 639.5)" dominant-baseline="central" text-anchor="middle"><title>Sun in Virgo at 22.60°</title>22°</text>
+<text x="349.5" y="615.1" class="signn" style="font-size:16.3px" transform="rotate(-82.6 349.5 615.1)" dominant-baseline="central" text-anchor="middle"><title>Sun in Virgo at 22.60°</title>♍︎</text>
+<text x="352.1" y="594.9" class="deg" style="font-size:12.4px" transform="rotate(-82.6 352.1 594.9)" dominant-baseline="central" text-anchor="middle"><title>Sun in Virgo at 22.60°</title>36′</text>
+<line x1="544.1" y1="273.0" x2="549.2" y2="269.7" class="pmark"/>
+<text x="621.0" y="222.9" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Pluto in Aquarius at 3.10° ℞</title>♇︎</text>
+<text x="602.6" y="234.9" class="deg deg-rx" style="font-size:12.4px" transform="rotate(-33.1 602.6 234.9)" dominant-baseline="central" text-anchor="middle"><title>Pluto in Aquarius at 3.10° ℞</title>06′</text>
+<text x="585.5" y="246.0" class="signn signn-rx" style="font-size:16.3px" transform="rotate(-33.1 585.5 246.0)" dominant-baseline="central" text-anchor="middle"><title>Pluto in Aquarius at 3.10° ℞</title>♒︎</text>
+<text x="564.5" y="259.7" class="deg deg-rx" transform="rotate(-33.1 564.5 259.7)" dominant-baseline="central" text-anchor="middle"><title>Pluto in Aquarius at 3.10° ℞</title>3°℞</text>
+<line x1="361.2" y1="185.0" x2="361.8" y2="191.1" class="pmark"/>
+<line x1="362.4" y1="192.2" x2="361.8" y2="191.1" class="leader"/>
+<text x="370.1" y="205.7" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Moon in Aries at 5.51°</title>☽︎</text>
+<text x="371.3" y="227.0" class="deg" transform="rotate(86.8 371.3 227.0)" dominant-baseline="central" text-anchor="middle"><title>Moon in Aries at 5.51°</title>5°</text>
+<text x="372.4" y="246.9" class="signn" style="font-size:16.3px" transform="rotate(86.8 372.4 246.9)" dominant-baseline="central" text-anchor="middle"><title>Moon in Aries at 5.51°</title>♈︎</text>
+<text x="373.6" y="267.3" class="deg" style="font-size:12.4px" transform="rotate(86.8 373.6 267.3)" dominant-baseline="central" text-anchor="middle"><title>Moon in Aries at 5.51°</title>31′</text>
+<line x1="352.4" y1="186.1" x2="353.3" y2="192.1" class="pmark"/>
+<line x1="352.5" y1="194.8" x2="353.3" y2="192.1" class="leader"/>
+<text x="348.6" y="208.3" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Chiron in Aries at 8.10°</title>⚷︎</text>
+<text x="352.5" y="229.8" class="deg" transform="rotate(79.6 352.5 229.8)" dominant-baseline="central" text-anchor="middle"><title>Chiron in Aries at 8.10°</title>8°</text>
+<text x="356.1" y="249.5" class="signn" style="font-size:16.3px" transform="rotate(79.6 356.1 249.5)" dominant-baseline="central" text-anchor="middle"><title>Chiron in Aries at 8.10°</title>♈︎</text>
+<text x="359.8" y="269.5" class="deg" style="font-size:12.4px" transform="rotate(79.6 359.8 269.5)" dominant-baseline="central" text-anchor="middle"><title>Chiron in Aries at 8.10°</title>06′</text>
+<line x1="267.1" y1="219.9" x2="270.6" y2="224.9" class="pmark"/>
+<text x="279.4" y="237.4" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Uranus in Taurus at 5.20°</title>♅︎</text>
+<text x="291.9" y="255.1" class="deg" transform="rotate(54.8 291.9 255.1)" dominant-baseline="central" text-anchor="middle"><title>Uranus in Taurus at 5.20°</title>5°</text>
+<text x="303.4" y="271.5" class="signn" style="font-size:16.3px" transform="rotate(54.8 303.4 271.5)" dominant-baseline="central" text-anchor="middle"><title>Uranus in Taurus at 5.20°</title>♉︎</text>
+<text x="315.2" y="288.1" class="deg" style="font-size:12.4px" transform="rotate(54.8 315.2 288.1)" dominant-baseline="central" text-anchor="middle"><title>Uranus in Taurus at 5.20°</title>12′</text>
+<line x1="219.6" y1="267.7" x2="224.5" y2="271.1" class="pmark"/>
+<text x="237.0" y="279.9" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>North Node in Taurus at 25.00° ℞</title>☊︎</text>
+<text x="262.7" y="297.9" class="deg deg-rx" transform="rotate(35.0 262.7 297.9)" dominant-baseline="central" text-anchor="middle"><title>North Node in Taurus at 25.00° ℞</title>25°℞</text>
+<text x="285.2" y="313.6" class="signn signn-rx" style="font-size:16.3px" transform="rotate(35.0 285.2 313.6)" dominant-baseline="central" text-anchor="middle"><title>North Node in Taurus at 25.00° ℞</title>♉︎</text>
+<text x="299.9" y="323.9" class="deg deg-rx" style="font-size:12.4px" transform="rotate(35.0 299.9 323.9)" dominant-baseline="central" text-anchor="middle"><title>North Node in Taurus at 25.00° ℞</title>00′</text>
+<line x1="231.8" y1="508.1" x2="236.4" y2="504.1" class="pmark"/>
+<text x="248.0" y="494.2" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Venus in Leo at 10.85°</title>♀︎</text>
+<text x="267.2" y="477.6" class="deg" transform="rotate(-40.9 267.2 477.6)" dominant-baseline="central" text-anchor="middle"><title>Venus in Leo at 10.85°</title>10°</text>
+<text x="285.8" y="461.4" class="signn" style="font-size:16.3px" transform="rotate(-40.9 285.8 461.4)" dominant-baseline="central" text-anchor="middle"><title>Venus in Leo at 10.85°</title>♌︎</text>
+<text x="301.2" y="448.1" class="deg" style="font-size:12.4px" transform="rotate(-40.9 301.2 448.1)" dominant-baseline="central" text-anchor="middle"><title>Venus in Leo at 10.85°</title>51′</text>
+<line x1="268.6" y1="541.1" x2="272.0" y2="536.1" class="pmark"/>
+<line x1="272.6" y1="532.9" x2="272.0" y2="536.1" class="leader"/>
+<text x="274.9" y="519.4" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Sun in Leo at 25.32°</title>☉︎</text>
+<text x="290.6" y="498.7" class="deg" transform="rotate(-53.0 290.6 498.7)" dominant-baseline="central" text-anchor="middle"><title>Sun in Leo at 25.32°</title>25°</text>
+<text x="305.4" y="479.0" class="signn" style="font-size:16.3px" transform="rotate(-53.0 305.4 479.0)" dominant-baseline="central" text-anchor="middle"><title>Sun in Leo at 25.32°</title>♌︎</text>
+<text x="317.7" y="462.7" class="deg" style="font-size:12.4px" transform="rotate(-53.0 317.7 462.7)" dominant-baseline="central" text-anchor="middle"><title>Sun in Leo at 25.32°</title>19′</text>
+<line x1="281.8" y1="549.5" x2="284.8" y2="544.2" class="pmark"/>
+<line x1="286.3" y1="543.2" x2="284.8" y2="544.2" class="leader"/>
+<text x="298.6" y="534.4" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Regulus in Leo at 29.90°</title>✦︎</text>
+<text x="313.1" y="507.0" class="deg" transform="rotate(-62.2 313.1 507.0)" dominant-baseline="central" text-anchor="middle"><title>Regulus in Leo at 29.90°</title>29°</text>
+<text x="324.6" y="485.1" class="signn" style="font-size:16.3px" transform="rotate(-62.2 324.6 485.1)" dominant-baseline="central" text-anchor="middle"><title>Regulus in Leo at 29.90°</title>♌︎</text>
+<text x="334.1" y="467.1" class="deg" style="font-size:12.4px" transform="rotate(-62.2 334.1 467.1)" dominant-baseline="central" text-anchor="middle"><title>Regulus in Leo at 29.90°</title>54′</text>
+<line x1="313.7" y1="564.3" x2="315.7" y2="558.6" class="pmark"/>
+<text x="320.9" y="544.2" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Mercury in Virgo at 10.20° ℞</title>☿︎</text>
+<text x="332.0" y="513.4" class="deg deg-rx" transform="rotate(-70.2 332.0 513.4)" dominant-baseline="central" text-anchor="middle"><title>Mercury in Virgo at 10.20° ℞</title>10°℞</text>
+<text x="341.0" y="488.3" class="signn signn-rx" style="font-size:16.3px" transform="rotate(-70.2 341.0 488.3)" dominant-baseline="central" text-anchor="middle"><title>Mercury in Virgo at 10.20° ℞</title>♍︎</text>
+<text x="346.9" y="471.9" class="deg deg-rx" style="font-size:12.4px" transform="rotate(-70.2 346.9 471.9)" dominant-baseline="central" text-anchor="middle"><title>Mercury in Virgo at 10.20° ℞</title>12′</text>
+<line x1="448.4" y1="563.5" x2="446.3" y2="557.8" class="pmark"/>
+<text x="441.0" y="543.6" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Mars in Libra at 20.44°</title>♂︎</text>
+<text x="434.2" y="525.5" class="deg" style="font-size:12.4px" transform="rotate(69.6 434.2 525.5)" dominant-baseline="central" text-anchor="middle"><title>Mars in Libra at 20.44°</title>26′</text>
+<text x="427.1" y="506.4" class="signn" style="font-size:16.3px" transform="rotate(69.6 427.1 506.4)" dominant-baseline="central" text-anchor="middle"><title>Mars in Libra at 20.44°</title>♎︎</text>
+<text x="418.5" y="483.3" class="deg" transform="rotate(69.6 418.5 483.3)" dominant-baseline="central" text-anchor="middle"><title>Mars in Libra at 20.44°</title>20°</text>
+<line x1="574.9" y1="360.8" x2="568.9" y2="361.4" class="pmark"/>
+<text x="553.7" y="362.9" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Pluto in Capricorn at 5.63° ℞</title>♇︎</text>
+<text x="531.9" y="365.0" class="deg deg-rx" style="font-size:12.4px" transform="rotate(-5.6 531.9 365.0)" dominant-baseline="central" text-anchor="middle"><title>Pluto in Capricorn at 5.63° ℞</title>38′</text>
+<text x="511.6" y="367.0" class="signn signn-rx" style="font-size:16.3px" transform="rotate(-5.6 511.6 367.0)" dominant-baseline="central" text-anchor="middle"><title>Pluto in Capricorn at 5.63° ℞</title>♑︎</text>
+<text x="486.7" y="369.5" class="deg deg-rx" transform="rotate(-5.6 486.7 369.5)" dominant-baseline="central" text-anchor="middle"><title>Pluto in Capricorn at 5.63° ℞</title>5°℞</text>
+<line x1="569.1" y1="328.9" x2="563.2" y2="330.5" class="pmark"/>
+<text x="548.5" y="334.5" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Jupiter in Capricorn at 15.11° ℞</title>♃︎</text>
+<text x="527.4" y="340.2" class="deg deg-rx" style="font-size:12.4px" transform="rotate(-15.1 527.4 340.2)" dominant-baseline="central" text-anchor="middle"><title>Jupiter in Capricorn at 15.11° ℞</title>07′</text>
+<text x="509.9" y="344.9" class="signn signn-rx" style="font-size:16.3px" transform="rotate(-15.1 509.9 344.9)" dominant-baseline="central" text-anchor="middle"><title>Jupiter in Capricorn at 15.11° ℞</title>♑︎</text>
+<text x="483.4" y="352.1" class="deg deg-rx" transform="rotate(-15.1 483.4 352.1)" dominant-baseline="central" text-anchor="middle"><title>Jupiter in Capricorn at 15.11° ℞</title>15°℞</text>
+<line x1="528.4" y1="252.2" x2="523.8" y2="256.2" class="pmark"/>
+<text x="512.3" y="266.1" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Saturn in Aquarius at 10.73°</title>♄︎</text>
+<text x="495.1" y="280.9" class="deg" style="font-size:12.4px" transform="rotate(-40.7 495.1 280.9)" dominant-baseline="central" text-anchor="middle"><title>Saturn in Aquarius at 10.73°</title>44′</text>
+<text x="479.7" y="294.2" class="signn" style="font-size:16.3px" transform="rotate(-40.7 479.7 294.2)" dominant-baseline="central" text-anchor="middle"><title>Saturn in Aquarius at 10.73°</title>♒︎</text>
+<text x="461.0" y="310.3" class="deg" transform="rotate(-40.7 461.0 310.3)" dominant-baseline="central" text-anchor="middle"><title>Saturn in Aquarius at 10.73°</title>10°</text>
+<line x1="410.9" y1="186.6" x2="409.9" y2="192.6" class="pmark"/>
+<text x="407.5" y="207.6" class="planet" style="font-size:29.39px" dominant-baseline="central" text-anchor="middle"><title>Neptune in Pisces at 20.92° ℞</title>♆︎</text>
+<text x="404.0" y="229.9" class="deg deg-rx" style="font-size:12.4px" transform="rotate(-80.9 404.0 229.9)" dominant-baseline="central" text-anchor="middle"><title>Neptune in Pisces at 20.92° ℞</title>55′</text>
+<text x="401.2" y="247.5" class="signn signn-rx" style="font-size:16.3px" transform="rotate(-80.9 401.2 247.5)" dominant-baseline="central" text-anchor="middle"><title>Neptune in Pisces at 20.92° ℞</title>♓︎</text>
+<text x="396.9" y="274.3" class="deg deg-rx" transform="rotate(-80.9 396.9 274.3)" dominant-baseline="central" text-anchor="middle"><title>Neptune in Pisces at 20.92° ℞</title>20°℞</text>
+<line x1="341.0" y1="436.3" x2="328.2" y2="424.8" stroke="#a06a52" class="aspect" opacity="0.42"/>
+<line x1="341.0" y1="436.3" x2="431.9" y2="335.3" stroke="#ffd25e" class="aspect" stroke-dasharray="4 3" opacity="0.42"/>
+<line x1="373.4" y1="311.8" x2="403.9" y2="444.2" stroke="#ffd25e" class="aspect" stroke-dasharray="2 3" opacity="0.42"/>
+<line x1="356.8" y1="444.4" x2="390.8" y2="312.4" stroke="#ff3b2f" class="aspect" opacity="0.42"/>
+<line x1="328.2" y1="424.8" x2="446.1" y2="362.1" stroke="#ffd25e" class="aspect" opacity="0.42"/>
+<line x1="403.9" y1="444.2" x2="448.2" y2="373.3" stroke="#ff3b2f" class="aspect" opacity="0.42"/>
+<line x1="446.1" y1="362.1" x2="431.9" y2="335.3" stroke="#ffd25e" class="aspect" stroke-dasharray="2 3" opacity="0.42"/>
+<line x1="341.0" y1="436.3" x2="373.4" y2="311.8" stroke="#ffd25e" class="aspect" opacity="0.42"/>
+<line x1="371.2" y1="447.9" x2="354.3" y2="443.5" stroke="#a06a52" class="aspect" opacity="0.42"/>
+<line x1="364.7" y1="313.2" x2="317.8" y2="351.4" stroke="#ff3b2f" class="aspect" opacity="0.42"/>
+<line x1="341.0" y1="436.3" x2="354.3" y2="443.5" stroke="#ffd25e" class="aspect"/>
+<line x1="373.4" y1="311.8" x2="364.7" y2="313.2" stroke="#a06a52" class="aspect"/>
+<line x1="328.2" y1="424.8" x2="312.6" y2="392.4" stroke="#ff3b2f" class="aspect"/>
+<line x1="403.9" y1="444.2" x2="437.4" y2="342.6" stroke="#ff3b2f" class="aspect"/>
+<line x1="431.9" y1="335.3" x2="317.8" y2="351.4" stroke="#ffd25e" class="aspect" stroke-dasharray="4 3"/>
+<text x="304.7" y="400.2" class="housenum" dominant-baseline="central" text-anchor="middle">1</text>
+<text x="324.9" y="435.1" class="housenum" dominant-baseline="central" text-anchor="middle">2</text>
+<text x="359.8" y="455.3" class="housenum" dominant-baseline="central" text-anchor="middle">3</text>
+<text x="400.2" y="455.3" class="housenum" dominant-baseline="central" text-anchor="middle">4</text>
+<text x="435.1" y="435.1" class="housenum" dominant-baseline="central" text-anchor="middle">5</text>
+<text x="455.3" y="400.2" class="housenum" dominant-baseline="central" text-anchor="middle">6</text>
+<text x="455.3" y="359.8" class="housenum" dominant-baseline="central" text-anchor="middle">7</text>
+<text x="435.1" y="324.9" class="housenum" dominant-baseline="central" text-anchor="middle">8</text>
+<text x="400.2" y="304.7" class="housenum" dominant-baseline="central" text-anchor="middle">9</text>
+<text x="359.8" y="304.7" class="housenum" dominant-baseline="central" text-anchor="middle">10</text>
+<text x="324.9" y="324.9" class="housenum" dominant-baseline="central" text-anchor="middle">11</text>
+<text x="304.7" y="359.8" class="housenum" dominant-baseline="central" text-anchor="middle">12</text>
+<text x="18.2" y="706.8" class="prof-key"><tspan class="prof-key-em">Inner:</tspan> Natal</text>
+<text x="18.2" y="731.1" class="prof-key"><tspan class="prof-key-em">Outer:</tspan> Transit</text>
+<text x="380.0" y="30.4" class="title" text-anchor="middle">Sample</text>
+</svg>

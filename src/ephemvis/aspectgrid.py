@@ -13,7 +13,17 @@ from __future__ import annotations
 
 from typing import cast
 
-from .wheel import _L, PALETTES, PLANET_GLYPHS, _esc, _lerp_hex, body_label
+from .wheel import (
+    _L,
+    PALETTES,
+    PLANET_GLYPHS,
+    SYM_FAMILY,
+    TXT_FAMILY,
+    _esc,
+    _lerp_hex,
+    body_label,
+    font_face_css,
+)
 
 ASP_SYM = {"conjunction": "☌", "opposition": "☍", "square": "□", "trine": "△",
            "sextile": "⚹", "quincunx": "⚻", "semisextile": "⚺",
@@ -36,7 +46,8 @@ DEFAULT_ORDER = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn",
                  "Neptune", "Pluto", "TrueNode", "MeanNode", "MeanLilith", "OscuLilith",
                  "Chiron", "Ceres", "Pallas", "Juno", "Vesta",
                  "Astraea", "Hygeia", "Eros", "Eris", "Sedna", "AsteroidLilith"]
-SYM = '"Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",system-ui,sans-serif'
+SYM = SYM_FAMILY        # embedded symbol family (or system fallback)
+TXT = TXT_FAMILY        # embedded text family (or system-ui)
 # Themes whose two grid-gradient colors read better swapped (perceptual). The
 # direction/anchoring is unchanged — only which color sits at the bottom-left nexus.
 _GRID_GRAD_REVERSE = {"infrared"}
@@ -79,6 +90,7 @@ def render_aspect_grid_svg(chart: dict, theme: str = "light", order=None,
     P = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %.0f %.0f" '
          'width="%.0f" height="%.0f" style="cursor:default" role="img" '
          'aria-label="aspect grid">' % (W, H, W, H)]
+    P.append(font_face_css())
 
     # gradient DIRECTION (pass one): warm nexus pinned at the bottom-left corner,
     # radiating perpendicular to the symbol diagonal toward the top-right. The axis
@@ -101,7 +113,7 @@ def render_aspect_grid_svg(chart: dict, theme: str = "light", order=None,
                 P.append('<g><title>%s</title>' % _esc(body_label(bi, bodies.get(bi, {}))))
                 P.append('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>'
                          % (x, y, C, C, diagbg))
-                P.append('<text x="%.1f" y="%.1f" fill="%s" font-family=\'%s\' font-size="%.1f" '
+                P.append('<text x="%.1f" y="%.1f" fill="%s" font-family="%s" font-size="%.1f" '
                          'text-anchor="middle" dominant-baseline="central">%s︎</text></g>'
                          % (x + C / 2, y + C / 2, accent, SYM, C * 0.52,
                             _esc(PLANET_GLYPHS.get(bi) or
@@ -117,7 +129,7 @@ def render_aspect_grid_svg(chart: dict, theme: str = "light", order=None,
                     _NICE.get(gorder[j], gorder[j]), abs(float(a.get("orb", 0.0))))
                 P.append('<g><title>%s</title>'
                          '<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s" fill-opacity="0.13"/>'
-                         '<text x="%.1f" y="%.1f" fill="%s" font-family=\'%s\' font-size="%.1f" '
+                         '<text x="%.1f" y="%.1f" fill="%s" font-family="%s" font-size="%.1f" '
                          'font-weight="600" text-anchor="middle" dominant-baseline="central">%s︎</text></g>'
                          % (_esc(tip), x, y, C, C, col, x + C / 2, y + C / 2, col, SYM, C * 0.46,
                             _esc(ASP_SYM.get(a.get("aspect"), "·"))))
@@ -144,11 +156,155 @@ def render_aspect_grid_svg(chart: dict, theme: str = "light", order=None,
     if leg_h:
         ly, lx = pad + gridW + 17.0, pad
         for k in present:
-            P.append('<text x="%.1f" y="%.1f" fill="%s" font-family=\'%s\' font-size="14" '
+            P.append('<text x="%.1f" y="%.1f" fill="%s" font-family="%s" font-size="14" '
                      'dominant-baseline="central">%s︎</text>' % (lx, ly, pal[ASP_CAT[k]], SYM, _esc(ASP_SYM[k])))
             lx += 20.0
-            P.append('<text x="%.1f" y="%.1f" fill="%s" font-family="system-ui,sans-serif" '
-                     'font-size="12.5" dominant-baseline="central">%s</text>' % (lx, ly, muted, ASP_LABEL[k]))
+            P.append('<text x="%.1f" y="%.1f" fill="%s" font-family="%s" '
+                     'font-size="12.5" dominant-baseline="central">%s</text>' % (lx, ly, muted, TXT, ASP_LABEL[k]))
+            lx += len(ASP_LABEL[k]) * 7.2 + 22.0
+
+    P.append('</svg>')
+    return "\n".join(P)
+
+
+def render_synastry_grid_svg(inner_chart: dict, outer_chart: dict,
+                             cross_aspects: list | None = None, theme: str = "light",
+                             order=None, cell: float = 30.0, legend: bool = True,
+                             labels=("Inner", "Outer")) -> str:
+    """Return an SVG string for a synastry (cross-chart) aspect grid.
+
+    Unlike the single-chart triangular aspectarian, this is a full **rectangular**
+    matrix: the inner chart's bodies run down the left header column, the outer chart's
+    across the top header row, and each interior cell shows the cross-aspect between its
+    row (inner) and column (outer) body. `cross_aspects` is the list openephem's
+    ``cross_aspects(inner, outer)`` returns (dicts with ``a`` = inner body, ``b`` =
+    outer body). The frame/gridlines carry a gradient folded inward from **two** corners
+    (bottom-left and top-right) — two triangular aspectarians folded into one rectangle.
+    """
+    inner_bodies = inner_chart.get("bodies") or {}
+    outer_bodies = outer_chart.get("bodies") or {}
+    xs = cross_aspects or []
+    pal = _L if theme == "auto" else PALETTES.get(theme, _L)
+    rows = [b for b in (order or DEFAULT_ORDER) if b in inner_bodies]   # inner (down)
+    cols = [b for b in (order or DEFAULT_ORDER) if b in outer_bodies]   # outer (across)
+    n, m = len(rows), len(cols)
+    amap = {(a.get("a"), a.get("b")): a for a in xs}                    # (inner, outer) -> aspect
+
+    C, pad = float(cell), 8.0
+    lm = tm = 20.0                                     # left / top axis-label margins
+    bg0 = cast("tuple[str, str]", pal["bg"])[0]
+    diagbg = _lerp_hex(bg0, pal["planet"], 0.10)       # header-cell tint over bg
+    accent = pal["anglelab"]                           # header glyph color
+    muted = pal["deg"]
+    gwarm, gcool = pal["aHard"], pal["aSoft"]
+    if theme in _GRID_GRAD_REVERSE:
+        gwarm, gcool = gcool, gwarm
+    gid = "synas_%s_%d_%dx%d" % (theme, int(round(C)), n, m)
+
+    x_head = pad + lm                                  # left header column x-start
+    x0 = x_head + C                                    # interior x-start (after header col)
+    y_head = pad + tm                                  # top header row y-start
+    y0 = y_head + C                                    # interior y-start (after header row)
+    gridW = C + m * C                                  # header col + m outer cols
+    gridH = C + n * C                                  # header row + n inner rows
+
+    present = [k for k in ASP_SYM if any(a.get("aspect") == k for a in xs)]
+    leg_h = 26.0 if (legend and present) else 0.0
+    W = x_head + gridW + pad
+    H = y_head + gridH + pad + leg_h
+
+    P = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %.0f %.0f" '
+         'width="%.0f" height="%.0f" style="cursor:default" role="img" '
+         'aria-label="synastry grid">' % (W, H, W, H)]
+    P.append(font_face_css())
+
+    # gradient folded in from TWO corners: warm at bottom-left AND top-right, cool at the
+    # centre — the axis runs along the BL->TR diagonal of the matrix block.
+    P.append('<defs><linearGradient id="%s" gradientUnits="userSpaceOnUse" '
+             'x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f">'
+             '<stop offset="0%%" stop-color="%s"/><stop offset="50%%" stop-color="%s"/>'
+             '<stop offset="100%%" stop-color="%s"/></linearGradient></defs>'
+             % (gid, x_head, y_head + gridH, x_head + gridW, y_head, gwarm, gcool, gwarm))
+
+    # axis labels
+    P.append('<text x="%.1f" y="%.1f" fill="%s" font-family="%s" '
+             'font-size="12.5" font-weight="700" text-anchor="middle">%s</text>'
+             % (x_head + gridW / 2.0, pad + tm * 0.6, muted, TXT, _esc(labels[1])))
+    P.append('<text x="%.1f" y="%.1f" fill="%s" font-family="%s" '
+             'font-size="12.5" font-weight="700" text-anchor="middle" '
+             'transform="rotate(-90 %.1f %.1f)">%s</text>'
+             % (pad + lm * 0.6, y_head + gridH / 2.0, muted, TXT,
+                pad + lm * 0.6, y_head + gridH / 2.0, _esc(labels[0])))
+
+    def _glyph(name, bodies):
+        return _esc(PLANET_GLYPHS.get(name) or
+                    ("✦" if bodies.get(name, {}).get("kind") == "star" else name[:2]))
+
+    # top header row: outer bodies across
+    for j, nm in enumerate(cols):
+        x, y = x0 + j * C, y_head
+        P.append('<g><title>%s</title>'
+                 '<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>'
+                 '<text x="%.1f" y="%.1f" fill="%s" font-family="%s" font-size="%.1f" '
+                 'text-anchor="middle" dominant-baseline="central">%s︎</text></g>'
+                 % (_esc(body_label(nm, outer_bodies.get(nm, {}))), x, y, C, C, diagbg,
+                    x + C / 2, y + C / 2, accent, SYM, C * 0.52, _glyph(nm, outer_bodies)))
+    # left header column: inner bodies down
+    for i, nm in enumerate(rows):
+        x, y = x_head, y0 + i * C
+        P.append('<g><title>%s</title>'
+                 '<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>'
+                 '<text x="%.1f" y="%.1f" fill="%s" font-family="%s" font-size="%.1f" '
+                 'text-anchor="middle" dominant-baseline="central">%s︎</text></g>'
+                 % (_esc(body_label(nm, inner_bodies.get(nm, {}))), x, y, C, C, diagbg,
+                    x + C / 2, y + C / 2, accent, SYM, C * 0.52, _glyph(nm, inner_bodies)))
+
+    # interior cells: cross-aspect symbol + category color
+    for i, ri in enumerate(rows):
+        for j, cj in enumerate(cols):
+            a = amap.get((ri, cj))
+            if not a:
+                continue
+            x, y = x0 + j * C, y0 + i * C
+            col = pal[ASP_CAT.get(a.get("aspect"), "aSoft")]
+            asp = a.get("aspect")
+            tip = "%s %s %s · %.1f° orb" % (
+                _NICE.get(ri, ri), ASP_REL.get(asp, asp),
+                _NICE.get(cj, cj), abs(float(a.get("orb", 0.0))))
+            P.append('<g><title>%s</title>'
+                     '<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s" fill-opacity="0.13"/>'
+                     '<text x="%.1f" y="%.1f" fill="%s" font-family="%s" font-size="%.1f" '
+                     'font-weight="600" text-anchor="middle" dominant-baseline="central">%s︎</text></g>'
+                     % (_esc(tip), x, y, C, C, col, x + C / 2, y + C / 2, col, SYM, C * 0.46,
+                        _esc(ASP_SYM.get(asp, "·"))))
+
+    # gridlines + frame (same two-corner gradient)
+    for i in range(n + 1):
+        yy = y0 + i * C
+        P.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="url(#%s)" stroke-width="1.5" '
+                 'shape-rendering="crispEdges"/>' % (x_head, yy, x_head + gridW, yy, gid))
+    for j in range(m + 1):
+        xx = x0 + j * C
+        P.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="url(#%s)" stroke-width="1.5" '
+                 'shape-rendering="crispEdges"/>' % (xx, y_head, xx, y_head + gridH, gid))
+    # separators bordering the header row/column
+    P.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="url(#%s)" stroke-width="1.5" '
+             'shape-rendering="crispEdges"/>' % (x0, y_head, x0, y_head + gridH, gid))
+    P.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="url(#%s)" stroke-width="1.5" '
+             'shape-rendering="crispEdges"/>' % (x_head, y0, x_head + gridW, y0, gid))
+    P.append('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="none" '
+             'stroke="url(#%s)" stroke-width="4" shape-rendering="crispEdges"/>'
+             % (x_head, y_head, gridW, gridH, gid))
+
+    # legend
+    if leg_h:
+        ly, lx = y_head + gridH + 17.0, x_head
+        for k in present:
+            P.append('<text x="%.1f" y="%.1f" fill="%s" font-family="%s" font-size="14" '
+                     'dominant-baseline="central">%s︎</text>' % (lx, ly, pal[ASP_CAT[k]], SYM, _esc(ASP_SYM[k])))
+            lx += 20.0
+            P.append('<text x="%.1f" y="%.1f" fill="%s" font-family="%s" '
+                     'font-size="12.5" dominant-baseline="central">%s</text>' % (lx, ly, muted, TXT, ASP_LABEL[k]))
             lx += len(ASP_LABEL[k]) * 7.2 + 22.0
 
     P.append('</svg>')
