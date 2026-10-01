@@ -6,6 +6,17 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- **Embedded glyphs now come from astroglyphs_2K 0.2.0's single "Astroglyphs 2K" font**
+  instead of four families (`AstroSym`, `AstroSym2`, `AstroMath`, `AstroText`). Every SVG
+  carries one `@font-face` (12 KB woff2 instead of ~49 KB across four), and `SYM_FAMILY` /
+  `TXT_FAMILY` both lead with the one family. Glyph metrics are unchanged: apart from the
+  family name, every chart snapshot is byte-identical.
+
+### Added
+- `_fontdata.ALTERNATES` (e.g. Pluto ♇ ⯓ ⯔ ⯕ ⯖) and `_fontdata.LOTS` (the Hermetic lots), so
+  renderers can offer alternate glyph forms and lot glyphs from the embedded font.
+
 ## [0.5.1] — 2026-09-16
 
 ### Added
