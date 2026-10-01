@@ -6,6 +6,8 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.2] — 2026-10-01
+
 ### Changed
 - **Embedded glyphs now come from astroglyphs_2K 0.2.0's single "Astroglyphs 2K" font**
   instead of four families (`AstroSym`, `AstroSym2`, `AstroMath`, `AstroText`). Every SVG
