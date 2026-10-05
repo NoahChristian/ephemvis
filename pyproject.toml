@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ephemvis"
-version = "0.6.0"
+version = "0.6.1"
 description = "Themeable SVG chart-wheel & aspect-grid rendering for openephem chart data"
 readme = "README.md"
 license = "MIT"
@@ -34,7 +34,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-compute = ["openephem>=0.1.0"]
+compute = ["openephem>=0.5.0"]
 test = ["pytest>=7", "ruff>=0.6", "mypy>=1.10"]
 # Build-time only: the glyph toolkit that regenerates _fontdata.py (tools/refresh_fontdata.py).
 # Not needed at runtime or to run the tests — the generated data is committed.

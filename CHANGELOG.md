@@ -6,6 +6,14 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.1] — 2026-10-04
+
+### Changed
+- The `[compute]` extra now requires **`openephem>=0.5.0`** (was `>=0.1.0`). The 0.6.0 warning
+  badge renders openephem's `chart["warnings"]`, which first appears in openephem 0.4.0; pinning
+  to 0.5.0 also guarantees the bundled NBS Circular 406 tzatlas rules, so an installed pair can
+  both warn about and (opt-in) correct the pre-1970 offsets rather than warn alone.
+
 ## [0.6.0] — 2026-10-04
 
 ### Added
@@ -296,6 +304,7 @@ Initial public release — themeable SVG rendering for openephem chart data.
 - CI gates: pytest + **SVG snapshot tests** (byte-stable across Linux/Windows) +
   ruff + mypy, on Python 3.10–3.13.
 
+[0.6.1]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.6.1
 [0.6.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.6.0
 [0.5.2]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.5.2
 [0.5.1]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.5.1
