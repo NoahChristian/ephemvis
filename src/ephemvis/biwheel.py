@@ -50,6 +50,7 @@ from .wheel import (
     _is_wholesign_cusps,
     _spread,
     _theme_markup,
+    _warn_badge,
     body_label,
     sign_label,
 )
@@ -86,7 +87,8 @@ def render_biwheel_svg(inner_chart: dict, outer_chart: dict, *,
                        show_cross_aspects: bool = True,
                        show_inner_aspects: bool = False,
                        show_outer_aspects: bool = False,
-                       text_labels: bool = False) -> str:
+                       text_labels: bool = False,
+                       show_warnings: bool = True) -> str:
     """Return an SVG string for a bi-wheel comparing two charts.
 
     ``inner_chart`` (radix) owns the ring, houses and orientation; ``outer_chart``'s
@@ -432,6 +434,18 @@ def render_biwheel_svg(inner_chart: dict, outer_chart: dict, *,
     if title:
         P.append(f'<text x="{cx:.1f}" y="{size*0.04:.1f}" class="title" '
                  f'text-anchor="middle">{_esc(title)}</text>')
+    if show_warnings:
+        # merge both charts' warnings; label-prefix each line only when both carry some, so
+        # synastry (both natal) flags both while transit-to-natal usually shows only the inner
+        wi = [str(w) for w in (inner_chart.get("warnings") or []) if w]
+        wo = [str(w) for w in (outer_chart.get("warnings") or []) if w]
+        li, lo = labels
+        if wi and wo:
+            merged = [f"{li}: {w}" for w in wi] + [f"{lo}: {w}" for w in wo]
+        else:
+            merged = wi + wo
+        if badge := _warn_badge(merged, x=size * 0.93, y=size * 0.07, scale=size / 760.0):
+            P.append(badge)
     P.append('</svg>')
     return "\n".join(P)
 

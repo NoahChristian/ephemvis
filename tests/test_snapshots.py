@@ -134,6 +134,13 @@ def test_wheel_snapshot(theme):
            render_svg(SAMPLE_CHART, size=760, theme=theme, title="Sample"))
 
 
+def test_wheel_warning_badge_snapshot():
+    # locks the exact badge markup/geometry; a warned chart is the only case that draws it
+    warned = dict(SAMPLE_CHART, warnings=["Pre-1967 US zone applied DST; offset may be off by 1h."])
+    _check("wheel_warned.svg",
+           render_svg(warned, size=760, theme="light", title="Sample"))
+
+
 @pytest.mark.parametrize("theme", SNAP_THEMES)
 def test_grid_snapshot(theme):
     _check("grid_%s.svg" % theme,

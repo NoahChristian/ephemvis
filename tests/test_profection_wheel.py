@@ -119,3 +119,14 @@ def test_lord_of_year_rim_and_stacked_legends(layout):
         assert f">{planet} (" in s                    # each lord named in the legend
     for g in ("♄", "♃", "♂", "☉", "♀", "☿", "☽"):
         assert g in s                                  # each lord glyph present
+
+
+# --- timezone-uncertainty warning badge ---
+_WARN = 'aria-label="chart data warning"'
+
+
+def test_warning_badge():
+    warned = dict(_chart(), warnings=["tz uncertain"])
+    assert _WARN in render_profection_wheel_svg(warned)
+    assert _WARN not in render_profection_wheel_svg(_chart())
+    assert _WARN not in render_profection_wheel_svg(warned, show_warnings=False)

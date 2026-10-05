@@ -21,7 +21,7 @@ from __future__ import annotations
 from datetime import date as _date
 
 from .profection_wheel import glyphs_by_year, render_profection_wheel_svg, theme_lord_colors
-from .wheel import PALETTES, SYM_FAMILY, TXT_FAMILY, font_face_css
+from .wheel import PALETTES, SYM_FAMILY, TXT_FAMILY, _warn_badge, font_face_css
 
 _SIGNS = ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
           "Sagittarius", "Capricorn", "Aquarius", "Pisces")
@@ -86,7 +86,8 @@ def _dasha_path(vim: dict) -> str:
 
 
 def _chart_style(chart: dict, vim: dict, *, theme: str, size: int, title: str,
-                 max_age: int, sub_style: str = "ticks", layout: str = "annulus") -> str:
+                 max_age: int, sub_style: str = "ticks", layout: str = "annulus",
+                 show_warnings: bool = True) -> str:
     """Project the daśā onto the annual-profection wheel: band = Mahā lord, glyph = Antar lord,
     on the shared natal core."""
     if not chart.get("profections"):
@@ -110,6 +111,7 @@ def _chart_style(chart: dict, vim: dict, *, theme: str, size: int, title: str,
                + "(band = mahā · glyph = antar)")
     return render_profection_wheel_svg(
         chart, theme=theme, size=size, max_age=max_age, layout=layout,
+        show_warnings=show_warnings,
         timelord={"title": title, "subtitle_lines": [s for s in subtitle if s],
                   "lord_names": list(_LEGEND),
                   "lord_colors": {**theme_lord_colors(theme, _CHALDEAN), **_NODE_COLOR},
@@ -121,7 +123,8 @@ def _chart_style(chart: dict, vim: dict, *, theme: str, size: int, title: str,
 def render_vimshottari_svg(chart: dict, *, theme: str = "light", max_age: float = 100.0,
                            width: int = 1160, title: str = "Vimśottarī Daśā",
                            style: str = "timeline", sub_style: str = "ticks",
-                           size: int = 620, layout: str = "annulus") -> str:
+                           size: int = 620, layout: str = "annulus",
+                           show_warnings: bool = True) -> str:
     """Render the Vimśottarī daśā for ``chart`` as an SVG string.
 
     ``style`` is ``"timeline"`` (default; the horizontal Mahā/Antar bars) or ``"chart"`` (the
@@ -136,7 +139,8 @@ def render_vimshottari_svg(chart: dict, *, theme: str = "light", max_age: float 
                          "assemble(..., vimshottari_as_of=))")
     if style == "chart":
         return _chart_style(chart, vim, theme=theme, size=size, title=title,
-                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout)
+                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout,
+                            show_warnings=show_warnings)
     if style != "timeline":
         raise ValueError("style must be 'timeline' or 'chart'")
 
@@ -243,6 +247,9 @@ def render_vimshottari_svg(chart: dict, *, theme: str = "light", max_age: float 
         P.append(f'<text x="{lx+19:.1f}" y="{ly}" fill="{muted}" font-size="13.5">{_esc(r)}{gtag}</text>')
         lx += 52 + len(r) * 7.6
     P.append(font_face_css())
+    if show_warnings and (badge := _warn_badge(chart.get("warnings"), x=W - padR - 14,
+                                               y=24, scale=1.2, bg=bg)):
+        P.append(badge)
     P.append("</svg>")
     return "\n".join(P)
 

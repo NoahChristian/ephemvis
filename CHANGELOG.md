@@ -6,6 +6,21 @@ All notable changes to **ephemvis** are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-10-04
+
+### Added
+- **Timezone-uncertainty warning badge.** Every chart renderer now surfaces openephem's
+  `chart["warnings"]` — the flag `resolve()` raises for a pre-1970 / pre-Uniform-Time-Act birth
+  whose offset is uncertain (e.g. a 1955 Kansas birth). A small amber caution triangle is drawn in a
+  corner, with the full warning text(s) in an SVG `<title>` hover tooltip. ephemvis does no
+  timezone logic of its own; openephem decides *whether* a chart is uncertain (a Toronto birth is
+  never flagged), and ephemvis merely passes the flag through to `render_svg`,
+  `render_biwheel_svg`, `render_profection_wheel_svg`, `render_vedic_square_svg`, the four time-lord
+  renderers (`render_firdaria_svg`, `render_decennials_svg`, `render_zodiacal_releasing_svg`,
+  `render_vimshottari_svg`), and both aspect grids. The two-chart renderers merge inner + outer
+  warnings. Each renderer gains a `show_warnings: bool = True` flag to suppress it. A chart with no
+  warnings renders byte-identically to before.
+
 ## [0.5.2] — 2026-10-01
 
 ### Changed
@@ -281,6 +296,8 @@ Initial public release — themeable SVG rendering for openephem chart data.
 - CI gates: pytest + **SVG snapshot tests** (byte-stable across Linux/Windows) +
   ruff + mypy, on Python 3.10–3.13.
 
+[0.6.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.6.0
+[0.5.2]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.5.2
 [0.5.1]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.5.1
 [0.5.0]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.5.0
 [0.3.2]: https://github.com/NoahChristian/ephemvis/releases/tag/v0.3.2

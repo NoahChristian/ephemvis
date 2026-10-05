@@ -21,7 +21,14 @@ from __future__ import annotations
 import math
 
 from .profection_wheel import theme_lord_colors
-from .wheel import PALETTES, SIGN_GLYPHS, SYM_FAMILY, TXT_FAMILY, font_face_css
+from .wheel import (
+    PALETTES,
+    SIGN_GLYPHS,
+    SYM_FAMILY,
+    TXT_FAMILY,
+    _warn_badge,
+    font_face_css,
+)
 
 # the nine grahas (Rāhu = the north node, Ketu = its opposite point). Classical Vedic uses
 # these only — the outer planets are omitted.
@@ -537,7 +544,8 @@ def _render_east(chart, pal, lord_col, size, title):
 
 
 def render_vedic_square_svg(chart: dict, *, style: str = "south", theme: str = "light",
-                           size: int = 620, title: str = "Rāśi") -> str:
+                           size: int = 620, title: str = "Rāśi",
+                           show_warnings: bool = True) -> str:
     """Render a Vedic square chart for ``chart`` (a **sidereal** chart) as an SVG string.
 
     ``style`` is ``"south"`` (South-Indian fixed-rāśi grid), ``"north"`` (North-Indian
@@ -560,12 +568,20 @@ def render_vedic_square_svg(chart: dict, *, style: str = "south", theme: str = "
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])
     lord_col = _lord_colors(theme)
     if style == "south":
-        return _render_south(chart, pal, lord_col, size, title)
-    if style == "north":
-        return _render_north(chart, pal, lord_col, size, title)
-    if style == "east":
-        return _render_east(chart, pal, lord_col, size, title)
-    raise ValueError("style must be 'south', 'north', or 'east'")
+        svg = _render_south(chart, pal, lord_col, size, title)
+    elif style == "north":
+        svg = _render_north(chart, pal, lord_col, size, title)
+    elif style == "east":
+        svg = _render_east(chart, pal, lord_col, size, title)
+    else:
+        raise ValueError("style must be 'south', 'north', or 'east'")
+    if show_warnings:
+        # the rāśi grid fills the square, so knock out a disc behind the top-right badge
+        badge = _warn_badge(chart.get("warnings"), x=size * 0.93, y=size * 0.07,
+                            scale=size / 620.0, bg=pal["bg"][0])
+        if badge:
+            svg = svg.replace("</svg>", badge + "</svg>")
+    return svg
 
 
 if __name__ == "__main__":

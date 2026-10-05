@@ -58,3 +58,14 @@ def test_varga_label_from_chart_tag():
     c["varga"] = {"division": 9, "name": "Navāṃśa"}
     assert "D-9" in render_vedic_square_svg(c, style="north")
     assert "D-1" in render_vedic_square_svg(_chart(), style="north")   # default when untagged
+
+
+# --- timezone-uncertainty warning badge ---
+_WARN = 'aria-label="chart data warning"'
+
+
+def test_warning_badge():
+    warned = dict(_chart(), warnings=["tz uncertain"])
+    assert _WARN in render_vedic_square_svg(warned)
+    assert _WARN not in render_vedic_square_svg(_chart())
+    assert _WARN not in render_vedic_square_svg(warned, show_warnings=False)

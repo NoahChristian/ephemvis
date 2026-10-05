@@ -19,7 +19,15 @@ from __future__ import annotations
 
 import math
 
-from .wheel import PALETTES, PLANET_GLYPHS, SIGN_GLYPHS, SYM_FAMILY, TXT_FAMILY, font_face_css
+from .wheel import (
+    PALETTES,
+    PLANET_GLYPHS,
+    SIGN_GLYPHS,
+    SYM_FAMILY,
+    TXT_FAMILY,
+    _warn_badge,
+    font_face_css,
+)
 
 _SIGNS = ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
           "Sagittarius", "Capricorn", "Aquarius", "Pisces")
@@ -199,7 +207,7 @@ def glyphs_by_year(sub_segments, n_years: int):
 def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: int = 83,
                                 size: int = 760, title: str = "Annual Profections",
                                 planets="classical", timelord=None,
-                                layout: str = "annulus") -> str:
+                                layout: str = "annulus", show_warnings: bool = True) -> str:
     """Render the annual-profection wheel for ``chart`` as an SVG string.
 
     ``theme`` is any key of :data:`ephemvis.PALETTES` (``'auto'`` renders as light).
@@ -662,6 +670,9 @@ def render_profection_wheel_svg(chart: dict, *, theme: str = "light", max_age: i
         P.append(f'<text x="{lx + lw:.0f}" y="{ly + 24*s:.0f}" fill="{pal["sub"]}" font-family="{_UI}" '
                  f'font-size="{_n(12*s)}" text-anchor="end">{emax}</text>')
     P.append(font_face_css())
+    if show_warnings and (badge := _warn_badge(chart.get("warnings"), x=size * 0.93,
+                                               y=size * 0.055, scale=size / 760.0, bg=pal["bg"])):
+        P.append(badge)
     P.append("</svg>")
     return "\n".join(P)
 

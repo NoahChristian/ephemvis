@@ -24,6 +24,11 @@ EMBED_FONTS = True
 SYM_FAMILY = _fontdata.SYM_FAMILY    # font-family stack for symbol glyphs
 TXT_FAMILY = _fontdata.TXT_FAMILY    # font-family stack for numerals / labels / ℞ / ° / ′ / ″
 
+# Caution-badge amber. One fixed color (not theme-swapped) so the single inline helper works
+# across every renderer; verified ~3.0:1 on white and ~6:1 on the dark ground (#14161a), i.e.
+# >= 3:1 for a graphical mark on both. See _warn_badge.
+WARN_COLOR = "#d4820a"
+
 
 def font_face_css() -> str:
     """The ``@font-face`` ``<style>`` for the embedded glyphs, or ``""`` when EMBED_FONTS is off."""
@@ -357,9 +362,41 @@ def _esc(s: str) -> str:
     return (str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 
+def _warn_badge(warnings, *, x: float, y: float, scale: float = 1.0,
+                color: str = WARN_COLOR, bg: str | None = None) -> str:
+    """A small caution triangle centered at ``(x, y)`` whose ``<title>`` tooltip carries the
+    chart's warning text, or ``""`` when there are none.
+
+    ephemvis does no timezone/date logic of its own — this simply surfaces ``chart["warnings"]``
+    (openephem decides *whether* a chart is uncertain). Returning ``""`` for an empty/absent list
+    is the whole gate, so an unwarned chart renders byte-identical to before. Drawn as vector
+    (not the ⚠ glyph, which isn't in the embedded font subset) so it renders identically
+    everywhere. ``bg`` paints a knockout disc behind the mark for placement over dense content.
+    """
+    items = list(warnings) if isinstance(warnings, (list, tuple)) else ([warnings] if warnings else [])
+    items = [str(w) for w in items if w]
+    if not items:
+        return ""
+    tip = _esc("\n".join(items))
+    s = 11.0 * scale                              # triangle half-base
+    top, bot = y - s, y + s * 0.78                # apex up, base down
+    pts = f"{x:.1f},{top:.1f} {x - s:.1f},{bot:.1f} {x + s:.1f},{bot:.1f}"
+    out = [f'<g role="img" aria-label="chart data warning"><title>{tip}</title>']
+    if bg:
+        out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{s * 1.55:.1f}" fill="{bg}"/>')
+    out.append(f'<polygon points="{pts}" fill="none" stroke="{color}" '
+               f'stroke-width="{max(1.7 * scale, 1.0):.2f}" stroke-linejoin="round"/>')
+    out.append(f'<text x="{x:.1f}" y="{y + s * 0.22:.1f}" text-anchor="middle" '
+               f'dominant-baseline="central" fill="{color}" font-family="{TXT_FAMILY}" '
+               f'font-weight="800" font-size="{s * 0.95:.1f}px">!</text>')
+    out.append('</g>')
+    return "".join(out)
+
+
 def render_svg(chart: dict, size: int = 760, theme: str = "auto",
                text_labels: bool = False, title: str | None = None,
-               show_profection: bool = True, show_aspects: bool = True) -> str:
+               show_profection: bool = True, show_aspects: bool = True,
+               show_warnings: bool = True) -> str:
     cx = cy = size / 2.0
     r_out = size * 0.45              # outer edge (leaves a margin for AC/MC outside)
     r_zod_in = r_out * 0.890         # inner edge of the zodiac band (signs live here); matches the
@@ -733,6 +770,10 @@ def render_svg(chart: dict, size: int = 760, theme: str = "auto",
     if title:
         P.append(f'<text x="{cx:.1f}" y="{size*0.04:.1f}" class="title" '
                  f'text-anchor="middle">{_esc(title)}</text>')
+    if show_warnings and (badge := _warn_badge(chart.get("warnings"), x=size * 0.93,
+                                               y=size * 0.07, scale=size / 760.0)):
+        # top-right corner — outside the inscribed rim of a circular wheel, so always clear
+        P.append(badge)
     P.append('</svg>')
     return "\n".join(P)
 

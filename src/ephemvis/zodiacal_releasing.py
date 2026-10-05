@@ -24,7 +24,7 @@ from __future__ import annotations
 from datetime import date as _date
 
 from .profection_wheel import glyphs_by_year, render_profection_wheel_svg, theme_lord_colors
-from .wheel import PALETTES, SYM_FAMILY, TXT_FAMILY, font_face_css
+from .wheel import PALETTES, SYM_FAMILY, TXT_FAMILY, _warn_badge, font_face_css
 
 SIGNS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
          "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
@@ -105,7 +105,8 @@ def _l2_segments(zr: dict, max_age: float):
 
 
 def _chart_style(chart: dict, zr: dict, *, theme: str, size: int, title: str,
-                 max_age: int, sub_style: str = "ticks", layout: str = "annulus") -> str:
+                 max_age: int, sub_style: str = "ticks", layout: str = "annulus",
+                 show_warnings: bool = True) -> str:
     """Roll releasing onto the annual-profection wheel: each age cell takes the L1 sign's
     element color and the L2 sign's glyph, on the shared natal-chart core. (Angularity /
     peak / loosing-of-the-bond markers stay on the horizontal timeline for now.)"""
@@ -134,6 +135,7 @@ def _chart_style(chart: dict, zr: dict, *, theme: str, size: int, title: str,
                + "(band = L1 element · glyph = L2 sign)")
     return render_profection_wheel_svg(
         chart, theme=theme, size=size, max_age=max_age, layout=layout,
+        show_warnings=show_warnings,
         timelord={"title": title, "subtitle_lines": subtitle, "lord_names": list(_ELEMENT),
                   "lord_colors": theme_lord_colors(theme, _ELEMENT), "glyph_map": glyph_map,
                   "major_by_age": major_by_age, "glyph_by_age": glyph_by_age,
@@ -144,7 +146,7 @@ def render_zodiacal_releasing_svg(chart: dict, *, theme: str = "light",
                                   max_age: float = 84.0, width: int = 1160,
                                   title: str = "Zodiacal Releasing", style: str = "timeline",
                                   sub_style: str = "ticks", size: int = 620,
-                                  layout: str = "annulus") -> str:
+                                  layout: str = "annulus", show_warnings: bool = True) -> str:
     """Render the zodiacal releasing for ``chart`` as an SVG string.
 
     ``style`` is ``"timeline"`` (default; the horizontal L1/L2 bars with angularity and
@@ -161,7 +163,8 @@ def render_zodiacal_releasing_svg(chart: dict, *, theme: str = "light",
                          "openephem's assemble(..., releasing_as_of=))")
     if style == "chart":
         return _chart_style(chart, zr, theme=theme, size=size, title=title,
-                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout)
+                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout,
+                            show_warnings=show_warnings)
     if style != "timeline":
         raise ValueError("style must be 'timeline' or 'chart'")
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])
@@ -318,6 +321,9 @@ def render_zodiacal_releasing_svg(chart: dict, *, theme: str = "light",
              f'stroke-width="1.6" stroke-dasharray="3 2"/>')
     P.append(f'<text x="{lx+16:.1f}" y="{ly}" fill="{muted}" font-size="13.5">loosing of the bond</text>')
     P.append(font_face_css())
+    if show_warnings and (badge := _warn_badge(chart.get("warnings"), x=W - padR - 14,
+                                               y=24, scale=1.2, bg=bg)):
+        P.append(badge)
     P.append("</svg>")
     return "\n".join(P)
 

@@ -19,7 +19,7 @@ from __future__ import annotations
 from datetime import date as _date
 
 from .profection_wheel import glyphs_by_year, render_profection_wheel_svg, theme_lord_colors
-from .wheel import PALETTES, SYM_FAMILY, TXT_FAMILY, font_face_css
+from .wheel import PALETTES, SYM_FAMILY, TXT_FAMILY, _warn_badge, font_face_css
 
 _SIGNS = ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
           "Sagittarius", "Capricorn", "Aquarius", "Pisces")
@@ -86,7 +86,8 @@ def _sub_segments(dec: dict, max_age: float):
 
 
 def _chart_style(chart: dict, dec: dict, *, theme: str, size: int, title: str,
-                 max_age: int, sub_style: str = "ticks", layout: str = "annulus") -> str:
+                 max_age: int, sub_style: str = "ticks", layout: str = "annulus",
+                 show_warnings: bool = True) -> str:
     """Roll the decennial timeline onto the annual-profection wheel: keep the age annuli,
     but stamp each age cell with that year's decennial (sub-)lord glyph."""
     if not chart.get("profections"):
@@ -111,6 +112,7 @@ def _chart_style(chart: dict, dec: dict, *, theme: str, size: int, title: str,
                + (f" / {sub}" if sub and sub != major else "") + "   (band = major · glyph = sub)")
     return render_profection_wheel_svg(
         chart, theme=theme, size=size, max_age=max_age, layout=layout,
+        show_warnings=show_warnings,
         timelord={"title": title, "subtitle_lines": subtitle, "lord_names": list(_LEGEND),
                   "major_by_age": major_by_age, "glyph_by_age": glyph_by_age,
                   "sub_segments": sub_segments, "sub_style": sub_style,
@@ -120,7 +122,7 @@ def _chart_style(chart: dict, dec: dict, *, theme: str, size: int, title: str,
 def render_decennials_svg(chart: dict, *, theme: str = "light", style: str = "timeline",
                           sub_style: str = "ticks", max_age: float = 76.0, width: int = 1160,
                           size: int = 620, title: str = "Decennials",
-                          layout: str = "annulus") -> str:
+                          layout: str = "annulus", show_warnings: bool = True) -> str:
     """Render the decennials for ``chart`` as an SVG string.
 
     ``style`` is ``"timeline"`` (default; the horizontal period bars) or ``"chart"`` (the
@@ -138,7 +140,8 @@ def render_decennials_svg(chart: dict, *, theme: str = "light", style: str = "ti
                          "assemble(..., decennials_as_of=))")
     if style == "chart":
         return _chart_style(chart, dec, theme=theme, size=size, title=title,
-                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout)
+                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout,
+                            show_warnings=show_warnings)
     if style != "timeline":
         raise ValueError("style must be 'timeline' or 'chart'")
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])
@@ -261,6 +264,9 @@ def render_decennials_svg(chart: dict, *, theme: str = "light", style: str = "ti
         P.append(f'<text x="{lx+19:.1f}" y="{ly}" fill="{muted}" font-size="13.5">{_esc(r)}{gtag}</text>')
         lx += 52 + len(r) * 7.6
     P.append(font_face_css())
+    if show_warnings and (badge := _warn_badge(chart.get("warnings"), x=W - padR - 14,
+                                               y=24, scale=1.2, bg=bg)):
+        P.append(badge)
     P.append("</svg>")
     return "\n".join(P)
 

@@ -240,3 +240,42 @@ def test_no_intercept_glyphs_on_wholesign():
     c["angles"] = {"asc": 65.95, "mc": 305.0}
     c["cusps"] = [(60.0 + 30.0 * k) % 360.0 for k in range(12)]   # whole-sign boundaries
     assert 'class="sign-icept"' not in wheel.render_svg(c, theme="light")
+
+
+# --- timezone-uncertainty warning badge (ephemvis surfaces openephem's chart["warnings"]) ---
+WARN_MARK = 'aria-label="chart data warning"'
+WARN_MSG = "Pre-1967 US zone applied DST; offset may be off by 1h."
+
+
+def test_warning_badge_shown():
+    s = wheel.render_svg(dict(_mock_chart(), warnings=[WARN_MSG]))
+    assert WARN_MARK in s
+    assert "<title>%s</title>" % WARN_MSG in s        # full text rides in the hover tooltip
+    ET.fromstring(s)
+
+
+def test_warning_badge_absent_without_warnings():
+    assert WARN_MARK not in wheel.render_svg(_mock_chart())
+
+
+def test_warning_badge_byte_identical_without_warnings():
+    # the whole gate: an unwarned chart (absent OR empty list) renders exactly as before
+    chart = _mock_chart()
+    base = wheel.render_svg(chart)
+    assert base == wheel.render_svg(dict(chart, warnings=[]))
+    assert WARN_MARK not in base
+
+
+def test_warning_badge_opt_out():
+    s = wheel.render_svg(dict(_mock_chart(), warnings=[WARN_MSG]), show_warnings=False)
+    assert WARN_MARK not in s
+
+
+def test_warning_badge_escapes_text():
+    s = wheel.render_svg(dict(_mock_chart(), warnings=["offset < 0 & uncertain"]))
+    assert "offset &lt; 0 &amp; uncertain" in s
+
+
+def test_aspect_grid_warning_badge():
+    assert WARN_MARK in aspectgrid.render_aspect_grid_svg(dict(_mock_chart(), warnings=[WARN_MSG]))
+    assert WARN_MARK not in aspectgrid.render_aspect_grid_svg(_mock_chart())

@@ -19,7 +19,7 @@ from __future__ import annotations
 from datetime import date as _date
 
 from .profection_wheel import glyphs_by_year, render_profection_wheel_svg, theme_lord_colors
-from .wheel import PALETTES, SYM_FAMILY, TXT_FAMILY, font_face_css
+from .wheel import PALETTES, SYM_FAMILY, TXT_FAMILY, _warn_badge, font_face_css
 
 _SIGNS = ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio",
           "Sagittarius", "Capricorn", "Aquarius", "Pisces")
@@ -96,7 +96,8 @@ def _sub_segments(fd: dict, max_age: float):
 
 
 def _chart_style(chart: dict, fd: dict, *, theme: str, size: int, title: str,
-                 max_age: int, sub_style: str = "ticks", layout: str = "annulus") -> str:
+                 max_age: int, sub_style: str = "ticks", layout: str = "annulus",
+                 show_warnings: bool = True) -> str:
     """Roll the firdaria major/sub sequence onto the annual-profection wheel: age cells take
     the major lord's color and the sub lord's glyph, on the shared natal-chart core."""
     if not chart.get("profections"):
@@ -121,6 +122,7 @@ def _chart_style(chart: dict, fd: dict, *, theme: str, size: int, title: str,
                + "   (band = major · glyph = sub)")
     return render_profection_wheel_svg(
         chart, theme=theme, size=size, max_age=max_age, layout=layout,
+        show_warnings=show_warnings,
         timelord={"title": title, "subtitle_lines": subtitle, "lord_names": list(_LEGEND),
                   "lord_colors": {**theme_lord_colors(theme, _CHALDEAN), **_NODE_COLOR},
                   "glyph_map": _GLYPH, "major_by_age": major_by_age, "glyph_by_age": glyph_by_age,
@@ -130,7 +132,7 @@ def _chart_style(chart: dict, fd: dict, *, theme: str, size: int, title: str,
 def render_firdaria_svg(chart: dict, *, theme: str = "light", max_age: float = 84.0,
                         width: int = 1160, title: str = "Firdaria", style: str = "timeline",
                         sub_style: str = "ticks", size: int = 620,
-                        layout: str = "annulus") -> str:
+                        layout: str = "annulus", show_warnings: bool = True) -> str:
     """Render the firdaria for ``chart`` as an SVG string.
 
     ``style`` is ``"timeline"`` (default; the horizontal period bars) or ``"chart"`` (the
@@ -146,7 +148,8 @@ def render_firdaria_svg(chart: dict, *, theme: str = "light", max_age: float = 8
                          "assemble(..., firdaria_as_of=))")
     if style == "chart":
         return _chart_style(chart, fd, theme=theme, size=size, title=title,
-                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout)
+                            max_age=int(round(max_age)), sub_style=sub_style, layout=layout,
+                            show_warnings=show_warnings)
     if style != "timeline":
         raise ValueError("style must be 'timeline' or 'chart'")
     pal = PALETTES.get("light" if theme == "auto" else theme, PALETTES["light"])
@@ -249,6 +252,10 @@ def render_firdaria_svg(chart: dict, *, theme: str = "light", max_age: float = 8
         P.append(f'<text x="{lx+19:.1f}" y="{ly}" fill="{muted}" font-size="13.5">{_esc(r)}{gtag}</text>')
         lx += 52 + len(r) * 7.6
     P.append(font_face_css())
+    if show_warnings and (badge := _warn_badge(chart.get("warnings"), x=W - padR - 14,
+                                               y=24, scale=1.2, bg=bg)):
+        # design-space top-right, clear of the top-left title
+        P.append(badge)
     P.append("</svg>")
     return "\n".join(P)
 

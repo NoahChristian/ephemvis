@@ -109,3 +109,21 @@ def test_bad_style_raises():
 
 def test_timeline_ignores_layout():
     assert render_firdaria_svg(_chart()) == render_firdaria_svg(_chart(), layout="spiral")
+
+
+# --- timezone-uncertainty warning badge ---
+_WARN = 'aria-label="chart data warning"'
+
+
+def test_warning_badge_timeline():
+    assert _WARN in render_firdaria_svg(dict(_chart(), warnings=["tz uncertain"]))
+    assert _WARN not in render_firdaria_svg(_chart())
+    assert _WARN not in render_firdaria_svg(
+        dict(_chart(), warnings=["tz uncertain"]), show_warnings=False)
+
+
+def test_warning_badge_chart_style():
+    # the chart style delegates to the profection wheel; the flag must thread through
+    c = dict(_wheel_chart(), warnings=["tz uncertain"])
+    assert _WARN in render_firdaria_svg(c, style="chart")
+    assert _WARN not in render_firdaria_svg(dict(c, warnings=[]), style="chart")

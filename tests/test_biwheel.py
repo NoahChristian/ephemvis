@@ -149,3 +149,27 @@ def test_synastry_grid_shows_aspect_symbols_and_labels():
 def test_synastry_grid_empty_cross_is_wellformed():
     svg = render_synastry_grid_svg(_inner(), _outer(), [])
     ET.fromstring(svg)
+
+
+# --- timezone-uncertainty warning badge (merged across both charts) ---
+_WARN = 'aria-label="chart data warning"'
+
+
+def test_warning_badge_merges_both_charts():
+    inner = dict(_inner(), warnings=["inner tz uncertain"])
+    outer = dict(_outer(), warnings=["outer tz uncertain"])
+    s = render_biwheel_svg(inner, outer, labels=("Natal", "Transit"))
+    assert _WARN in s
+    assert "Natal: inner tz uncertain" in s and "Transit: outer tz uncertain" in s
+
+
+def test_warning_badge_single_chart_not_prefixed():
+    s = render_biwheel_svg(dict(_inner(), warnings=["inner tz uncertain"]), _outer())
+    assert _WARN in s
+    assert "inner tz uncertain" in s and "Inner:" not in s and "Natal:" not in s
+
+
+def test_warning_badge_absent_when_clean():
+    assert _WARN not in render_biwheel_svg(_inner(), _outer())
+    assert _WARN not in render_biwheel_svg(
+        dict(_inner(), warnings=["x"]), _outer(), show_warnings=False)

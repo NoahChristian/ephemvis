@@ -21,6 +21,7 @@ from .wheel import (
     TXT_FAMILY,
     _esc,
     _lerp_hex,
+    _warn_badge,
     body_label,
     font_face_css,
 )
@@ -54,7 +55,8 @@ _GRID_GRAD_REVERSE = {"infrared"}
 
 
 def render_aspect_grid_svg(chart: dict, theme: str = "light", order=None,
-                           cell: float = 30.0, legend: bool = True) -> str:
+                           cell: float = 30.0, legend: bool = True,
+                           show_warnings: bool = True) -> str:
     """Return an SVG string for the triangular aspect grid.
 
     Only bodies that appear in `order` AND in the chart's `bodies` are shown, in that
@@ -163,6 +165,10 @@ def render_aspect_grid_svg(chart: dict, theme: str = "light", order=None,
                      'font-size="12.5" dominant-baseline="central">%s</text>' % (lx, ly, muted, TXT, ASP_LABEL[k]))
             lx += len(ASP_LABEL[k]) * 7.2 + 22.0
 
+    if show_warnings and (badge := _warn_badge(chart.get("warnings"), x=W - pad - 12,
+                                               y=pad + 12, scale=1.0, bg=bg0)):
+        # triangular grid leaves the top-right corner clear
+        P.append(badge)
     P.append('</svg>')
     return "\n".join(P)
 
@@ -170,7 +176,7 @@ def render_aspect_grid_svg(chart: dict, theme: str = "light", order=None,
 def render_synastry_grid_svg(inner_chart: dict, outer_chart: dict,
                              cross_aspects: list | None = None, theme: str = "light",
                              order=None, cell: float = 30.0, legend: bool = True,
-                             labels=("Inner", "Outer")) -> str:
+                             labels=("Inner", "Outer"), show_warnings: bool = True) -> str:
     """Return an SVG string for a synastry (cross-chart) aspect grid.
 
     Unlike the single-chart triangular aspectarian, this is a full **rectangular**
@@ -307,5 +313,16 @@ def render_synastry_grid_svg(inner_chart: dict, outer_chart: dict,
                      'font-size="12.5" dominant-baseline="central">%s</text>' % (lx, ly, muted, TXT, ASP_LABEL[k]))
             lx += len(ASP_LABEL[k]) * 7.2 + 22.0
 
+    if show_warnings:
+        # the rectangular matrix fills the top-right; use the blank top-left axes-origin corner
+        wi = [str(w) for w in (inner_chart.get("warnings") or []) if w]
+        wo = [str(w) for w in (outer_chart.get("warnings") or []) if w]
+        li, lo = labels
+        if wi and wo:
+            merged = [f"{li}: {w}" for w in wi] + [f"{lo}: {w}" for w in wo]
+        else:
+            merged = wi + wo
+        if badge := _warn_badge(merged, x=pad + 11, y=pad + 11, scale=0.9, bg=bg0):
+            P.append(badge)
     P.append('</svg>')
     return "\n".join(P)
